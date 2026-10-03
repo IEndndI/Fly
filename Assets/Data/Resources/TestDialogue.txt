@@ -1,0 +1,27 @@
+flow	speakerName	text	characterSprite	backgroundSprite	hideCharacter	effect	BGM	ambient
+jump:不存在	小明	早上好！	微笑			play:小明入场，se:whoosh:vol(0.3)	happy	wind_loop:in(2):vol(0.3)
+		今天的天气很不错呢。						
+		可是，昨晚做了一个很奇怪的梦。					tenseness:out(3):in(1):vol(0.4)	wind_loop:out(3):stop
+		我梦见自己，{w}变成了一只鸟。	小明_疑惑			shake：1,flash，play:推镜头		bird_loop
+						wait:1		
+						shake		
+jump:风吹		其实我一直想告诉你——{nw}	小明_严肃					bird_loop:stop
+		其实我们都是假的！						
+label:风吹	{clear}	一阵风吹过						wind_loop：vol（0.3）,bird_loop
+	小明	……算了，不说这个了，我先走了。						
+	Sub	早上好！	微笑:left			se:whoosh:full	happy:in(0.1)	
+	小明	你？{w}等等，{w}你是什么时候...	小明_疑惑:pos(1440,540)					
+	Sub	我们都在啊。{w}是个很好的日子，{w}不是吗？					happy	
+	{clear}	我怎么回答？						
+option:是>分支A								
+option:不是>分支B								
+								
+label:分支A		Sub笑	Sub_微笑					
+jump:汇合	Sub	我也这么觉得。						
+label:分支B	Sub	……					tenseness:out(0.5):gap(2):vol(0.4)	
+		我知道了。						
+jump:风吹		至少，我们{nw}						
+label:汇合	Sub	可是...我要走了	伤心				{clear}	
+	小明	我也是	小明_严肃					
+end	{clear}	两人离开了。			all			
+		可他们也没有来过。						
