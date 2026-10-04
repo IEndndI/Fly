@@ -99,8 +99,7 @@ public class ChapterCard : MonoBehaviour
 
         // ③ 停留
         yield return new WaitForSeconds(holdTime);
-        if (!SetContent(id)) yield break;
-        yield break;   // TODO：换成你的动画
+        
     }
 
     // uncard —— 扉页收起 → 12 栏抽离，露出新场景

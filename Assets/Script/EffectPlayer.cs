@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class EffectPlayer : MonoBehaviour
 {
+    public ChapterCard chapterCard;
     public Image flashOverlay;
 
     public float shakeDuration = 0.4f;
@@ -96,6 +97,8 @@ public class EffectPlayer : MonoBehaviour
         else if (cmd.name == "jump") StartCoroutine(Jump(cmd.duration, target));
         else if (cmd.name == "play") timelinePlayer.Play(cmd.arg);
         else if (cmd.name == "se") audioPlayer.PlaySE(cmd);
+        else if (cmd.name == "card") StartCoroutine(chapterCard.Cover(cmd.arg));
+        else if (cmd.name == "uncard") StartCoroutine(chapterCard.Reveal());          // 空1          // 空2
         else Debug.LogWarning("未知效果：" + cmd.name);
     }
 
@@ -112,6 +115,8 @@ public class EffectPlayer : MonoBehaviour
             if (cmd.flags.Contains("full")) return audioPlayer.GetSELength(cmd.arg);
             return 0f;
         }
+        else if (cmd.name == "card") return chapterCard.ColumnsTotal + 0.4f + chapterCard.holdTime;
+        else if (cmd.name == "uncard") return 0.25f + chapterCard.ColumnsTotal;              // 空2
         else return 0f;
     }
 }
