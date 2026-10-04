@@ -18,6 +18,7 @@ public class ChapterCard : MonoBehaviour
         public string place = "七月 · 仲夏夜";
         [TextArea] public string quote = "";
         public string page = "003";
+        public string ordinal = "first";     // 蜡笔写出来的英文序数词：Sprites/Fly/Card/trail_first_line0~2
     }
     public Chapter[] chapters;               // 文字都在 Inspector 里改
 
@@ -28,6 +29,8 @@ public class ChapterCard : MonoBehaviour
     public TextMeshProUGUI numeral, title, english, place, quote, page, caption;
     public Image[] tocBacks;                 // 目录每行的底（当前章反白）
     public TextMeshProUGUI[] tocRows;        // 目录每行的字
+    public RectTransform trailMask;          // 蜡笔线的裁切框：从左往右拉开，线就像被画出来
+    public BoilSprite trail;                 // 蜡笔线本身（3 帧抖动）
 
     [Header("时间")]
     public float columnTime = 0.45f;         // 每一栏落下 / 抽离用时
@@ -36,11 +39,12 @@ public class ChapterCard : MonoBehaviour
 
     static readonly Color Cobalt = new Color(0f, 0.278f, 0.671f);
     static readonly Color Paper = new Color(0.949f, 0.925f, 0.875f);
-    float maskFullWidth;
+    float maskFullWidth, trailFullWidth;
 
     void Awake()
     {
         maskFullWidth = numeralMask.sizeDelta.x;
+        trailFullWidth = trailMask.sizeDelta.x;
         SetColumns(0f);
         card.alpha = 0f;
         card.gameObject.SetActive(false);
@@ -55,6 +59,10 @@ public class ChapterCard : MonoBehaviour
         numeral.text = c.numeral; title.text = c.title; english.text = c.english;
         place.text = c.place; quote.text = c.quote; page.text = c.page;
         caption.text = "第" + c.numeral + "章 · Chapter " + (n + 1).ToString("00");
+        Sprite[] frames = new Sprite[3];                                    // 这一章的蜡笔线，先收起来等着画
+        for (int i = 0; i < 3; i++) frames[i] = Resources.Load<Sprite>("Sprites/Fly/Card/trail_" + c.ordinal + "_line" + i);
+        trail.SetFrames(frames[0] != null ? frames : new Sprite[0]);
+        SetTrailReveal(0f);
         for (int i = 0; i < tocRows.Length; i++)
         {
             bool has = i < chapters.Length, current = i == n;
@@ -80,6 +88,7 @@ public class ChapterCard : MonoBehaviour
     void SetColumns(float scaleY) { foreach (var c in columns) c.localScale = new Vector3(1f, scaleY, 1f); }
     public float ColumnsTotal { get { return columnTime + columnStagger * (columns.Length - 1); } }
     public void SetNumeralReveal(float p) { numeralMask.sizeDelta = new Vector2(maskFullWidth * p, numeralMask.sizeDelta.y); }
+    public void SetTrailReveal(float p) { trailMask.sizeDelta = new Vector2(trailFullWidth * p, trailMask.sizeDelta.y); }
 
     // ───────── 下面两个由你来写 ─────────
 
