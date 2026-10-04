@@ -37,6 +37,7 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public CharacterStage stage;
     public Image backgroundImage;
+    public BoilSprite backgroundLine;   // 背景上面那层会抖的线稿
     public EffectPlayer effectPlayer;
     public ChoiceMenu choiceMenu;
     public AudioPlayer audioPlayer;
@@ -401,8 +402,24 @@ public class DialogueManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(line.backgroundSpriteName))
         {
-            Sprite bg = LoadSprite(line.backgroundSpriteName);
-            if (bg != null) backgroundImage.sprite = bg;
+            string bgName = line.backgroundSpriteName;
+            // 新格式：bgName_base 是水彩底，bgName_line0~2 是三张线稿
+            Sprite bgBase = Resources.Load<Sprite>("Sprites/" + bgName + "_base");
+            if (bgBase != null)
+            {
+                backgroundImage.sprite = bgBase;
+                Sprite[] lines = new Sprite[3];
+                for (int i = 0; i < 3; i++)                       // 空3
+                    lines[i] = LoadSprite(bgName + "_line" + i);  // 空4
+                backgroundLine.SetFrames(lines);
+            }
+            else
+            {
+                // 旧的单张背景：照原来的做法，并且把线稿层藏起来
+                Sprite bg = LoadSprite(bgName);
+                if (bg != null) backgroundImage.sprite = bg;
+                backgroundLine.SetFrames(new Sprite[0]);
+            }
         }
 
         if (!string.IsNullOrEmpty(line.bgmName))

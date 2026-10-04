@@ -18,12 +18,24 @@ public class BoilSprite : MonoBehaviour
 
     void Update()
     {
+        if (frames.Length == 0) return;   // 没有线稿：这一帧什么都不做
         timer += Time.deltaTime;                         // 空2：这个你在 FadeVolume 里写过
         if (timer >= 1f / fps)
         {
             timer -= 1f / fps;
-            index = (index + 1) % 3;             // 空3：转到最后一张后回到 0
+            index = (index + 1) % frames.Length;             // 空3：转到最后一张后回到 0
             image.sprite = frames[index];
         }
+    }
+
+        // 别的脚本叫它换一套线稿；传空数组 = 这张背景没有线稿
+    public void SetFrames(Sprite[] newFrames)
+    {
+        frames = newFrames;
+        index = 0;
+        timer = 0f;
+        if (image == null) image = GetComponent<Image>();   // 可能 Start 还没来得及跑
+        image.enabled = frames.Length > 0;                // 空1：有线稿才显示
+        if (image.enabled) image.sprite = frames[0];      // 空2：马上换成新的第一张
     }
 }
