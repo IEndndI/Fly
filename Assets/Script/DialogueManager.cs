@@ -417,6 +417,8 @@ public class DialogueManager : MonoBehaviour
         {
             speakerNameText.text = line.speakerName;
             currentSpeaker = line.speakerName;
+            StartCoroutine(Tweens.Tween(0.4f, Tweens.Bezier(0.34f, 1.56f, 0.64f, 1f),
+                p => namePlate.rectTransform.anchoredPosition = new Vector2(-24f * (1f - p), 0f)));
         }
         if (line.text == "") dialogueText.text = "";
 
