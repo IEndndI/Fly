@@ -67,6 +67,10 @@ public class DialogueLoader : MonoBehaviour
             {
                 newLine.ambient = NormalizeCommand(CleanField(fields[8]));
             }
+            if (fields.Length > 9 && !string.IsNullOrEmpty(fields[9]))
+            {
+                newLine.lineType = NormalizeCommand(CleanField(fields[9]));
+            }
 
             result.Add(newLine);
         }

@@ -18,6 +18,7 @@ public class DialogueLine
     public string effectString;
     public string bgmName;      // null=沿用，"{clear}"=停止，其他=切换到这首
     public string ambient;      // null=不变，其他=要开/关的环境音（可逗号并列）
+    public string lineType;     // null=沿用，其他=台词 / 心声 / 旁白 / 书中
 }
 
 public class Command
@@ -49,6 +50,7 @@ public class DialogueManager : MonoBehaviour
 
     private bool isTyping = false;
     private string currentSpeaker = "";
+    private string currentLineType = "旁白";   // 沿用到下一个写了类型的格子
     private bool isSkipping = false;
     private bool waitingForClick = false;
     private bool clickReceived = false;
@@ -417,6 +419,12 @@ public class DialogueManager : MonoBehaviour
             currentSpeaker = line.speakerName;
         }
         if (line.text == "") dialogueText.text = "";
+
+        if (line.lineType != null)                // 空2：什么情况才算「这一格写了东西」？
+        {
+            currentLineType = line.lineType;
+            Debug.Log("类型：" + currentLineType);   // 先打印出来验证，名牌做好后换成真正的切换
+        }
 
         // 先隐藏、再显示：同一行里"全员下场 + 新人登场"才能按预期工作
         if (!string.IsNullOrEmpty(line.hideTarget)) HideCharacters(line.hideTarget,speaker);

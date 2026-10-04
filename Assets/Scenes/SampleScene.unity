@@ -832,7 +832,7 @@ MonoBehaviour:
   audioPlayer: {fileID: 1593563960}
   dialogueLines: []
   loader: {fileID: 717773070}
-  dialogueFileName: TestDialogue
+  dialogueFileName: Fly
   typingSpeed: 0.05
 --- !u!4 &717773072
 Transform:
@@ -965,8 +965,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: speakerName
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
-  m_sharedMaterial: {fileID: -7980182304275263680, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 300e5bd5d3a745a4f8d1e5c1858e702a, type: 2}
+  m_sharedMaterial: {fileID: 7051196233222461854, guid: 300e5bd5d3a745a4f8d1e5c1858e702a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1547,8 +1547,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
-  m_sharedMaterial: {fileID: -7980182304275263680, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1cb98685c8093b7488daa0e47f4f874c, type: 2}
+  m_sharedMaterial: {fileID: 7704943612798304888, guid: 1cb98685c8093b7488daa0e47f4f874c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
