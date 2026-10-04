@@ -12,7 +12,7 @@ public class CharacterStage : MonoBehaviour
     private Dictionary<string, Image> onStage = new Dictionary<string, Image>();
 
     // 让某个角色显示某张图；hasPos 为 true 时顺便移动到 aePos
-    public void Show(string characterName, Sprite sprite, bool hasPos, Vector2 aePos)
+    public void Show(string characterName, Sprite sprite, Sprite[] lines, bool hasPos, Vector2 aePos, float height)
     {
         Image img;
         if (!onStage.TryGetValue(characterName, out img))
@@ -32,6 +32,16 @@ public class CharacterStage : MonoBehaviour
 
         img.sprite = sprite;
         if (hasPos) img.rectTransform.anchoredPosition = AEToUnity(aePos);
+
+        img.sprite = sprite;
+        img.GetComponentInChildren<BoilSprite>().SetFrames(lines);           // 空1
+        if (height > 0)
+        {
+            float width = height * sprite.rect.width / sprite.rect.height;    // 空2：保持原图比例
+            img.rectTransform.sizeDelta = new Vector2(width, height);         // 空3
+        }
+        if (hasPos) img.rectTransform.anchoredPosition = AEToUnity(aePos);
+    
     }
 
     public void Hide(string characterName)

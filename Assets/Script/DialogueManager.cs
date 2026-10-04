@@ -44,7 +44,7 @@ public class DialogueManager : MonoBehaviour
 
     public List<DialogueLine> dialogueLines;
     public DialogueLoader loader;
-    public string dialogueFileName = "TestDialogue";
+    public string dialogueFileName = "Fly";
     public float typingSpeed = 0.05f;
 
     private bool isTyping = false;
@@ -213,6 +213,7 @@ public class DialogueManager : MonoBehaviour
 
     void Start()
     {
+        LoadSpriteIndex();
         dialogueLines = loader.LoadDialogueFromFile(dialogueFileName);
         BuildLabels();
         CheckLabels();
@@ -376,13 +377,34 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+        // 图片索引：文件名 → Resources 里的路径（编辑器自动生成的 SpriteIndex.txt）
+    private Dictionary<string, string> spriteIndex = new Dictionary<string, string>();
+
+    void LoadSpriteIndex()
+    {
+        TextAsset file = Resources.Load<TextAsset>("SpriteIndex");
+        if (file == null) { Debug.LogWarning("找不到 SpriteIndex.txt"); return; }
+        foreach (string row in file.text.Split('\n'))
+        {
+            string[] parts = row.TrimEnd('\r').Split('\t');
+            if (parts.Length < 2) continue;     // 空1：空行、格式不对的就跳过
+            spriteIndex[parts[0]] = parts[1];   // 空2
+        }
+    }
+
+        // 安静地找：先当路径找，找不到再查索引（只写文件名也行）
+    Sprite FindSprite(string spriteName)
+    {
+        Sprite sprite = Resources.Load<Sprite>(spriteName);
+        if (sprite == null && spriteIndex.TryGetValue(spriteName, out string path))
+            sprite = Resources.Load<Sprite>(path);   // 空3
+        return sprite;
+    }
+
     Sprite LoadSprite(string spriteName)
     {
-        Sprite sprite = Resources.Load<Sprite>("Sprites/" + spriteName);
-        if (sprite == null)
-        {
-            Debug.LogWarning("找不到图片" + spriteName);
-        }
+        Sprite sprite = FindSprite(spriteName);
+        if (sprite == null) Debug.LogWarning("找不到图片" + spriteName);
         return sprite;
     }
 
@@ -404,7 +426,7 @@ public class DialogueManager : MonoBehaviour
         {
             string bgName = line.backgroundSpriteName;
             // 新格式：bgName_base 是水彩底，bgName_line0~2 是三张线稿
-            Sprite bgBase = Resources.Load<Sprite>("Sprites/" + bgName + "_base");
+            Sprite bgBase = FindSprite(bgName + "_base");
             if (bgBase != null)
             {
                 backgroundImage.sprite = bgBase;
@@ -459,8 +481,20 @@ public class DialogueManager : MonoBehaviour
                 fileName = speaker + "_" + cmd.name;
             }
 
-            Sprite sprite = LoadSprite(fileName);
-            if (sprite != null) stage.Show(characterName, sprite, cmd.hasPos, cmd.pos);
+                        // 新格式：Fly/Char/ 下的 文件名_base + 文件名_line0~2；找不到就当旧立绘
+            Sprite[] lines = new Sprite[0];
+            Sprite sprite = FindSprite(fileName + "_base");
+            if (sprite != null)
+            {
+                lines = new Sprite[3];
+                for (int i = 0; i < lines.Length; i++)
+                    lines[i] = FindSprite(fileName + "_line" + i);
+            }
+            else sprite = LoadSprite(fileName);
+
+            float height = 0;   // 0 = 表里没写 h()，保持预制体原来的大小
+            if (cmd.namedArgs.TryGetValue("h", out string hText)) float.TryParse(hText, out height);   // 空4
+            if (sprite != null) stage.Show(characterName, sprite, lines, cmd.hasPos, cmd.pos, height);  // 空5
         }
     }
 
