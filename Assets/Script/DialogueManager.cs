@@ -423,7 +423,7 @@ public class DialogueManager : MonoBehaviour
         if (line.lineType != null)                // 空2：什么情况才算「这一格写了东西」？
         {
             currentLineType = line.lineType;
-            Debug.Log("类型：" + currentLineType);   // 先打印出来验证，名牌做好后换成真正的切换
+            ApplyLineType(currentLineType);
         }
 
         // 先隐藏、再显示：同一行里"全员下场 + 新人登场"才能按预期工作
@@ -634,6 +634,38 @@ public class DialogueManager : MonoBehaviour
 
             if (cmd.flags.Contains("stop")) audioPlayer.StopAmbient(cmd);
             else audioPlayer.PlayAmbient(cmd);
+        }
+    }
+
+        // 名牌三态：台词 = 钴蓝实心名牌，心声 = 纸白描边，旁白 / 书中 = 不显示名牌
+    public Image namePlate;                       // 名牌底图
+    public UnityEngine.UI.Outline namePlateLine;  // 描边（心声用）
+    public TMPro.TextMeshProUGUI modeLabel;       // 左下角的类型小字
+    Color cobalt = new Color(0f, 0.278f, 0.671f);
+    Color paper  = new Color(0.949f, 0.925f, 0.875f);
+
+    void ApplyLineType(string type)
+    {
+        switch (type)
+        {
+            case "台词":
+                namePlate.gameObject.SetActive(true);
+                namePlate.color = cobalt;
+                speakerNameText.color = paper;
+                namePlateLine.enabled = false;          // 空1：台词要不要描边？
+                modeLabel.text = "台词 · LINE";
+                break;
+            case "心声":
+                namePlate.gameObject.SetActive(true);
+                namePlate.color = paper;                // 空2：底色换成什么？
+                speakerNameText.color = cobalt;          // 空3：字换成什么颜色才看得见？
+                namePlateLine.enabled = true;
+                modeLabel.text = "心声 · THOUGHT";
+                break;
+            default:                                   // 旁白、书中
+                namePlate.gameObject.SetActive(false);  // 空4
+                modeLabel.text = type == "书中" ? "书中 · IN THE BOOK" : "旁白 · NARRATION";
+                break;
         }
     }
 }
