@@ -82,6 +82,9 @@ streetnight_line2	Sprites/Fly/BG/streetnight_line2
 Sub_伤心	Sprites/Sub_伤心
 Sub_微笑	Sprites/Sub_微笑
 Sub_普通	Sprites/Sub_普通
+ui_cut	Sprites/Fly/UI/ui_cut
+ui_ruler	Sprites/Fly/UI/ui_ruler
+ui_slant	Sprites/Fly/UI/ui_slant
 妈妈_cook_base	Sprites/Fly/Char/妈妈_cook_base
 妈妈_cook_line0	Sprites/Fly/Char/妈妈_cook_line0
 妈妈_cook_line1	Sprites/Fly/Char/妈妈_cook_line1
