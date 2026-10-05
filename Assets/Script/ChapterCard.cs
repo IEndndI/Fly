@@ -106,7 +106,7 @@ public class ChapterCard : MonoBehaviour
         StartCoroutine(Tweens.Tween(0.6f, Tweens.Bezier(0f, 0f, 0f, 1f), p => SetNumeralReveal(p)));
         yield return Tweens.Tween(0.4f, Tweens.EaseOut, p => card.alpha = p);   // 空3
 
-        StartCoroutine(Tweens.Tween(1f, Tweens.Bezier(0.75f,0f,0.25f,1f), p => SetTrailReveal(p)));
+        StartCoroutine(Tweens.Tween(1f, Tweens.Bezier(0.5f,0f,0.5f,1f), p => SetTrailReveal(p)));
 
         // ③ 停留
         yield return new WaitForSeconds(holdTime);
