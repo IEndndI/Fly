@@ -40,3 +40,4 @@ Thumbs.db
 # 打包时 Unity 额外生成的调试信息（不要发布）
 *_DoNotShip/
 *_BackUpThisFolder_ButDontShipItWithYourGame/
+/Release/

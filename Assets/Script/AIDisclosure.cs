@@ -45,7 +45,7 @@ public class AIDisclosure : MonoBehaviour
     Sprite dot; AudioSource se;
     int cur; float d; bool snapped, aiming, flying, auto, finished, intro = true;
     TextMeshProUGUI stat, repoNote; CanvasGroup gliderDrop, guide; Image finger, fingerRing; readonly List<Image> guideArc = new List<Image>(); bool touched; float guideT;
-    public const string REPO_URL = "";              // ★ GitHub 仓库地址，发布时填上（Application.OpenURL）
+    public const string REPO_URL = "https://github.com/IEndndI/Fly";   // GitHub 仓库地址（Application.OpenURL）
     class Anim { public RectTransform rt; public CanvasGroup g; public float delay; public int kind; public Vector2 home; }
     readonly List<Anim> anims = new List<Anim>();
 
