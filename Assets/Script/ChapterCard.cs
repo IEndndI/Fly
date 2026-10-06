@@ -51,6 +51,11 @@ public class ChapterCard : MonoBehaviour
     float maskFullWidth, trailFullWidth;
     Vector2[] tocHome;                       // 目录每一行的原位（滑入动画用）
     float[] tocBackA;                        // 目录底色原本的 alpha
+    // 底色基准：在设计源头（Awake / SetContent）记下来，动画只乘透明度——卡片被打断也不会把半截颜色当成新基准
+    Color capBase, plcBase, titBase, engBase, quoBase, pgBase;
+    Color[] tocBase, dotBase, lineBase;
+    TextMeshProUGUI numText;                 // 左上角的「N°02 · 第二章」（分镜 gcN，场景里原来没有，代码补的）
+    Color numBase;
 
     void Awake()
     {
@@ -62,6 +67,11 @@ public class ChapterCard : MonoBehaviour
             tocHome[i] = tocRows[i].rectTransform.anchoredPosition;
             tocBackA[i] = tocBacks[i] != null ? tocBacks[i].color.a : 1f;
         }
+        tocBase = new Color[tocRows.Length]; dotBase = new Color[tocRows.Length]; lineBase = new Color[tocRows.Length];
+        var cc = caption.color; cc.a = 1f; caption.color = cc;              // 场景里它是 0（隐身），按分镜强制显示
+        capBase = caption.color; plcBase = place.color; titBase = title.color;
+        engBase = english.color; quoBase = quote.color; pgBase = page.color;
+        BuildDetails();
         if (CoveredEntry)                    // 标题的钴蓝色页进来的：先当作已经盖住
         {
             CoveredEntry = false; entryCover = true;
@@ -107,7 +117,13 @@ public class ChapterCard : MonoBehaviour
             if (!has) continue;
             tocRows[i].text = (i + 1).ToString("00") + "　" + chapters[i].title + "<pos=88%>" + chapters[i].page;
             tocRows[i].color = current ? Cobalt : new Color(Paper.r, Paper.g, Paper.b, i > n ? 0.42f : 1f);  // 没读到的压暗
+            if (tocLines != null && tocLines[i] != null) tocLines[i].enabled = !current;                      // 白底那行不要行线（分镜 .toc.on 无阴影）
+            if (tocDots != null && tocDots[i] != null) tocDots[i].color = current ? Cobalt : new Color(Paper.r, Paper.g, Paper.b, 0.55f);   // .toc.on .ld 变钴蓝
+            tocBase[i] = tocRows[i].color;                                                                   // 记基准（动画用，收尾还原用）
+            if (tocDots != null && tocDots[i] != null) dotBase[i] = tocDots[i].color;
+            if (tocLines != null && tocLines[i] != null) lineBase[i] = tocLines[i].color;
         }
+        if (numText != null) numText.text = "N°" + (n + 1).ToString("00") + " · 第" + c.numeral + "章";       // 分镜 gcN
         return true;
     }
 
@@ -123,7 +139,11 @@ public class ChapterCard : MonoBehaviour
     }
     void SetColumns(float scaleY) { foreach (var c in columns) c.localScale = new Vector3(1f, scaleY, 1f); }
     public float ColumnsTotal { get { return columnTime + columnStagger * (columns.Length - 1); } }
-    public void SetNumeralReveal(float p) { numeralMask.sizeDelta = new Vector2(maskFullWidth * p, numeralMask.sizeDelta.y); }
+    public void SetNumeralReveal(float p)
+    {
+        numeralMask.sizeDelta = new Vector2(maskFullWidth * p, numeralMask.sizeDelta.y);
+        if (ticksMask != null) ticksMask.sizeDelta = new Vector2(ticksFullWidth * p, ticksMask.sizeDelta.y);   // 刻度跟着章号一起揭
+    }
     public void SetTrailReveal(float p) { trailMask.sizeDelta = new Vector2(trailFullWidth * p, trailMask.sizeDelta.y); }
 
     // ───────── 下面两个由你来写 ─────────
@@ -147,59 +167,156 @@ public class ChapterCard : MonoBehaviour
         // ② 扉页出现：每个部分用自己的入场（分镜同款）——章号从左往右擦开、文字错峰淡入、目录一条条滑进来
         card.gameObject.SetActive(true);                               // 空2
         card.alpha = 1f;                                               // 空3：整组不再统一淡入，下面逐个来
-        caption.alpha = place.alpha = title.alpha = english.alpha = quote.alpha = page.alpha = 0f;
-        for (int i = 0; i < tocRows.Length; i++)
-        {
-            tocRows[i].alpha = 0f;
-            tocRows[i].rectTransform.anchoredPosition = tocHome[i] + new Vector2(-24f, 0f);
-        }
-        // 扉页自己跑一个时钟（和分镜一样）：入场 1.25 秒；点一下 → 入场加速到 4×、省掉停留
+        // 底色基准在 Awake / SetContent 里已经记好（capBase / tocBase / dotBase / lineBase），
+        // 这里只乘透明度——被打断也不会把半截颜色当成新基准
+        // 扉页自己跑一个时钟（和分镜一样，单位毫秒）：入场 1.25 秒；点一下 → 入场加速到 4×、省掉停留
         float ms = 0f;
-        while (ms < CARD_HOLD)
+        while (ms < CARD_HOLD * 1000f)
         {
-            ms += Time.deltaTime * (cardFast ? 4f : 1f);
-            SetNumeralReveal(1f - Mathf.Pow(2f, -10f * Mathf.Clamp01(ms / 0.56f)));   // 章号：指数擦开（0.56 秒）
-            SetTrailReveal(Mathf.Clamp01((ms - 0.3f) / 1f));                          // 蜡笔线 0.3 秒后开始画
-            // 文字：五个位置错峰淡入（220/280/340/400/460 起，各 260 毫秒；分镜 renderGame）
-            caption.alpha = Seg(ms, 220f, 480f);
-            place.alpha   = Seg(ms, 280f, 540f);
-            title.alpha = english.alpha = Seg(ms, 340f, 600f);
-            quote.alpha   = Seg(ms, 400f, 660f);
-            page.alpha    = Seg(ms, 460f, 720f);
-            // 目录：一条一条从左边滑进来（300+i*55 起，各 340 毫秒，从 -24 滑到位）
+            ms += Time.deltaTime * 1000f * (cardFast ? 4f : 1f);
+            SetNumeralReveal(1f - Mathf.Pow(2f, -10f * Mathf.Clamp01(ms / 560f)));    // 章号：指数擦开（560ms，分镜）
+            SetTrailReveal(Mathf.Clamp01((ms - 300f) / 1000f));                       // 蜡笔线 300ms 后开始画
+            // 文字：五个位置错峰淡入（220/280/340/400/460 起，各 260ms；分镜 renderGame）
+            float titleU = Seg(ms, 340f, 600f);
+            if (numText != null) numText.color = Fade(numBase, Seg(ms, 220f, 480f));   // 「N°0X · 第X章」第一档（分镜 gcN）
+            place.color   = Fade(plcBase, Seg(ms, 280f, 540f));
+            caption.color = Fade(capBase, titleU);                                     // 「第X章 · Chapter 0X」跟标题一组（分镜 gcT 容器）
+            title.color   = Fade(titBase, titleU);
+            english.color = Fade(engBase, titleU);
+            quote.color   = Fade(quoBase, Seg(ms, 400f, 660f));
+            page.color    = Fade(pgBase, Seg(ms, 460f, 720f));
+            // 目录：一条一条从左边滑进来（300+i*55 起，各 340ms，从 -24 滑到位）
             for (int i = 0; i < tocRows.Length; i++)
             {
                 if (!tocRows[i].gameObject.activeSelf) continue;
                 float u = Seg(ms, 300f + i * 55f, 640f + i * 55f), e = 1f - Mathf.Pow(1f - u, 3f);
-                tocRows[i].alpha = u;
+                tocRows[i].color = Fade(tocBase[i], u);
                 tocRows[i].rectTransform.anchoredPosition = tocHome[i] + new Vector2(-24f * (1f - e), 0f);
                 if (i < tocBacks.Length && tocBacks[i] != null)
                 {
                     Color bc = tocBacks[i].color;
                     tocBacks[i].color = new Color(bc.r, bc.g, bc.b, tocBackA[i] * u);
                 }
+                if (tocDots != null && tocDots[i] != null) tocDots[i].color = Fade(dotBase[i], u);
+                if (tocLines != null && tocLines[i] != null) tocLines[i].color = Fade(lineBase[i], u);
             }
             if (Input.GetMouseButtonDown(0)) cardFast = true;                         // 点击不算跳过，是加速
-            if (cardFast && ms >= CARD_IN) break;                                     // 点过：入场走完就收
+            if (cardFast && ms >= CARD_IN * 1000f) break;                             // 点过：入场走完就收
             yield return null;
         }
-        // 收尾：全部归位（下一张扉页从干净状态开始）
+        // 收尾：全部还原到基准色（下一张扉页从干净状态开始）
         SetNumeralReveal(1f); SetTrailReveal(1f);
-        caption.alpha = place.alpha = title.alpha = english.alpha = quote.alpha = page.alpha = 1f;
+        caption.color = capBase; place.color = plcBase; title.color = titBase; english.color = engBase; quote.color = quoBase; page.color = pgBase;
+        if (numText != null) numText.color = numBase;
         for (int i = 0; i < tocRows.Length; i++)
         {
-            tocRows[i].alpha = 1f;
+            tocRows[i].color = tocBase[i];
             tocRows[i].rectTransform.anchoredPosition = tocHome[i];
             if (i < tocBacks.Length && tocBacks[i] != null)
             {
                 Color bc = tocBacks[i].color;
                 tocBacks[i].color = new Color(bc.r, bc.g, bc.b, tocBackA[i]);
             }
+            if (tocDots != null && tocDots[i] != null) tocDots[i].color = dotBase[i];
+            if (tocLines != null && tocLines[i] != null) tocLines[i].color = lineBase[i];
         }
     }
 
+    // 底色不变，只乘一层透明度（分镜的 op(el, u)）
+    static Color Fade(Color c, float a) { return new Color(c.r, c.g, c.b, c.a * a); }
+
     // 分镜里的 seg(ms, a, b)：这一段的淡入进度（各元素错峰用）
     static float Seg(float ms, float a, float b) { return Mathf.Clamp01((ms - a) / (b - a)); }
+
+    // ───────── 分镜卡片上有、但场景里没做的细节（2026-10-06 对着分镜补齐）─────────
+    // ① 切口下的刻度（drawCard 的 measured cut：第 5–12 栏每条栏边一齿，和章号同步揭开）
+    // ② 目录每行的底部细线、标题与页码之间的虚线引导（.ld）
+    // ③ 目录表头右边的「p.」
+    RectTransform ticksMask;
+    readonly float ticksFullWidth = 1232f;
+    Image[] tocDots, tocLines;
+
+    void BuildDetails()
+    {
+        // ⓪ 左上的「N°01 · 第一章」（分镜 gcN，左 120 上 80）：场景里缺这个元素，代码补
+        {
+            var go = new GameObject("NumLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
+            var rt = (RectTransform)go.transform; rt.SetParent(card.transform, false);   // 挂进 Card：card 一收它跟着收
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(120f, -80f); rt.sizeDelta = new Vector2(828f, 20f);
+            numText = go.GetComponent<TextMeshProUGUI>();
+            numText.font = caption.font; numText.fontSize = 12f; numText.characterSpacing = 9f;
+            numText.color = Paper; numText.alignment = TextAlignmentOptions.TopLeft;
+            numText.enableWordWrapping = false; numText.raycastTarget = false;
+            numBase = numText.color;
+        }
+
+        // ① 刻度：容器在 CutLine 下面一点（688,-672），宽 1232，用遮罩和章号一起从左往右揭
+        ticksMask = Rect("CutTicks", (RectTransform)card.transform, new Vector2(688f, -672f), new Vector2(1232f, 20f));
+        ticksMask.gameObject.AddComponent<RectMask2D>();
+        for (int i = 5; i <= 12; i++)
+        {
+            float col = 120f + (i - 1) * 142f;
+            Tick(ticksMask, col - 688f, 10f);              // 栏左边：长齿
+            Tick(ticksMask, col + 118f - 688f, 6f);        // 栏右边：短齿
+        }
+
+        // ② 目录：虚线 + 行线（挂进 Toc1~5，跟着行一起动）
+        tocDots = new Image[tocRows.Length]; tocLines = new Image[tocRows.Length];
+        for (int i = 0; i < tocRows.Length; i++)
+        {
+            var row = tocRows[i].rectTransform;
+            var ln = Rect("RowLine", row, new Vector2(0f, -39f), new Vector2(402f, 1f));
+            var li = ln.gameObject.AddComponent<Image>();
+            li.color = new Color(Paper.r, Paper.g, Paper.b, 0.2f); li.raycastTarget = false;
+            tocLines[i] = li;
+            var dt = Rect("Dots", row, new Vector2(110f, -20f), new Vector2(218f, 1f));
+            var di = dt.gameObject.AddComponent<Image>();
+            di.sprite = DotSprite(); di.type = Image.Type.Tiled;
+            di.color = new Color(Paper.r, Paper.g, Paper.b, 0.55f); di.raycastTarget = false;
+            tocDots[i] = di;
+        }
+
+        // ③ 表头的「p.」（贴着 TocHead 的右缘）
+        var head = transform.Find("TocHead");
+        if (head != null && tocRows.Length > 0)
+        {
+            var go = new GameObject("HeadP", typeof(RectTransform), typeof(TextMeshProUGUI));
+            var rt = (RectTransform)go.transform; rt.SetParent(head, false);
+            rt.anchorMin = new Vector2(0f, 1f); rt.anchorMax = new Vector2(1f, 1f); rt.pivot = new Vector2(1f, 1f);
+            rt.anchoredPosition = Vector2.zero; rt.sizeDelta = new Vector2(0f, 20f);
+            var t = go.GetComponent<TextMeshProUGUI>();
+            t.font = tocRows[0].font; t.text = "p."; t.fontSize = 12f; t.characterSpacing = 9f;
+            t.color = new Color(Paper.r, Paper.g, Paper.b, 0.8f);
+            t.alignment = TextAlignmentOptions.TopRight; t.enableWordWrapping = false; t.raycastTarget = false;
+        }
+    }
+
+    void Tick(RectTransform parent, float x, float h)
+    {
+        var rt = Rect("Tick", parent, new Vector2(x, 0f), new Vector2(1f, h));
+        var img = rt.gameObject.AddComponent<Image>();
+        img.color = new Color(Paper.r, Paper.g, Paper.b, 0.55f); img.raycastTarget = false;
+    }
+
+    static RectTransform Rect(string n, RectTransform parent, Vector2 pos, Vector2 size)
+    {
+        var go = new GameObject(n, typeof(RectTransform));
+        var rt = (RectTransform)go.transform; rt.SetParent(parent, false);
+        rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
+        rt.anchoredPosition = pos; rt.sizeDelta = size;
+        return rt;
+    }
+
+    static Sprite dotLineSprite;
+    static Sprite DotSprite()      // 6×1：2 实 4 空，Tiled 平铺成虚线
+    {
+        if (dotLineSprite != null) return dotLineSprite;
+        var tex = new Texture2D(6, 1, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Point };
+        for (int x = 0; x < 6; x++) tex.SetPixel(x, 0, x < 2 ? Color.white : new Color(1f, 1f, 1f, 0f));
+        tex.Apply();
+        return dotLineSprite = Sprite.Create(tex, new Rect(0f, 0f, 6f, 1f), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+    }
 
     // 宽屏适配：等画布尺寸定下来后，把最右一栏补到画布右缘（16:9 时差值是 0，什么都不动）
     IEnumerator Start()
@@ -242,6 +359,7 @@ public class ChapterCard : MonoBehaviour
         var ap = FindObjectOfType<AudioPlayer>();
         if (ap != null) ap.PlaySfx("Fly/sfx_drop");
         yield return Tweens.Tween(ColumnsTotal, t => t, p => SetColumnsAt(p * ColumnsTotal, true));
+        TitleScreen.CoveredEntry = true;      // 标题场景从「已盖住」开始，再用 12 栏抽离露出标题（分镜 exitGame）
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 

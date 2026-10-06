@@ -33,6 +33,8 @@ public class TitleScreen : MonoBehaviour
     RectTransform flood;                                          // 「开始」用的钴蓝色页（T4）
     RectTransform picture;                                        // 标题画面三帧
     float fitW = -1f;
+    RectTransform[] coverCols;                                    // 从游戏回来时的 12 栏（先盖着，再抽离）
+    public static bool CoveredEntry;                              // 游戏里「合上书 / Esc」置上：标题从「已盖住」开始
 
     void Awake()
     {
@@ -67,6 +69,46 @@ public class TitleScreen : MonoBehaviour
         se = gameObject.AddComponent<AudioSource>(); se.playOnAwake = false; se.volume = SaveSystem.Sfx;
         var clip = Resources.Load<AudioClip>(bgm);
         if (clip != null) { music.clip = clip; music.Play(); }
+
+        if (CoveredEntry)                     // 从游戏「合上书」回来：先盖着，再依次抽离露出标题（分镜 exitGame → 标题的 12 栏）
+        {
+            CoveredEntry = false;
+            BuildCover();
+            StartCoroutine(CoverLift());
+        }
+    }
+
+    void BuildCover()
+    {
+        coverCols = new RectTransform[12];
+        for (int i = 0; i < 12; i++)
+        {
+            float l = i == 0 ? 0 : 120 + i * 142 - 12, r = i == 11 ? 1920 : 120 + i * 142 + 118 + 12;
+            var go = new GameObject("Cover" + (i + 1), typeof(RectTransform), typeof(Image));
+            var rt = go.GetComponent<RectTransform>(); rt.SetParent(root, false);
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(l, 0f); rt.sizeDelta = new Vector2(r - l + 1, 1080f);
+            var img = go.GetComponent<Image>(); img.color = Cobalt; img.raycastTarget = false;
+            coverCols[i] = rt;
+        }
+        float cw = root.rect.width;            // 宽屏：末栏补到画布右缘
+        if (cw > 1920.5f) coverCols[11].sizeDelta = new Vector2(coverCols[11].sizeDelta.x + (cw - 1920f), 1080f);
+    }
+
+    IEnumerator CoverLift()
+    {
+        Play("Fly/sfx_drop");
+        float total = 0.45f + 11 * 0.03f;
+        for (float t = 0f; t < total; t += Time.deltaTime)
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                float u = Mathf.Clamp01((t - i * 0.03f) / 0.45f);
+                coverCols[i].localScale = new Vector3(1f, 1f - EaseInOut(u), 1f);   // 依次抽离（分镜 colWipe 的 cover=false）
+            }
+            yield return null;
+        }
+        foreach (var c in coverCols) c.gameObject.SetActive(false);
     }
 
     void BuildItem(Item it, int i)

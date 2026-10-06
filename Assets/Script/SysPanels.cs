@@ -74,7 +74,7 @@ public class SysPanels : MonoBehaviour
 
     enum Phase { Opening, Open, Closing }
     Phase phase = Phase.Opening;
-    float phaseT;
+    float phaseStart = -1f;                                                  // 用时间戳起算：生成网点的卡顿不会让动画跳过去
 
     // ───────── 打开 / 关闭 ─────────
     public static void Show(string tab)
@@ -87,13 +87,49 @@ public class SysPanels : MonoBehaviour
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
         rt.SetAsLastSibling();
         var p = go.AddComponent<SysPanels>();
-        p.Init(tab);
+        p.StartCoroutine(p.OpenFlow(tab));
     }
 
-    void Init(string wantTab)
+    // 开页流程（对照分镜 composeScreen）：先把 UI 收起来、等这一帧渲染完 → 把「只有场景」的画面印成网点 → 放回 UI → 建系统页。
+    // 印的东西 = 背景 + 立绘（对话框、正文、四角小字、快捷栏都不印）。
+    IEnumerator OpenFlow(string wantTab)
     {
         inGame = FindObjectOfType<DialogueManager>() != null;
         dm = FindObjectOfType<DialogueManager>();
+        var hidden = HideUiForPrint();
+        yield return new WaitForEndOfFrame();                                    // 必须是「帧末」：CaptureScreenshotAsTexture 只能在这一刻拿到刚渲染的画面
+        var tone = MakeHalftone();                                               // （原来用 yield return null，拿到的是上一帧——UI 还没藏起来的那张，印出来全是 UI）
+        foreach (GameObject go in hidden) if (go != null) go.SetActive(true);    // UI 放回去
+        Init(wantTab, tone);
+    }
+
+    List<GameObject> HideUiForPrint()
+    {
+        // 印的对象 = 当前画面的「背景 + 立绘」：画布上除底层的几样之外全部藏一帧——对话框、正文、四角小字、
+        // 快捷栏、网格、书角、扉页……一个都不印。保留：Background（底色）+ BG_Line（背景的线稿层，房间是
+        // 底色和线稿叠出来的）+ Stage（立绘）；标题场景再加上 TitleScreen 那张画面（菜单单独藏）。
+        // 以前是逐个点名藏，老是漏（新加的装饰没人记得加进名单），干脆反着来：只留底和人物。
+        var list = new List<GameObject>();
+        var canvas = FindTopCanvas();
+        if (canvas != null)
+            foreach (Transform c in canvas.transform)
+            {
+                string n = c.name;
+                if (n == "Background" || n == "BG_Line" || n == "Stage" || n == "TitleScreen" || n == "SysPanel") continue;   // SysPanel 是这页自己，别动
+                Hide(list, c.gameObject);
+            }
+        for (int i = 1; i <= 5; i++) Hide(list, GameObject.Find("Canvas/TitleScreen/Item0" + i));   // 标题的菜单不印（画面留着）
+        return list;
+    }
+
+    void Hide(List<GameObject> list, GameObject go)
+    {
+        if (go == null || !go.activeSelf) return;
+        go.SetActive(false); list.Add(go);
+    }
+
+    void Init(string wantTab, Texture2D tone)
+    {
         if (wantTab == "save" && !inGame) wantTab = "load";                      // 标题上不能存档（分镜 setTab）
         tab = wantTab;
 
@@ -104,19 +140,19 @@ public class SysPanels : MonoBehaviour
         ReadSlots();
 
         root = (RectTransform)transform;
-        BuildUI();
+        BuildUI(tone);
         SetTab(tab);
 
         UiOpen++;
         PlaySfx("Fly/sfx_print"); PlaySfx("Fly/sfx_slide");
-        phase = Phase.Opening; phaseT = 0f;
+        phase = Phase.Opening; phaseStart = -1f;
     }
 
     bool closing;
     public void Close()
     {
         if (closing) return;
-        closing = true; phase = Phase.Closing; phaseT = 0f;
+        closing = true; phase = Phase.Closing; phaseStart = -1f;
         PlaySfx("Fly/sfx_slide");
         UiOpen = Mathf.Max(0, UiOpen - 1);
         DialogueManager.blockUntil = Time.time + 0.15f;                          // 关掉的那一下不要顺手翻页
@@ -173,17 +209,16 @@ public class SysPanels : MonoBehaviour
     }
 
     // ───────── 建界面 ─────────
-    void BuildUI()
+    void BuildUI(Texture2D tone)
     {
-        // 背后印刷：先把现在的画面采样成 320×180，再按 15° 网角铺钴蓝圆点
+        // 背后印刷：开页前采样的画面，按 15° 网角铺钴蓝圆点（分镜 renderHalftone）
         htone = NewImage("HTone", root, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         htone.raycastTarget = true;                                  // 盖住整屏、挡住后面的点击
-        var tex = MakeHalftone();
-        if (tex != null)
+        if (tone != null)
         {
-            htone.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+            htone.sprite = Sprite.Create(tone, new Rect(0, 0, tone.width, tone.height), new Vector2(0.5f, 0.5f), 100f);
             htone.type = Image.Type.Filled; htone.fillMethod = Image.FillMethod.Horizontal;
-            htone.fillOrigin = 0; htone.fillAmount = 0f;
+            htone.fillOrigin = 1; htone.fillAmount = 0f;             // 从右往左揭开（分镜：inset 的左内缩从 100% 收回）
         }
         else htone.color = Paper;
 
@@ -227,8 +262,8 @@ public class SysPanels : MonoBehaviour
             tabCells.Add(cell); tabZhs.Add(zh); tabEns.Add(en); tabNums.Add(num); tabLines.Add(ln.GetComponent<Image>());
         }
 
-        // 纸白版面（向右出血到面板右缘）
-        sheet = Rect("Sheet", root, new Vector2(676f + 12f, -152f), new Vector2(1232f, 848f));
+        // 纸白版面（向右出血到面板右缘）——必须是面板的子物体：面板滑动时它要跟着走，不能留在原地
+        sheet = Rect("Sheet", panel, new Vector2(12f, -152f), new Vector2(1232f, 848f));
         sheet.gameObject.AddComponent<Image>().color = Paper;
         sheet.gameObject.AddComponent<RectMask2D>();
 
@@ -316,14 +351,17 @@ public class SysPanels : MonoBehaviour
         thumb.gameObject.AddComponent<Image>().color = Paper;
         var mask = thumb.gameObject.AddComponent<RectMask2D>();
         mask.enabled = false;                                            // 平时不裁；写档动画时打开
-        var pic = NewImage("Pic", thumb, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        // 图和边框都钉死 260×146：写档时遮罩收放裁掉它们，而不是把图压扁（分镜是 clipPath 擦拭）
+        var pic = NewImage("Pic", thumb, new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, new Vector2(260f, 146f));
+        pic.rectTransform.pivot = new Vector2(0f, 1f);
         if (s.has && s.row < lines.Count)
         {
             var spr = FindSprite(rowInfo[s.row].bg);
             if (spr != null) pic.sprite = spr;
         }
         else pic.color = new Color(Paper.r - 0.03f, Paper.g - 0.03f, Paper.b - 0.03f, 1f);
-        var frame = NewImage("Frame", thumb, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        var frame = NewImage("Frame", thumb, new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, new Vector2(260f, 146f));
+        frame.rectTransform.pivot = new Vector2(0f, 1f);
         frame.sprite = FrameSprite(); frame.type = Image.Type.Sliced; frame.color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.35f);
         if (s.has && s.auto)                                              // 「折角」自动档的耳朵
         {
@@ -409,14 +447,20 @@ public class SysPanels : MonoBehaviour
 
     IEnumerator PrintSlot(RectTransform thumb)
     {
-        yield return Tweens.Tween(0.38f, Tweens.EaseOut, p => thumb.sizeDelta = new Vector2(260f * p, 146f));
-        thumb.GetComponent<RectMask2D>().enabled = false;
+        // 打印动画期间如果翻了页 / 重建了格子，这个缩略图会被销毁：每帧先问一句还在不在
+        yield return Tweens.Tween(0.38f, Tweens.EaseOut, p => { if (thumb != null) thumb.sizeDelta = new Vector2(260f * p, 146f); });
+        if (thumb != null)
+        {
+            var mask = thumb.GetComponent<RectMask2D>();
+            if (mask != null) mask.enabled = false;
+            thumb.sizeDelta = new Vector2(260f, 146f);
+        }
     }
 
     void LoadSlot(int i)
     {
         PlaySfx("Fly/sfx_select"); PlaySfx("Fly/sfx_whoosh");
-        StartCoroutine(LoadRoutine(slots[i].row, slotCells[i]));
+        StartCoroutine(LoadRoutine(slots[i].row, slotThumbMasks[i]));   // 从「缩略图」那块开始涨（分镜：260×146 卡在图边上）
     }
 
     IEnumerator LoadRoutine(int row, RectTransform thumb)
@@ -449,7 +493,7 @@ public class SysPanels : MonoBehaviour
             {
                 cc.SetColumnsNow(1f);                                    // 先盖住（画面本来就是钴蓝）
                 DiscardVisuals();                                        // 不能 Destroy：这个协程还挂在身上
-                yield return new WaitForSeconds(0.35f);
+                // 不等待：同一拍里就接着抽离（分镜 revealFromCard 是无缝连着的）
                 yield return Tweens.Tween(cc.ColumnsTotal, t => t, p => cc.SetColumnsAt(p * cc.ColumnsTotal, false));
                 Destroy(gameObject);
             }
@@ -731,23 +775,25 @@ public class SysPanels : MonoBehaviour
     // ───────── 每帧：进出场动画 + 键盘 ─────────
     void Update()
     {
-        phaseT += Time.unscaledDeltaTime;
-        if (phase == Phase.Opening)
+        if (panel == null) return;                                      // 界面还没建好（OpenFlow 采样那一两帧）
+        if (phaseStart < 0f) phaseStart = Time.realtimeSinceStartup;    // 这个阶段的第一帧才开始计时
+        float t = Time.realtimeSinceStartup - phaseStart;
+        if (phase == Phase.Opening)                                     // 分镜 openSys：面板先滑（72% 到位）、网格随后揭开、纸页最后淡入
         {
-            float u = Mathf.Clamp01(phaseT / 0.42f);
+            float u = Mathf.Clamp01(t / 0.42f);
             SetPanelX(1244f * (1f - Tweens.EaseOut(Mathf.Clamp01(u / 0.72f))));
             if (htone.sprite != null) htone.fillAmount = Tweens.EaseOut(Mathf.Clamp01((u - 0.1f) / 0.9f));
             slabelGroup.alpha = Mathf.Clamp01((u - 0.55f) / 0.45f);
-            if (phaseT >= 0.42f) { phase = Phase.Open; phaseT = 0f; SetPanelX(0f); if (htone.sprite != null) htone.fillAmount = 1f; slabelGroup.alpha = 1f; }
+            if (t >= 0.42f) { phase = Phase.Open; SetPanelX(0f); if (htone.sprite != null) htone.fillAmount = 1f; slabelGroup.alpha = 1f; }
             return;
         }
-        if (phase == Phase.Closing)
+        if (phase == Phase.Closing)                                     // 分镜 closeSys：面板先走、网格随后收
         {
-            float u = Mathf.Clamp01(phaseT / 0.3f);
+            float u = Mathf.Clamp01(t / 0.3f);
             SetPanelX(1244f * (u * u * u));
             if (htone.sprite != null) htone.fillAmount = 1f - Mathf.Pow(Mathf.Clamp01(u / 0.83f), 3f);
             slabelGroup.alpha = 1f - Mathf.Clamp01(u / 0.3f);
-            if (phaseT >= 0.3f) Destroy(gameObject);
+            if (t >= 0.3f) Destroy(gameObject);
             return;
         }
 
@@ -906,7 +952,9 @@ public class SysPanels : MonoBehaviour
         for (int y = 0; y < SH; y++)
             for (int x = 0; x < SW; x++)
             {
-                Color c = src.GetPixelBilinear((x + 0.5f) / SW, 1f - (y + 0.5f) / SH);   // y=0 是屏幕顶部
+                // 注意：截图纹理（CaptureScreenshotAsTexture）的 v 方向和常规纹理相反——v=0 才是屏幕顶部，
+                // 所以这里不加 1-v 的翻转（加过，结果整张印反了：草坡跑到上面、天空堆在下面）
+                Color c = src.GetPixelBilinear((x + 0.5f) / SW, (y + 0.5f) / SH);
                 lum[y * SW + x] = c.r * 0.2126f + c.g * 0.7152f + c.b * 0.0722f;
             }
         Destroy(src);
