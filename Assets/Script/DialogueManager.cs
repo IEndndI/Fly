@@ -636,6 +636,7 @@ public class DialogueManager : MonoBehaviour
             if (effectPlayer.blankPage != null) effectPlayer.blankPage.Hide();
             foreach (GameObject go in effectPlayer.sceneObjects) if (go != null) go.SetActive(false);
             if (effectPlayer.chapterCard != null) effectPlayer.chapterCard.ResetImmediate();
+            if (SceneCam.instance != null) SceneCam.instance.SnapHome();     // 镜头回原位：别的章的姿势别带过来
         }
         RestoreUpTo(row);
         StartCoroutine(RunFrom(row));

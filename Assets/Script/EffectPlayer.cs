@@ -23,6 +23,7 @@ public class EffectPlayer : MonoBehaviour
     public PageFx pageFx;              // 留空会自己找
     public DreamFx dreamFx;            // 留空会自己找
     public NightFx nightFx;            // 留空会自己找
+    public SceneCam sceneCam;          // 留空会自己找（第二章飞行段的慢镜头）
 
     // 章扉页：12 栏落下（咚咚咚）→ 扉页出现时一声钟；从标题色页进来的那次没有落栏，只有钟
     IEnumerator CardSounds(bool fromTitle)
@@ -162,6 +163,11 @@ public class EffectPlayer : MonoBehaviour
         {
             if (nightFx == null) nightFx = FindObjectOfType<NightFx>();
             if (nightFx != null) nightFx.Command(cmd.arg); else Debug.LogWarning("场景里没有 NightFx");
+        }
+        else if (cmd.name == "cam")     // cam:z(1.12):y(-48):t(9) —— 场景镜头缓慢推近 / 平移（第二章一镜到底）
+        {
+            if (sceneCam == null) sceneCam = FindObjectOfType<SceneCam>();
+            if (sceneCam != null) sceneCam.Command(cmd); else Debug.LogWarning("场景里没有 SceneCam");
         }
         else if (cmd.name == "show" || cmd.name == "hide")
         {

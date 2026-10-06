@@ -31,6 +31,12 @@ public class GameChrome : MonoBehaviour
     {
         if (dialogue == null) dialogue = FindObjectOfType<DialogueManager>();
         if (chapterCard == null) chapterCard = FindObjectOfType<ChapterCard>(true);
+        if (FindObjectOfType<SceneCam>() == null)                   // 场景镜头（第二章飞行段）：没人放就自己建一个，不用手拖
+        {
+            var camGo = new GameObject("SceneCam", typeof(RectTransform));
+            camGo.transform.SetParent(transform.parent, false);
+            camGo.AddComponent<SceneCam>();
+        }
         root = (RectTransform)transform;
         root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
         group = gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts = false; group.alpha = 0f;
