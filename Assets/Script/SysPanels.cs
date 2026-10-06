@@ -634,32 +634,39 @@ public class SysPanels : MonoBehaviour
     }
 
     // ───────── 设置 ─────────
+    // ───────── 设置（瑞士网格：版面四周 56 边距；三栏 = 名称 280 · 滑杆 600 · 数值 160，栏距 40；线最少 2px）─────────
+    const float SL = 56f, SW = 1120f, SC1 = 0f, SC2 = 320f, SC3 = 960f, SRow = 78f, STop = 176f;
+
     void BuildSettingsPage()
     {
-        Header("设置 · 改动立即生效", "Settings");
         setRows.Clear(); setSel = 0;
-        AddSetRow(0, "文字速度", "TEXT SPEED", 0.01f, 0.06f, 0.001f, () => SaveSystem.TextDelay, v => SaveSystem.TextDelay = v, v => Mathf.RoundToInt(v * 1000f) + " ms / 字", null);
+        var head = Rect("SetHead", sheet, new Vector2(SL, -44f), new Vector2(SW, 120f));
+        Txt(head, "设置", LabelFont != null ? LabelFont : UiFont, 44f, new Vector2(0f, 0f), new Vector2(400f, 56f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
+        Txt(head, "SETTINGS · 04", UiFont, 12f, new Vector2(SW - 400f, -30f), new Vector2(400f, 16f), TextAlignmentOptions.TopRight, Cobalt, 9f);
+        Bar(head, new Vector2(0f, -66f), new Vector2(SW, 4f));                                   // 粗钴蓝条
+        Txt(head, "改动立即生效 · CHANGES APPLY AT ONCE", UiFont, 12f, new Vector2(0f, -82f), new Vector2(600f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 9f);
+
+        AddSetRow(0, "文字速度", "TEXT SPEED", 0.01f, 0.06f, 0.001f, () => SaveSystem.TextDelay, v => SaveSystem.TextDelay = v, v => Mathf.RoundToInt(v * 1000f) + " ms", null);
         AddSetRow(1, "自动间隔", "AUTO DELAY", 0.5f, 3f, 0.1f, () => SaveSystem.AutoDelay, v => SaveSystem.AutoDelay = v, v => v.ToString("0.0") + " s", null);
-        AddSetRow(2, "对话条", "TEXT BOX", 0.4f, 1f, 0.05f, () => SaveSystem.Box, v => SaveSystem.Box = v, v => Mathf.RoundToInt(v * 100f) + " %", null);
-        AddSetRow(3, "音乐", "MUSIC", 0f, 1f, 0.05f, () => SaveSystem.Music, v => { SaveSystem.Music = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + " %", null);
-        AddSetRow(4, "音效", "SOUND", 0f, 1f, 0.05f, () => SaveSystem.Sfx, v => { SaveSystem.Sfx = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + " %", null);
-        AddSetRow(5, "环境声", "AMBIENCE", 0f, 1f, 0.05f, () => SaveSystem.Ambience, v => { SaveSystem.Ambience = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + " %", null);
+        AddSetRow(2, "对话条", "TEXT BOX", 0.4f, 1f, 0.05f, () => SaveSystem.Box, v => SaveSystem.Box = v, v => Mathf.RoundToInt(v * 100f) + "%", null);
+        AddSetRow(3, "音乐", "MUSIC", 0f, 1f, 0.05f, () => SaveSystem.Music, v => { SaveSystem.Music = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + "%", null);
+        AddSetRow(4, "音效", "SOUND", 0f, 1f, 0.05f, () => SaveSystem.Sfx, v => { SaveSystem.Sfx = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + "%", null);
+        AddSetRow(5, "环境声", "AMBIENCE", 0f, 1f, 0.05f, () => SaveSystem.Ambience, v => { SaveSystem.Ambience = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + "%", null);
         AddSetRow(6, "梦境帧率", "DREAM FPS", 0f, 0f, 0f, () => SaveSystem.DreamFps, v => SaveSystem.DreamFps = v, v => Mathf.RoundToInt(v) + " fps", new float[] { 6f, 8f, 12f, 24f });
 
-        // 恢复默认（分镜 sbtn）
-        var reset = Rect("Reset", sheet, new Vector2(0f, -648f), new Vector2(120f, 44f));
-        var ri = reset.gameObject.AddComponent<Image>(); ri.color = new Color(0, 0, 0, 0);
-        var rl = NewImage("Box", reset, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero); rl.sprite = FrameSprite(); rl.type = Image.Type.Sliced; rl.color = Cobalt;
-        Txt(reset, "恢复默认", UiFont, 16f, new Vector2(20f, -22f), new Vector2(90f, 20f), TextAlignmentOptions.MidlineLeft, Cobalt, 0f);
+        float by = STop + 7 * SRow + 28f;
+        // 恢复默认：2px 钴蓝框
+        var reset = Rect("Reset", sheet, new Vector2(SL + SC1, -by), new Vector2(280f, 52f));
+        reset.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+        Frame2(reset, Cobalt);
+        Txt(reset, "恢复默认　<size=11>RESET</size>", UiFont, 17f, Vector2.zero, new Vector2(280f, 52f), TextAlignmentOptions.Center, Cobalt, 2f);
         reset.gameObject.AddComponent<Button>().onClick.AddListener(() => { PlaySfx("Fly/sfx_select"); SaveSystem.ResetSettings(); ApplyAudio(); SetTab("settings"); });
 
-        // 游戏里：合上书，回到标题
-        if (inGame)
+        if (inGame)                                                                             // 游戏里：合上书，回到标题
         {
-            var outBtn = Rect("Exit", sheet, new Vector2(284f, -648f), new Vector2(190f, 44f));
-            var oi = outBtn.gameObject.AddComponent<Image>(); oi.color = Cobalt;
-            oi.raycastTarget = true;
-            Txt(outBtn, "合上书，回到标题", UiFont, 16f, new Vector2(20f, -22f), new Vector2(150f, 20f), TextAlignmentOptions.MidlineLeft, Paper, 0f);
+            var outBtn = Rect("Exit", sheet, new Vector2(SL + SC2, -by), new Vector2(320f, 52f));
+            var oi = outBtn.gameObject.AddComponent<Image>(); oi.color = Cobalt; oi.raycastTarget = true;
+            Txt(outBtn, "合上书，回到标题　<size=11>CLOSE THE BOOK</size>", UiFont, 17f, Vector2.zero, new Vector2(320f, 52f), TextAlignmentOptions.Center, Paper, 2f);
             outBtn.gameObject.AddComponent<Button>().onClick.AddListener(() =>
             {
                 PlaySfx("Fly/sfx_select");
@@ -672,6 +679,20 @@ public class SysPanels : MonoBehaviour
         RefreshSetSel();
     }
 
+    // 2px 的框（四条实心 Image 拼，不用 1px 九宫格：缩小时不会时有时无）
+    void Frame2(RectTransform parent, Color c)
+    {
+        var sz = parent.sizeDelta;
+        Bar(parent, Vector2.zero, new Vector2(sz.x, 2f), c);
+        Bar(parent, new Vector2(0f, -(sz.y - 2f)), new Vector2(sz.x, 2f), c);
+        Bar(parent, Vector2.zero, new Vector2(2f, sz.y), c);
+        Bar(parent, new Vector2(sz.x - 2f, 0f), new Vector2(2f, sz.y), c);
+    }
+    void Bar(RectTransform parent, Vector2 pos, Vector2 size, Color c)
+    {
+        var r = Rect("bar", parent, pos, size); var im = r.gameObject.AddComponent<Image>(); im.color = c; im.raycastTarget = false;
+    }
+
     void ApplyAudio()
     {
         var a = FindObjectOfType<AudioPlayer>();
@@ -680,49 +701,50 @@ public class SysPanels : MonoBehaviour
 
     void AddSetRow(int i, string zh, string en, float min, float max, float step, System.Func<float> get, System.Action<float> set, System.Func<float, string> show, float[] opts)
     {
-        float y = 80f + i * 76f;
-        var row = Rect("Row" + zh, sheet, new Vector2(0f, -y), new Vector2(1112f, 72f));
-        var ln = Rect("Line", row, new Vector2(0f, -71f), new Vector2(1112f, 1f));
-        ln.gameObject.AddComponent<Image>().color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.18f);
-        var zhT = Txt(row, zh, UiFont, 18f, new Vector2(0f, -16f), new Vector2(240f, 24f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
-        Txt(row, en, UiFont, 11f, new Vector2(0f, -40f), new Vector2(240f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 8f);
-        var val = Txt(row, "", UiFont, 20f, new Vector2(1112f - 200f, -22f), new Vector2(200f, 24f), TextAlignmentOptions.TopRight, Cobalt, 0f);
+        float y = STop + i * SRow;
+        var row = Rect("Row" + zh, sheet, new Vector2(SL, -y), new Vector2(SW, SRow));
+        Bar(row, new Vector2(0f, -(SRow - 2f)), new Vector2(SW, 2f), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.22f));   // 行线 2px
+        Txt(row, (i + 1).ToString("00"), UiFont, 12f, new Vector2(SC1, -22f), new Vector2(32f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 4f);
+        var zhT = Txt(row, zh, UiFont, 22f, new Vector2(SC1 + 40f, -16f), new Vector2(240f, 28f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
+        Txt(row, en, UiFont, 11f, new Vector2(SC1 + 40f, -46f), new Vector2(240f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 8f);
+        var val = Txt(row, "", UiFont, 24f, new Vector2(SC3, -22f), new Vector2(160f, 30f), TextAlignmentOptions.TopRight, Cobalt, 0f);
+        val.fontStyle = FontStyles.Bold;
 
         var sr = new SetRow { zh = zh, en = en, min = min, max = max, step = step, get = get, set = set, show = show, opts = opts, val = val, zhT = zhT };
 
-        if (opts != null)                                                // 段选按钮（梦境帧率）
+        if (opts != null)                                                // 段选：四格，选中的实心钴蓝
         {
-            float bw = 686f / opts.Length;
+            float gap = 12f, bw = (600f - gap * (opts.Length - 1)) / opts.Length;
             for (int k = 0; k < opts.Length; k++)
             {
-                float bxx = 284f + k * bw;
-                var b = Rect("Seg" + k, row, new Vector2(bxx, -16f), new Vector2(bw - 2f, 40f));
-                var bi = b.gameObject.AddComponent<Image>();
-                bi.sprite = FrameSprite(); bi.type = Image.Type.Sliced;
+                var b = Rect("Seg" + k, row, new Vector2(SC2 + k * (bw + gap), -18f), new Vector2(bw, 42f));
                 bool on = Mathf.Abs(get() - opts[k]) < 0.01f;
-                bi.color = on ? Cobalt : new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.5f);
-                var bt = Txt(b, show(opts[k]), UiFont, 13f, Vector2.zero, new Vector2(bw - 2f, 40f), TextAlignmentOptions.Center, on ? Paper : Cobalt, 4f);
+                var bi = b.gameObject.AddComponent<Image>(); bi.color = on ? Cobalt : new Color(0, 0, 0, 0);
+                if (!on) Frame2(b, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f));
+                Txt(b, show(opts[k]), UiFont, 15f, Vector2.zero, new Vector2(bw, 42f), TextAlignmentOptions.Center, on ? Paper : Cobalt, 4f);
                 float v = opts[k];
                 b.gameObject.AddComponent<Button>().onClick.AddListener(() => { set(v); PlaySfx("Fly/sfx_select"); RefreshPage(); });
             }
+            val.text = show(get());
         }
         else
         {
-            // 滑杆：686 宽，线在中间，方块滑块
-            var tr = Rect("Track", row, new Vector2(284f, -36f), new Vector2(686f, 32f));
-            var ti = tr.gameObject.AddComponent<Image>(); ti.color = new Color(0, 0, 0, 0);
-            var tl = Rect("TLine", tr, new Vector2(0f, 16f), new Vector2(686f, 1f));
-            tl.gameObject.AddComponent<Image>().color = Cobalt;
-            Txt(row, min.ToString("0.##"), UiFont, 11f, new Vector2(284f, -54f), new Vector2(60f, 14f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 0f);
-            Txt(row, max.ToString("0.##"), UiFont, 11f, new Vector2(284f + 686f - 60f, -54f), new Vector2(60f, 14f), TextAlignmentOptions.TopRight, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 0f);
-            var kn = Rect("Knob", tr, new Vector2(0f, 8f), new Vector2(16f, 16f));
-            kn.gameObject.AddComponent<Image>().color = Cobalt;
+            // 滑杆：600 宽；2px 轨道 + 每 10% 一个刻度（50% 长一点）+ 6px 实心进度 + 18px 方块滑块
+            var tr = Rect("Track", row, new Vector2(SC2, -20f), new Vector2(600f, 40f));
+            tr.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            Bar(tr, new Vector2(0f, -19f), new Vector2(600f, 2f), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.45f));
+            for (int k = 0; k <= 10; k++)
+                Bar(tr, new Vector2(Mathf.Min(598f, k * 60f), k % 5 == 0 ? -8f : -12f), new Vector2(2f, k % 5 == 0 ? 10f : 6f), new Color(Cobalt.r, Cobalt.g, Cobalt.b, k % 5 == 0 ? 0.9f : 0.5f));
+            var fill = Rect("Fill", tr, new Vector2(0f, -17f), new Vector2(0f, 6f)); var fi = fill.gameObject.AddComponent<Image>(); fi.color = Cobalt; fi.raycastTarget = false;
+            var kn = Rect("Knob", tr, new Vector2(0f, -11f), new Vector2(18f, 18f));
+            var ki = kn.gameObject.AddComponent<Image>(); ki.color = Cobalt; ki.raycastTarget = false;
             sr.knob = kn;
 
             System.Action refresh = () =>
             {
                 float u = max > min ? Mathf.Clamp01((get() - min) / (max - min)) : 0f;
-                kn.anchoredPosition = new Vector2(686f * u - 8f, 8f);
+                kn.anchoredPosition = new Vector2(600f * u - 9f, -11f);
+                fill.sizeDelta = new Vector2(600f * u, 6f);
                 val.text = show(get());
             };
             sr.refresh = refresh;
@@ -733,7 +755,7 @@ public class SysPanels : MonoBehaviour
             {
                 var pd = (PointerEventData)d;
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(tr, pd.position, pd.pressEventCamera, out Vector2 lp);
-                float u = Mathf.Clamp01(lp.x / 686f);                    // 轴心在左上，lp.x 就是 0~686
+                float u = Mathf.Clamp01(lp.x / 600f);
                 float nv = Mathf.Clamp(Mathf.Round(Mathf.Lerp(min, max, u) / step) * step, min, max);
                 if (Mathf.Abs(nv - get()) > 0.0001f) { set(nv); PlaySfx("Fly/sfx_tick"); refresh(); }
             };

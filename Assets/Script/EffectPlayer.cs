@@ -135,6 +135,10 @@ public class EffectPlayer : MonoBehaviour
             StartCoroutine(CardSounds(fromTitle));
         }
         else if (cmd.name == "uncard") { StartCoroutine(chapterCard.Reveal()); if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_drop"); }
+        else if (cmd.name == "flight")  // flight:seg(a,b) / flight:off —— 第二章一镜到底的飞行视频（FlightVideo）
+        {
+            if (FlightVideo.Instance != null) FlightVideo.Instance.Apply(cmd); else Debug.LogWarning("场景里没有 FlightVideo");
+        }
         else if (cmd.name == "lock")    // lock:on / lock:off —— 自动播放锁（AutoLock）
         {
             if (autoLock == null) autoLock = FindObjectOfType<AutoLock>();

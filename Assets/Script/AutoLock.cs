@@ -25,7 +25,7 @@ public class AutoLock : MonoBehaviour
 
     RectTransform root, shackle;
     CanvasGroup group;
-    Image ringBack, ring;
+    Image ringBack, ring, body;
     TextMeshProUGUI title, sub;
     Coroutine run;
     AudioPlayer sound;
@@ -46,6 +46,17 @@ public class AutoLock : MonoBehaviour
         if (on == IsLocked && run != null) return;
         if (run != null) StopCoroutine(run);
         run = StartCoroutine(on ? Arm() : Release());
+    }
+
+    // 不用光晕描边（看起来像没抠干净）：画面暗了整套换成纸色，1 秒渐变（和四角小字一样）
+    float darkK;
+    void Update()
+    {
+        bool dark = (FlightVideo.Instance != null && FlightVideo.Instance.Dark) || GameChrome.DarkK > 0.5f;
+        darkK = Mathf.MoveTowards(darkK, dark ? 1f : 0f, Time.deltaTime);
+        Color c = Color.Lerp(Cobalt, Paper, darkK);
+        foreach (var g in new Graphic[] { title, sub, ring, ringBack, shackle.GetComponent<Image>(), body })
+            if (g != null) g.color = new Color(c.r, c.g, c.b, g.color.a);
     }
 
     // 被锁住时点了一下：轻轻晃一下，告诉读者「现在点不了」
@@ -133,7 +144,7 @@ public class AutoLock : MonoBehaviour
         icon.SetParent(root, false); icon.anchorMin = icon.anchorMax = new Vector2(0f, 1f); icon.pivot = new Vector2(0.5f, 0.5f);
         icon.anchoredPosition = new Vector2(22, -24); icon.sizeDelta = new Vector2(10, 10);
         Image bodyImg = MakeImage("Body", icon, null, new Vector2(5, -6.5f), new Vector2(10, 7));
-        bodyImg.color = Cobalt;
+        bodyImg.color = Cobalt; body = bodyImg;
         Image sh = MakeImage("Shackle", icon, MakeSprite(ShackleTex(64)), Vector2.zero, new Vector2(8, 8));
         sh.color = Cobalt;
         shackle = sh.rectTransform; shackle.anchorMin = shackle.anchorMax = new Vector2(0.5f, 0.5f); shackle.pivot = new Vector2(0.5f, 0f);
@@ -164,11 +175,6 @@ public class AutoLock : MonoBehaviour
         if (font != null) t.font = font;
         t.fontSize = size; t.color = Cobalt; t.raycastTarget = false;
         t.enableWordWrapping = false; t.alignment = TextAlignmentOptions.MidlineLeft;
-        // 纸色光晕：亮的、暗的画面上都读得清
-        var m = t.fontMaterial;
-        m.EnableKeyword("UNDERLAY_ON");
-        m.SetColor("_UnderlayColor", new Color(Paper.r, Paper.g, Paper.b, 0.95f));
-        m.SetFloat("_UnderlayDilate", 0.6f); m.SetFloat("_UnderlaySoftness", 0.6f);
         return t;
     }
 

@@ -4,6 +4,7 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/Build_Android/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 /[Mm]emoryCaptures/
@@ -31,3 +32,11 @@ Thumbs.db
 
 # 本机的 Claude Code 设置
 .claude/settings.local.json
+
+# 本机的 Claude Code / MCP 配置
+.claude/
+.mcp.json
+
+# 打包时 Unity 额外生成的调试信息（不要发布）
+*_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/

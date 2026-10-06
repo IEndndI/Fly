@@ -100,7 +100,7 @@ public class AudioPlayer : MonoBehaviour
         if (cmd.name == "{clear}")
         {
             if (currentFade != null) StopCoroutine(currentFade);
-            bgmSource.Stop();
+            currentFade = StartCoroutine(FadeOutStop(outTime));      // 不再一下子掐断：按 out 时间淡出再停
             return;
         }
 
@@ -161,6 +161,12 @@ public class AudioPlayer : MonoBehaviour
     // ───────── 通用 ─────────
 
     // 从当前音量淡到 to；BGM 和环境音共用
+    IEnumerator FadeOutStop(float time)
+    {
+        yield return FadeVolume(bgmSource, 0f, time);
+        bgmSource.Stop();
+    }
+
     IEnumerator FadeVolume(AudioSource source, float to, float time)
     {
         float from = source.volume;

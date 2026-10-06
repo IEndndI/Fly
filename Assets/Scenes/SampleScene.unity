@@ -2685,7 +2685,6 @@ MonoBehaviour:
   trail: {fileID: 1361362282}
   columnTime: 0.45
   columnStagger: 0.03
-  holdTime: 2.2
 --- !u!1 &613240966
 GameObject:
   m_ObjectHideFlags: 0
@@ -3029,6 +3028,7 @@ RectTransform:
   - {fileID: 797623564}
   - {fileID: 145054303}
   - {fileID: 684096157}
+  - {fileID: 1509197891}
   - {fileID: 623127944}
   - {fileID: 2039526844}
   - {fileID: 888406451}
@@ -3320,6 +3320,7 @@ MonoBehaviour:
   pageFx: {fileID: 0}
   dreamFx: {fileID: 0}
   nightFx: {fileID: 0}
+  sceneCam: {fileID: 0}
 --- !u!114 &717773074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6645,6 +6646,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478182965}
   m_CullTransparentMesh: 1
+--- !u!1 &1509197890
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1509197891}
+  - component: {fileID: 1509197892}
+  m_Layer: 0
+  m_Name: FlightVideo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1509197891
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509197890}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 678061913}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1509197892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509197890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e81015d90de78f46a0e6c7269899c27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clipPath: Video/flight
 --- !u!1 &1561728108
 GameObject:
   m_ObjectHideFlags: 0
@@ -6741,9 +6791,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmSource: {fileID: 1690026599}
   seSource: {fileID: 949512721}
-  fadeOutTime: 1
-  fadeInTime: 1
-  gapTime: 0
+  fadeOutTime: 3
+  fadeInTime: 3
+  gapTime: 0.3
 --- !u!4 &1593563961
 Transform:
   m_ObjectHideFlags: 0

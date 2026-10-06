@@ -1,3 +1,10 @@
+ai_bg	Sprites/Fly/UI/ai_bg
+ai_glider_v0	Sprites/Fly/UI/ai_glider_v0
+ai_glider_v1	Sprites/Fly/UI/ai_glider_v1
+ai_glider_v2	Sprites/Fly/UI/ai_glider_v2
+ai_line_v0	Sprites/Fly/UI/ai_line_v0
+ai_line_v1	Sprites/Fly/UI/ai_line_v1
+ai_line_v2	Sprites/Fly/UI/ai_line_v2
 ascent_cloud_base	Sprites/Fly/BG/ascent_cloud_base
 ascent_cloud_line0	Sprites/Fly/BG/ascent_cloud_line0
 ascent_cloud_line1	Sprites/Fly/BG/ascent_cloud_line1

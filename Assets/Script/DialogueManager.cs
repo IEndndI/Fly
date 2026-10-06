@@ -364,7 +364,8 @@ public class DialogueManager : MonoBehaviour
                 }
                 else if (autoLock != null && autoLock.IsLocked)
                 {
-                    yield return new WaitForSeconds(autoLock.ReadTime(typedText)); // 锁住时：留够阅读时间，自己翻
+                    for (float w = 0f, need = autoLock.ReadTime(typedText); w < need; w += Time.deltaTime * FlightVideo.Speed) yield return null; // 锁住时：留够阅读时间，自己翻（长按 1.5 倍）
+                    while (FlightVideo.Instance != null && FlightVideo.Instance.Active && !FlightVideo.Instance.AtSegmentEnd) yield return null;   // 飞行画面也走完这句的那一段
                     if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");
                 }
                 else if (!autoAdvance)
@@ -492,6 +493,7 @@ public class DialogueManager : MonoBehaviour
             Sprite bgBase = FindSprite(bgName + "_base");
             if (bgBase != null)
             {
+                if (backgroundImage.sprite != bgBase && !HardCutBg(line)) BgFade.Snapshot(backgroundImage, backgroundLine);   // 换背景：旧的淡出、新的落定（章节开头 / 视频刚结束：直接切）
                 backgroundImage.sprite = bgBase;
                 Sprite[] lines = new Sprite[3];
                 for (int i = 0; i < 3; i++)                       // 空3
@@ -612,7 +614,7 @@ public class DialogueManager : MonoBehaviour
             foreach (string raw in SplitTopLevel(l.effectString, ','))
             {
                 string t = raw.Trim();
-                if (t.StartsWith("lock:") || t.StartsWith("fx:") || t.StartsWith("night:") || t.StartsWith("show:") || t.StartsWith("hide:") || (t.StartsWith("dream:") && t != "dream:pass"))
+                if (t.StartsWith("lock:") || t.StartsWith("flight:") || t.StartsWith("fx:") || t.StartsWith("night:") || t.StartsWith("show:") || t.StartsWith("hide:") || (t.StartsWith("dream:") && t != "dream:pass"))
                     effectPlayer.Play(LoadCommand(t), null);
             }
         }
@@ -658,6 +660,20 @@ public class DialogueManager : MonoBehaviour
         if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");   // 翻页声
     }
 
+    // 章节一开头（label 之后还没出过台词：扉页盖着）、飞行视频收尾那一行：背景直接切，不做淡变
+    bool HardCutBg(DialogueLine line)
+    {
+        if (line.effectString != null && line.effectString.Contains("flight:")) return true;
+        int i = dialogueLines.IndexOf(line);
+        for (int k = i - 1; k >= 0; k--)
+        {
+            var L = dialogueLines[k];
+            if (L.flow != null && L.flow.StartsWith("label:")) return true;
+            if (!string.IsNullOrEmpty(L.text) && (L.flow == null || !L.flow.StartsWith("option:"))) return false;
+        }
+        return true;
+    }
+
     // 按 {w} 分段打字，段与段之间等点击
     IEnumerator TypeText(string content)
     {
@@ -688,7 +704,7 @@ public class DialogueManager : MonoBehaviour
             dialogueText.text += letter;
             if (audioPlayer != null && "，。、！？“”…—：；（） ".IndexOf(letter) < 0)   // 每写一个字一声铅笔（标点不响）
                 audioPlayer.PlaySfx("Fly/sfx_pencil" + Random.Range(0, 4));
-            yield return new WaitForSeconds(SaveSystem.TextDelay);   // 文字速度在设置里调（原来的 typingSpeed 不再用）
+            yield return new WaitForSeconds(SaveSystem.TextDelay / FlightVideo.Speed);   // 文字速度在设置里调（原来的 typingSpeed 不再用）
         }
         isTyping = false;
     }

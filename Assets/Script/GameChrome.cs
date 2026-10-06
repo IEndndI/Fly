@@ -54,6 +54,9 @@ public class GameChrome : MonoBehaviour
         page.rectTransform.pivot = new Vector2(1f, 1f);
         page.rectTransform.anchoredPosition = new Vector2(-120f, -1032f);
         ticksRoot = Rect("Ticks", new Vector2(262, -874), new Vector2(118, 8)); ticksRoot.GetComponent<Image>().enabled = false;
+        var marks = new GameObject("PageMarks", typeof(RectTransform));            // 折角 + 起飞码数牌（照第一版分镜）
+        marks.transform.SetParent(root, false);
+        marks.AddComponent<PageMarks>().Init(dialogue, font);
     }
 
     // ───────── 宽屏适配（安卓 / iOS / Mac）：画布只往大处长、谁都不裁；背景 cover 铺满；中间那批跟着中线走 ─────────
@@ -149,7 +152,7 @@ public class GameChrome : MonoBehaviour
 
         // 夜里换成纸色字
         string bg = dialogue.backgroundImage != null && dialogue.backgroundImage.sprite != null ? dialogue.backgroundImage.sprite.name.Replace("_base", "") : "";
-        bool dark = System.Array.IndexOf(darkBackgrounds, bg) >= 0;
+        bool dark = System.Array.IndexOf(darkBackgrounds, bg) >= 0 || (FlightVideo.Instance != null && FlightVideo.Instance.Dark);   // 飞行视频：深空以后也是暗的
         darkK = Mathf.MoveTowards(darkK, dark ? 1f : 0f, Time.deltaTime / 1.4f);
         DarkK = darkK;
         Color c = Color.Lerp(Cobalt, Paper, darkK);

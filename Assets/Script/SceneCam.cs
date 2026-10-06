@@ -75,6 +75,13 @@ public class SceneCam : MonoBehaviour
         moveT = 0f;
     }
 
+    // 换背景时的「落定」：从稍大一点（from 倍）缓缓收回原位（BgFade 调）
+    public void Settle(float from, float time)
+    {
+        zAt = zFrom = Mathf.Max(1f, from); pAt = pFrom = Vector2.zero;
+        zTo = 1f; pTo = Vector2.zero; moveDur = Mathf.Max(0.01f, time); moveT = 0f;
+    }
+
     // 立刻回到原位（跳转 / 读档用：免得把别的章的镜头姿势带过去）
     public void SnapHome()
     {

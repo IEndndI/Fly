@@ -41,7 +41,7 @@ public class QuickMenu : MonoBehaviour
             t.rectTransform.SetParent(rt, false); t.rectTransform.anchorMin = new Vector2(0f, 1f); t.rectTransform.anchorMax = new Vector2(1f, 1f);
             t.rectTransform.pivot = new Vector2(0f, 1f); t.rectTransform.anchoredPosition = Vector2.zero; t.rectTransform.sizeDelta = new Vector2(0f, 16f);
             if (font != null) t.font = font;
-            t.text = "<alpha=#80>0" + (i + 1) + "</alpha>  " + Names[i].ToUpper(); t.fontSize = 12f; t.characterSpacing = 9f; t.raycastTarget = false;
+            t.text = "<alpha=#80>0" + (i + 1) + "<alpha=#FF>  " + Names[i].ToUpper(); t.fontSize = 12f; t.characterSpacing = 9f; t.raycastTarget = false;
             labels[i] = t;
             var r = new GameObject("Rule", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             r.rectTransform.SetParent(rt, false); r.rectTransform.anchorMin = new Vector2(0f, 0f); r.rectTransform.anchorMax = new Vector2(1f, 0f);

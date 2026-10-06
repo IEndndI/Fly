@@ -21,7 +21,7 @@ public class TitleScreen : MonoBehaviour
     static readonly Color Paper = new Color(0.949f, 0.925f, 0.875f);
 
     class Item { public string num, zh, en; public bool enabled; public RectTransform inv; public float k; public CanvasGroup group; }
-    readonly Item[] items = {
+    Item[] items = {
         new Item { num = "01", zh = "开始", en = "START", enabled = true },
         new Item { num = "02", zh = "继续", en = "CONTINUE" },
         new Item { num = "03", zh = "回想", en = "MEMORIES" },
@@ -35,11 +35,19 @@ public class TitleScreen : MonoBehaviour
     float fitW = -1f;
     RectTransform[] coverCols;                                    // 从游戏回来时的 12 栏（先盖着，再抽离）
     public static bool CoveredEntry;                              // 游戏里「合上书 / Esc」置上：标题从「已盖住」开始
+    public static bool FromBlack;                                 // 结局播完置上：标题从黑场开始，0.9 秒淡出（分镜 finishEnding）
+    bool entering;                                                // 开场视频之后的入场动画进行中：不接受操作
 
     void Awake()
     {
         if (titleMenu == null) titleMenu = FindObjectOfType<TitleMenu>();
         items[1].enabled = items[2].enabled = SaveSystem.HasSave; items[3].enabled = true;
+        if (PlayerPrefs.GetInt("Fly.Cleared", 0) == 1)                      // 通关以后：「合上笔记」上面多一行「关于」
+        {
+            var l = new System.Collections.Generic.List<Item>(items);
+            l.Insert(4, new Item { num = "05", zh = "关于", en = "ABOUT", enabled = true });
+            l[5].num = "06"; items = l.ToArray();
+        }
         root = (RectTransform)transform;
         root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
 
@@ -57,6 +65,19 @@ public class TitleScreen : MonoBehaviour
         // 菜单：五行，每行 402 × 56，从 (120, 616) 起（AE 坐标）
         for (int i = 0; i < items.Length; i++) BuildItem(items[i], i);
 
+        // 标题左下印着「N°00 · AI 说明」：点它再看一遍创作声明（照分镜 #tAI）
+        var aiHit = MakeRect("AILink", root, new Vector2(330, -1030), new Vector2(120, 28));
+        aiHit.GetComponent<Image>().color = new Color(0, 0, 0, 0); aiHit.GetComponent<Image>().raycastTarget = true;
+        var aiTrig = aiHit.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+        AddTrigger(aiTrig, UnityEngine.EventSystems.EventTriggerType.PointerClick, () =>
+        {
+            if (leaving || entering || AIDisclosure.Active || SysPanels.UiOpen > 0) return;
+            Play("Fly/sfx_slide");
+            AIDisclosure.ForceShow = true;
+            var go = new GameObject("AIDisclosure", typeof(RectTransform)); go.transform.SetParent(root.parent, false);
+            var d = go.AddComponent<AIDisclosure>(); d.uiFont = uiFont; d.textFont = textFont; d.handFont = labelFont;
+        });
+
         // 「开始」的钴蓝色页（T4）：先从选中那行的反白条位置开始，进游戏前再展开（2026-10-06，照分镜 startGame）
         var fGo = new GameObject("Flood", typeof(RectTransform), typeof(Image));
         flood = fGo.GetComponent<RectTransform>(); flood.SetParent(root, false);
@@ -70,6 +91,14 @@ public class TitleScreen : MonoBehaviour
         var clip = Resources.Load<AudioClip>(bgm);
         if (clip != null) { music.clip = clip; music.Play(); }
 
+        int ai = System.Array.FindIndex(items, x => x.zh == "关于");
+        if (ai >= 0 && PlayerPrefs.GetInt("Fly.AboutSeen", 0) == 0) StartCoroutine(AboutReveal(ai));   // 第一次通关回来：「关于」单独登场 + 指引
+
+        if (FromBlack)                        // 从结局回来：黑场 0.9 秒淡出（分镜 finishEnding 的 quit 黑幕）
+        {
+            FromBlack = false;
+            StartCoroutine(BlackFade());
+        }
         if (CoveredEntry)                     // 从游戏「合上书」回来：先盖着，再依次抽离露出标题（分镜 exitGame → 标题的 12 栏）
         {
             CoveredEntry = false;
@@ -93,6 +122,58 @@ public class TitleScreen : MonoBehaviour
         }
         float cw = root.rect.width;            // 宽屏：末栏补到画布右缘
         if (cw > 1920.5f) coverCols[11].sizeDelta = new Vector2(coverCols[11].sizeDelta.x + (cw - 1920f), 1080f);
+    }
+
+    // 「关于」第一次出现：别的入场都走完以后，这一行从左边滑进来、纸色条刷过一遍、盖个章；
+    // 右边挂一张小标签「← 新的一页」一直轻轻晃，直到第一次点开「关于」
+    RectTransform aboutTag; CanvasGroup aboutTagGroup;
+    IEnumerator AboutReveal(int ai)
+    {
+        var it = items[ai]; var rt = (RectTransform)it.group.transform;
+        float y = rt.anchoredPosition.y, wait = 0f;
+        it.group.blocksRaycasts = false;
+        while (wait < 0.8f)                                                 // 等开场 / 黑场 / 声明 / 抽栏都结束，再多等 0.8 秒
+        {
+            it.group.alpha = 0f; it.group.blocksRaycasts = false;
+            bool busy = entering || leaving || AIDisclosure.Active || SysPanels.UiOpen > 0;
+            wait = busy ? 0f : wait + Time.deltaTime;
+            yield return null;
+        }
+        // 纸色条：从左刷到右，再收回去
+        var flash = MakeRect("AboutFlash", rt, new Vector2(0, -1), new Vector2(0, 55)); flash.GetComponent<Image>().color = Paper;
+        Play("Fly/sfx_slide");
+        for (float t = 0f; t < 1.1f; t += Time.deltaTime)
+        {
+            float u = Mathf.Clamp01(t / 0.45f), e = 1f - Mathf.Pow(1f - u, 3f);
+            rt.anchoredPosition = new Vector2(120f - 60f * (1f - e), y);
+            it.group.alpha = e;
+            float w = t < 0.45f ? 402f * e : 402f * (1f - EaseInOut(Mathf.Clamp01((t - 0.55f) / 0.45f)));
+            flash.sizeDelta = new Vector2(w, 55f);
+            flash.anchoredPosition = new Vector2(t < 0.45f ? 0f : 402f - w, -1f);
+            yield return null;
+        }
+        Destroy(flash.gameObject);
+        rt.anchoredPosition = new Vector2(120f, y); it.group.alpha = 1f; it.group.blocksRaycasts = true;
+        Play("Fly/sfx_stamp");
+
+        // 指引标签
+        aboutTag = MakeRect("AboutTag", root, new Vector2(120 + 402 + 24, y - 10), new Vector2(286, 36));
+        aboutTag.GetComponent<Image>().color = Paper;
+        var tl = MakeRect("Edge", aboutTag, Vector2.zero, new Vector2(4, 36)); tl.GetComponent<Image>().color = Cobalt;
+        Text(aboutTag, "← NEW · 通关后多出来的一页", 15f, new Vector2(16, -18), new Vector2(262, 30), Cobalt, TextAlignmentOptions.MidlineLeft, uiFont, 1f);
+        aboutTagGroup = aboutTag.gameObject.AddComponent<CanvasGroup>(); aboutTagGroup.blocksRaycasts = false;
+        for (float t = 0f; ; t += Time.deltaTime)
+        {
+            bool seen = PlayerPrefs.GetInt("Fly.AboutSeen", 0) == 1 || leaving;
+            if (seen)
+            {
+                aboutTagGroup.alpha -= Time.deltaTime / 0.3f;
+                if (aboutTagGroup.alpha <= 0f) { Destroy(aboutTag.gameObject); yield break; }
+            }
+            else aboutTagGroup.alpha = Mathf.Clamp01(t / 0.3f);
+            aboutTag.anchoredPosition = new Vector2(120 + 402 + 24 + Mathf.Sin(t * 4f) * 6f * Mathf.Clamp01(t / 0.3f) + 30f * (1f - Mathf.Clamp01(t / 0.3f)), y - 10);
+            yield return null;
+        }
     }
 
     IEnumerator CoverLift()
@@ -172,7 +253,7 @@ public class TitleScreen : MonoBehaviour
 
     void Select(int i)
     {
-        if (leaving || SysPanels.UiOpen > 0 || i == sel || !items[i].enabled) return;
+        if (leaving || entering || SysPanels.UiOpen > 0 || i == sel || !items[i].enabled) return;
         sel = i; Play("Fly/sfx_tick");
     }
 
@@ -211,12 +292,12 @@ public class TitleScreen : MonoBehaviour
             float e = 1f - Mathf.Pow(1f - it.k, 3f);
             if (it.inv != null) it.inv.sizeDelta = new Vector2(402f * e, 55f);   // 重编译/销毁中途可能暂时为空
         }
-        if (!leaving && music != null && se != null)   // 设置页里改音量：标题的音乐 / 音效实时跟着（进游戏的淡出期间不动它）
+        if (!leaving && !entering && music != null && se != null)   // 设置页里改音量：标题的音乐 / 音效实时跟着（进游戏的淡出期间不动它）
         {
             music.volume = bgmVolume * SaveSystem.MusicScale;
             se.volume = SaveSystem.Sfx;
         }
-        if (leaving || SysPanels.UiOpen > 0) return;
+        if (leaving || entering || AIDisclosure.Active || SysPanels.UiOpen > 0) return;
         if (Input.GetKeyDown(KeyCode.DownArrow)) Step(1);
         if (Input.GetKeyDown(KeyCode.UpArrow)) Step(-1);
         if (sel >= 0 && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) Confirm();
@@ -231,12 +312,13 @@ public class TitleScreen : MonoBehaviour
 
     void Confirm()
     {
-        if (leaving || sel < 0 || SysPanels.UiOpen > 0) return;
+        if (leaving || entering || sel < 0 || SysPanels.UiOpen > 0) return;
         Play("Fly/sfx_select");
         if (items[sel].zh == "开始") { SaveSystem.PendingRow = -1; StartCoroutine(Begin()); }
         else if (items[sel].zh == "继续") OpenSys("load");      // 分镜：继续 = 打开读档页，点一个档位从那里继续读
         else if (items[sel].zh == "回想") OpenSys("log");
         else if (items[sel].zh == "设置") OpenSys("settings");
+        else if (items[sel].zh == "关于") { PlayerPrefs.SetInt("Fly.AboutSeen", 1); PlayerPrefs.Save(); AboutPanel.Open(root.parent, uiFont, textFont, labelFont); }
         else if (items[sel].zh == "合上笔记") titleMenu.QuitGame();
     }
 
@@ -281,6 +363,106 @@ public class TitleScreen : MonoBehaviour
     {
         flood.anchoredPosition = new Vector2(x, -y);
         flood.sizeDelta = new Vector2(w, h);
+    }
+
+    // ───────── 开场视频之后：标题从视频最后一帧上铺出来（分镜 20.5–22.6 秒）─────────
+    // OpeningPlayer 播放时先把标题藏起来
+    // 开场视频一开始就把标题音乐淡进来（视频本身不出声）
+    public void StartMusic(float fadeIn)
+    {
+        if (music.clip == null || music.isPlaying) return;
+        music.volume = 0f; music.Play(); StartCoroutine(FadeMusic(bgmVolume * SaveSystem.MusicScale, fadeIn));
+    }
+    IEnumerator FadeMusic(float to, float time)
+    {
+        float from = music.volume;
+        for (float t = 0f; t < time; t += Time.deltaTime) { music.volume = Mathf.Lerp(from, to, t / time); yield return null; }
+        music.volume = to;
+    }
+
+    public void PrepareForOpening()
+    {
+        entering = true;
+        picture.gameObject.SetActive(false);
+        foreach (var it in items) { it.group.alpha = 0f; it.group.blocksRaycasts = false; }
+        music.Stop();
+    }
+
+    // 12 栏从上往下依次铺出整张标题画面（每栏 0.45 秒、错开 0.06 秒），菜单一行行淡入，音乐淡入
+    public IEnumerator Entrance(System.Action done)
+    {
+        FitWide();
+        var boilSrc = picture.GetComponent<BoilSprite>();
+        var corners = new Vector3[4]; picture.GetWorldCorners(corners);       // [1] = 左上角
+        var strips = new RectTransform[12]; float cw = root.rect.width;
+        // 视频停在「飞」字下半截还在横条拼合的那一帧：右下角那块先用 0.3 秒淡成完整的字，不然栏铺到之前会露着几条白缝
+        var patch = new GameObject("FeiPatch", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasGroup)).GetComponent<RectTransform>();
+        patch.SetParent(root, false); patch.SetSiblingIndex(picture.GetSiblingIndex() + 1);
+        patch.anchorMin = new Vector2(0.7f, 0f); patch.anchorMax = new Vector2(1f, 0.56f); patch.offsetMin = patch.offsetMax = Vector2.zero;
+        var patchGroup = patch.GetComponent<CanvasGroup>(); patchGroup.alpha = 0f; patchGroup.blocksRaycasts = false;
+        {
+            var pg = new GameObject("Pic", typeof(RectTransform), typeof(Image));
+            var prt = pg.GetComponent<RectTransform>(); prt.SetParent(patch, false);
+            prt.anchorMin = prt.anchorMax = new Vector2(0f, 1f); prt.pivot = new Vector2(0f, 1f);
+            prt.sizeDelta = new Vector2(1920f, 1080f); prt.localScale = picture.localScale; prt.position = corners[1];
+            pg.GetComponent<Image>().raycastTarget = false;
+            pg.AddComponent<BoilSprite>().SetFrames(boilSrc.frames);
+        }
+        for (int i = 0; i < 12; i++)
+        {
+            float l = i == 0 ? 0 : 120 + i * 142 - 12, r = i == 11 ? Mathf.Max(1920f, cw) : 120 + i * 142 + 118 + 12;
+            var sg = new GameObject("Strip" + (i + 1), typeof(RectTransform), typeof(RectMask2D));
+            var srt = sg.GetComponent<RectTransform>(); srt.SetParent(root, false); srt.SetSiblingIndex(picture.GetSiblingIndex() + 1);
+            srt.anchorMin = srt.anchorMax = new Vector2(0f, 1f); srt.pivot = new Vector2(0f, 1f);
+            srt.anchoredPosition = new Vector2(l, 0f); srt.sizeDelta = new Vector2(r - l + 1, 0f);
+            var ig = new GameObject("Pic", typeof(RectTransform), typeof(Image));
+            var irt = ig.GetComponent<RectTransform>(); irt.SetParent(srt, false);
+            irt.anchorMin = irt.anchorMax = new Vector2(0f, 1f); irt.pivot = new Vector2(0f, 1f);
+            irt.sizeDelta = new Vector2(1920f, 1080f); irt.localScale = picture.localScale; irt.position = corners[1];
+            ig.GetComponent<Image>().raycastTarget = false;
+            var b = ig.AddComponent<BoilSprite>(); b.SetFrames(boilSrc.frames);
+            strips[i] = srt;
+        }
+        float ch = root.rect.height;
+        if (music.clip != null && !music.isPlaying) { music.volume = 0f; music.Play(); }
+        float target = bgmVolume * SaveSystem.MusicScale, total = 0.45f + 11 * 0.06f, mv0 = music.volume;
+        Play("Fly/sfx_slide"); int ticks = 0; bool stamped = false;
+        for (float t = 0f; t < total + 1.2f; t += Time.deltaTime)
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                float u = Mathf.Clamp01((t - i * 0.06f) / 0.45f), e = 1f - Mathf.Pow(1f - u, 3f);
+                strips[i].sizeDelta = new Vector2(strips[i].sizeDelta.x, ch * e);
+            }
+            patchGroup.alpha = Mathf.Clamp01(t / 0.3f);
+            for (int i = 0; i < items.Length; i++)                                 // 菜单：铺到一半以后一行行淡入（分镜 21.55 + i × 0.1）
+            {
+                float a = Mathf.Clamp01((t - 1.05f - i * 0.1f) / 0.3f);
+                items[i].group.alpha = a * (items[i].enabled ? 1f : 0.42f);
+            }
+            music.volume = Mathf.Lerp(mv0, target, Mathf.Clamp01(t / 1.5f));
+            while (ticks < 5 && t >= 0.95f + ticks * 0.1f) { Play("Fly/sfx_tick"); ticks++; }   // 菜单一行行落下（分镜 21.45–21.85）
+            if (!stamped && t >= 1.5f) { stamped = true; Play("Fly/sfx_stamp"); }                // 印章（分镜 22.0）
+            yield return null;
+        }
+        picture.gameObject.SetActive(true);
+        foreach (var srt in strips) Destroy(srt.gameObject);
+        Destroy(patch.gameObject);
+        foreach (var it in items) { it.group.alpha = it.enabled ? 1f : 0.42f; it.group.blocksRaycasts = true; }
+        entering = false;
+        done?.Invoke();
+    }
+
+    IEnumerator BlackFade()
+    {
+        var go = new GameObject("BlackFade", typeof(RectTransform), typeof(Image));
+        var rt = go.GetComponent<RectTransform>(); rt.SetParent(root, false); rt.SetAsLastSibling();
+        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
+        var img = go.GetComponent<Image>(); img.color = new Color(0.043f, 0.043f, 0.051f, 1f);
+        entering = true;
+        yield return new WaitForSeconds(0.15f);
+        for (float t = 0f; t < 0.9f; t += Time.deltaTime) { img.color = new Color(0.043f, 0.043f, 0.051f, 1f - t / 0.9f); yield return null; }
+        Destroy(go); entering = false;
     }
 
     static float EaseInOut(float x) { return x < 0.5f ? 4f * x * x * x : 1f - Mathf.Pow(-2f * x + 2f, 3f) / 2f; }

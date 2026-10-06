@@ -30,6 +30,7 @@ public class EndingPlayer : MonoBehaviour
         video.renderMode = VideoRenderMode.RenderTexture; video.targetTexture = rt;
         video.audioOutputMode = VideoAudioOutputMode.None;       // 视频本身没有声音，音乐走 AudioPlayer
         video.source = VideoSource.VideoClip;
+        gameObject.AddComponent<HoldToSpeed>();                   // 长按 = 4 倍速（松开恢复）
     }
 
     public IEnumerator Play(string branch, AudioPlayer audio, System.Func<string, Command> load)
@@ -45,6 +46,7 @@ public class EndingPlayer : MonoBehaviour
             if (Time.time - t0 > 5f) { Debug.LogWarning("结尾视频没准备好：" + path); yield break; }
             yield return null;
         }
+        PlayerPrefs.SetInt("Fly.Cleared", 1); PlayerPrefs.Save();   // 通关：标题多出「关于」
         if (audio != null && load != null) audio.PlayBGM(load(bgm));
         video.Play();
         DialogueManager.blockUntil = float.MaxValue;              // 结尾整段锁住
@@ -54,9 +56,18 @@ public class EndingPlayer : MonoBehaviour
         bool done = false;
         VideoPlayer.EventHandler onEnd = vp => done = true;
         video.loopPointReached += onEnd;
-        for (t0 = Time.time; !done && Time.time - t0 < (float)video.clip.length + 3f;) yield return null;
+        for (t0 = Time.time; !done && Time.time - t0 < (float)video.clip.length + 3f;)
+        {
+            if (video.time >= video.clip.length - 0.06) { video.Pause(); break; }   // 停在最后一帧（播完 VideoPlayer 会跳回第 0 帧）
+            yield return null;
+        }
         video.loopPointReached -= onEnd;
-        yield return new WaitForSeconds(0.4f);
+        GetComponent<HoldToSpeed>().Enabled = false;
+        // 压到黑场，标题从黑场里 0.9 秒淡出来（分镜 finishEnding）
+        yield return new WaitForSeconds(0.3f);
+        for (float t = 0f; t < 0.4f; t += Time.deltaTime) { float k = 1f - t / 0.4f; screen.color = new Color(k, k, k, 1f); yield return null; }
+        screen.color = Color.black;
+        TitleScreen.FromBlack = true;
         DialogueManager.blockUntil = 0f;
     }
 }
