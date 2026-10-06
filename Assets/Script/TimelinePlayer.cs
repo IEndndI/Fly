@@ -8,6 +8,7 @@ public class TimelinePlayer : MonoBehaviour
     public PlayableDirector director;
     public List<PlayableAsset> timelines;   // 所有演出，在 Inspector 里拖进来
     public CharacterStage stage;
+    public Transform[] fxRoots;
 
     void Update()
     {
@@ -54,6 +55,18 @@ public class TimelinePlayer : MonoBehaviour
         if (track is AnimationTrack)
         {
             RectTransform target = stage.GetTarget(track.name);
+
+            if (target == null) target = FindFx(track.name);
+
+            RectTransform FindFx(string objName)
+            {
+                foreach (Transform root in fxRoots)
+                {
+                    Transform t = root.Find(objName);           // 空3
+                    if (t != null) return (RectTransform)t;  // 空4
+                }
+                return null;
+            }
             
             if (target != null)
             {

@@ -10,22 +10,40 @@ public class AudioPlayer : MonoBehaviour
     public float fadeInTime = 1f;
     public float gapTime = 0f;
 
+    float lastBgmVol = 1f;   // 表格里写的 vol（还没乘设置）
+
+    void Start() { seSource.volume = SaveSystem.Sfx; }
+
+    // 设置改了音量：立刻生效（BGM 用的是表格里的 vol × 设置倍数；环境声同理）
+    public void ApplyVolumes()
+    {
+        seSource.volume = SaveSystem.Sfx;
+        if (bgmSource.isPlaying) bgmSource.volume = lastBgmVol * SaveSystem.MusicScale;
+        foreach (var kv in ambients)
+            if (kv.Value != null && ambientBase.TryGetValue(kv.Value, out float b))
+                kv.Value.volume = b * SaveSystem.Ambience;
+    }
+
     Coroutine currentFade;   // BGM 只有一首，一个遥控器就够
     private Dictionary<string, AudioSource> ambients = new Dictionary<string, AudioSource>();
     // 环境音可以同时响好几个，每台录音机一个遥控器；键用 AudioSource 不用名字，
     // 因为 stop 后马上重开同名环境音时，旧的还在淡出，两台同名
     private Dictionary<AudioSource, Coroutine> ambientFades = new Dictionary<AudioSource, Coroutine>();
+    // 每台环境音「表格里写的 vol」（还没乘设置里的环境声），设置改音量时用它重新算
+    private Dictionary<AudioSource, float> ambientBase = new Dictionary<AudioSource, float>();
 
     // ───────── 环境音 ─────────
 
     public void PlayAmbient(Command cmd)
     {
         float inTime = GetArg(cmd, "in", fadeInTime);
-        float vol    = GetArg(cmd, "vol", 1f);
+        float baseVol = GetArg(cmd, "vol", 1f);
+        float vol = baseVol * SaveSystem.Ambience;   // 设置里的「环境声」
 
         // 已经在响：不重开，只把音量淡到 vol（跟 BGM 同名分支一个思路）
         if (ambients.TryGetValue(cmd.name, out AudioSource playing))
         {
+            ambientBase[playing] = baseVol;
             FadeAmbient(playing, FadeVolume(playing, vol, inTime));
             return;
         }
@@ -39,6 +57,7 @@ public class AudioPlayer : MonoBehaviour
         source.volume = 0f;            // 先拧到 0：FadeVolume 从当前音量出发，新录音机默认是 1
         source.Play();
         ambients[cmd.name] = source;
+        ambientBase[source] = baseVol;
         FadeAmbient(source, FadeVolume(source, vol, inTime));
     }
 
@@ -76,6 +95,7 @@ public class AudioPlayer : MonoBehaviour
         float inTime  = GetArg(cmd, "in",  fadeInTime);
         float gap     = GetArg(cmd, "gap", gapTime);
         float vol     = GetArg(cmd, "vol", 1f);
+        lastBgmVol = vol; vol *= SaveSystem.MusicScale;   // 设置里的音乐音量
 
         if (cmd.name == "{clear}")
         {
@@ -123,6 +143,13 @@ public class AudioPlayer : MonoBehaviour
         AudioClip clip = LoadClip(cmd.arg, "音效");   // se:whoosh 的名字存在 arg 里
         if (clip == null) return;
         seSource.PlayOneShot(clip, GetArg(cmd, "vol", 1f));   // 叠着放、不打断上一个
+    }
+
+    // 代码里直接放一个音效（打字的铅笔声、翻页、锁……），不经过表格。name 和表格 se 列一样写，比如 "Fly/sfx_page"
+    public void PlaySfx(string name, float vol = 1f)
+    {
+        AudioClip clip = Resources.Load<AudioClip>("Audio/" + name);
+        if (clip != null) seSource.PlayOneShot(clip, vol);
     }
 
     public float GetSELength(string seName)

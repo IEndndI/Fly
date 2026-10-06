@@ -14,7 +14,7 @@ public class CharacterExtractor
         HashSet<char> uniqueChars = new HashSet<char>();
 
         // 读取台词表格文件（跟 DialogueLoader 读取方式一样）
-        TextAsset dataFile = Resources.Load<TextAsset>("TestDialogue");
+        TextAsset dataFile = Resources.Load<TextAsset>("Fly");
         if (dataFile == null)
         {
             Debug.LogError("找不到 TestDialogue 文件，检查路径是否正确");

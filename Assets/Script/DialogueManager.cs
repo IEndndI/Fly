@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 [System.Serializable]
 
@@ -42,6 +43,12 @@ public class DialogueManager : MonoBehaviour
     public EffectPlayer effectPlayer;
     public ChoiceMenu choiceMenu;
     public AudioPlayer audioPlayer;
+    public AutoLock autoLock;           // 自动播放锁，留空会自己找
+    public static float blockUntil;     // 在这之前点击无效（白纸、结尾这类不许被点掉的演出用）
+    public static string currentLine;   // 正在打的这句（白纸页要把它写在纸中间）
+    public int CurrentIndex { get; private set; } = -1;   // 正在演的这句在表格里是第几行（四角小字 GameChrome 读）
+    public string CurrentLineType => currentLineType;     // 台词 / 心声 / 旁白 / 书中（BookMode 读）
+    public static bool autoMode, skipMode;               // 快捷栏的 Auto / Skip（QuickMenu 切换）
 
     public List<DialogueLine> dialogueLines;
     public DialogueLoader loader;
@@ -216,14 +223,30 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         LoadSpriteIndex();
+        if (autoLock == null) autoLock = FindObjectOfType<AutoLock>();
         dialogueLines = loader.LoadDialogueFromFile(dialogueFileName);
         BuildLabels();
         CheckLabels();
-        StartCoroutine(RunFrom(0));
+        int start = 0;
+        if (SaveSystem.PendingRow >= 0 && SaveSystem.PendingRow < dialogueLines.Count)   // 标题点了「继续」
+        {
+            start = SaveSystem.PendingRow; SaveSystem.PendingRow = -1;
+            RestoreUpTo(start);
+        }
+        StartCoroutine(RunFrom(start));
     }
 
     void Update()
     {
+        if (Time.time < blockUntil) return;              // 演出还没完：点击不跳过、不加速
+        if (SysPanels.UiOpen > 0) return;                // 回想 / 设置开着
+        if (Input.GetMouseButtonDown(0) && PointerOnQuickMenu()) return;   // 点的是快捷栏按钮，不算翻页
+        if (autoLock != null && autoLock.IsLocked) { autoMode = skipMode = false; }   // 自动播放锁优先
+        if (autoLock != null && autoLock.IsLocked)       // 自动播放中：点击不跳过、不加速，只晃一下锁
+        {
+            if (Input.GetMouseButtonDown(0)) autoLock.Nudge();
+            return;
+        }
         if (Input.GetMouseButtonDown(0))
         {
             if (isTyping)
@@ -234,6 +257,19 @@ public class DialogueManager : MonoBehaviour
             {
                 clickReceived = true;
             }
+        }
+
+        // 键盘（分镜同款）：空格 / 回车 = 点击翻页；A = 自动开关；Esc = 合上书回标题
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            if (isTyping) isSkipping = true;
+            else if (waitingForClick) clickReceived = true;
+        }
+        if (Input.GetKeyDown(KeyCode.A)) { autoMode = !autoMode; skipMode = false; }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (effectPlayer != null && effectPlayer.CardBusy) return;   // 扉页正演着：先让它演完
+            if (effectPlayer != null && effectPlayer.chapterCard != null) effectPlayer.chapterCard.ExitToTitle();
         }
     }
 
@@ -268,11 +304,13 @@ public class DialogueManager : MonoBehaviour
                     index++;
                 }
 
+                skipMode = false;                              // 到抉择就停下 Skip
                 choiceMenu.Show(texts);
                 while (choiceMenu.chosenIndex == -1) yield return null;
 
                 string targetLabel = targets[choiceMenu.chosenIndex];
                 choiceMenu.Clear();
+                if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_select");
 
                 if (labels.TryGetValue(targetLabel, out int target)) index = target;
                 else Debug.LogWarning("找不到标签：" + targetLabel);
@@ -283,7 +321,9 @@ public class DialogueManager : MonoBehaviour
             List<DialogueLine> sequence = new List<DialogueLine>();
             sequence.Add(line);
             int next = index + 1;
-            while (next < dialogueLines.Count && IsEffectRow(dialogueLines[next]))
+            // label 行开始新的一段，不打包进上一句（不然下一章的扉页会在这一章最后一句一开始就落下来）
+            while (next < dialogueLines.Count && IsEffectRow(dialogueLines[next])
+                   && !(dialogueLines[next].flow != null && dialogueLines[next].flow.StartsWith("label:")))
             {
                 sequence.Add(dialogueLines[next]);
                 next++;
@@ -313,12 +353,19 @@ public class DialogueManager : MonoBehaviour
                     typedText = typedText.Substring(0, typedText.Length - 4);
                 }
 
+                currentLine = typedText; CurrentIndex = index;
+                SaveSystem.Save(index);                        // 每句开始时自动存档（标题的「继续」从这里接）
                 Coroutine sequenceRun = StartCoroutine(RunSequence(sequence)); // 不等它，让它在后台跑
                 yield return StartCoroutine(TypeText(typedText));              // 等打字完成
 
                 if (sequenceHasWaitClick)
                 {
                     yield return sequenceRun; // 点击交给演出用，等整段演出播完再自动翻
+                }
+                else if (autoLock != null && autoLock.IsLocked)
+                {
+                    yield return new WaitForSeconds(autoLock.ReadTime(typedText)); // 锁住时：留够阅读时间，自己翻
+                    if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");
                 }
                 else if (!autoAdvance)
                 {
@@ -351,9 +398,15 @@ public class DialogueManager : MonoBehaviour
                     }
                 }
 
-                else if (row.flow == "end")
+                else if (row.flow == "end" || row.flow.StartsWith("end:"))
                 {
                     Debug.Log("剧情结束");
+                    if (row.flow.StartsWith("end:"))      // end:a / end:b：先播这一支的结尾，再回标题
+                    {
+                        EndingPlayer ending = FindObjectOfType<EndingPlayer>();
+                        if (ending != null) yield return StartCoroutine(ending.Play(row.flow.Substring(4).Trim(), audioPlayer, LoadCommand));
+                        else Debug.LogWarning("场景里没有 EndingPlayer");
+                    }
                     SceneManager.LoadScene(0);
                     yield break;
                 }
@@ -531,13 +584,77 @@ public class DialogueManager : MonoBehaviour
         }
     }
     
+    // 鼠标是不是点在快捷栏的按钮上
+    bool PointerOnQuickMenu()
+    {
+        if (EventSystem.current == null) return false;
+        var ped = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        var hits = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(ped, hits);
+        foreach (var h in hits) if (h.gameObject.GetComponentInParent<QuickMenu>() != null) return true;
+        return false;
+    }
+
+    // 读档：从这一行所在那一段的 label 开始，把背景、音乐、句子类型、说话人和会持续的效果（锁、书页散开、梦、夜路、显示/隐藏）快进到这一行
+    void RestoreUpTo(int row)
+    {
+        int s = row;
+        while (s > 0 && !(dialogueLines[s].flow != null && dialogueLines[s].flow.StartsWith("label:"))) s--;
+        string bg = null, bgm = null, type = null, speaker = null;
+        for (int i = s; i < row; i++)
+        {
+            DialogueLine l = dialogueLines[i];
+            if (!string.IsNullOrEmpty(l.backgroundSpriteName)) bg = l.backgroundSpriteName;
+            if (!string.IsNullOrEmpty(l.bgmName)) bgm = l.bgmName;
+            if (l.lineType != null) type = l.lineType;
+            if (l.speakerName != null) speaker = l.speakerName;
+            if (string.IsNullOrEmpty(l.effectString)) continue;
+            foreach (string raw in SplitTopLevel(l.effectString, ','))
+            {
+                string t = raw.Trim();
+                if (t.StartsWith("lock:") || t.StartsWith("fx:") || t.StartsWith("night:") || t.StartsWith("show:") || t.StartsWith("hide:") || (t.StartsWith("dream:") && t != "dream:pass"))
+                    effectPlayer.Play(LoadCommand(t), null);
+            }
+        }
+        ApplySpeakerAndVisuals(new DialogueLine { backgroundSpriteName = bg, bgmName = bgm, lineType = type, speakerName = speaker }, speaker ?? currentSpeaker);
+    }
+
+    // 跳到表格的某一行（回想里点一句、读档页读档用）：先把会一直赖着的状态全部收掉，再从那里重开
+    public void JumpTo(int row)
+    {
+        if (dialogueLines == null || row < 0 || row >= dialogueLines.Count) return;
+        StopAllCoroutines();
+        autoMode = skipMode = false;
+        isTyping = false; isSkipping = false; waitingForClick = false; clickReceived = false;
+        if (autoLock != null) autoLock.Set(false);
+        if (effectPlayer != null)
+        {
+            effectPlayer.StopAllCoroutines();
+            if (effectPlayer.pageFx != null) effectPlayer.pageFx.Set(0);
+            if (effectPlayer.dreamFx != null) effectPlayer.dreamFx.Command("off");
+            if (effectPlayer.nightFx != null) effectPlayer.nightFx.Command("off");
+            if (effectPlayer.blankPage != null) effectPlayer.blankPage.Hide();
+            foreach (GameObject go in effectPlayer.sceneObjects) if (go != null) go.SetActive(false);
+            if (effectPlayer.chapterCard != null) effectPlayer.chapterCard.ResetImmediate();
+        }
+        RestoreUpTo(row);
+        StartCoroutine(RunFrom(row));
+    }
+
     IEnumerator WaitForClick()
     {
         waitingForClick = true;
         clickReceived = false;
-        while (!clickReceived) yield return null;
+        float t0 = Time.time;
+        while (!clickReceived)
+        {
+            if (skipMode && Time.time - t0 > 0.09f) break;                                                        // Skip：几乎不停
+            if (autoMode && Time.time - t0 > SaveSystem.AutoDelay + 0.038f * (currentLine ?? "").Length) break;   // Auto：按字数多等一会儿
+            yield return null;
+        }
         waitingForClick = false;
         clickReceived = false;
+        if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");   // 翻页声
     }
 
     // 按 {w} 分段打字，段与段之间等点击
@@ -561,13 +678,16 @@ public class DialogueManager : MonoBehaviour
 
         foreach (char letter in segment)
         {
+            if (skipMode) isSkipping = true;
             if (isSkipping)
             {
                 dialogueText.text = textBefore + segment;
                 break;
             }
             dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            if (audioPlayer != null && "，。、！？“”…—：；（） ".IndexOf(letter) < 0)   // 每写一个字一声铅笔（标点不响）
+                audioPlayer.PlaySfx("Fly/sfx_pencil" + Random.Range(0, 4));
+            yield return new WaitForSeconds(SaveSystem.TextDelay);   // 文字速度在设置里调（原来的 typingSpeed 不再用）
         }
         isTyping = false;
     }
@@ -611,6 +731,13 @@ public class DialogueManager : MonoBehaviour
         foreach (Command cmd in result)
         {
             effectPlayer.Play(cmd, target);
+        }
+
+        // 章扉页自己管时长：点击可以加速（分镜同款），不等固定秒数
+        if (effectPlayer.CardBusy)
+        {
+            while (effectPlayer.CardBusy) yield return null;
+            yield break;
         }
 
         if (hasWaitClick)

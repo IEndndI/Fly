@@ -19,10 +19,11 @@ public class BoilSprite : MonoBehaviour
     void Update()
     {
         if (frames.Length == 0) return;   // 没有线稿：这一帧什么都不做
+        float rate = SaveSystem.DreamFps > 0.1f ? SaveSystem.DreamFps : fps;   // 设置里的「梦境帧率」（分镜同款）
         timer += Time.deltaTime;                         // 空2：这个你在 FadeVolume 里写过
-        if (timer >= 1f / fps)
+        if (timer >= 1f / rate)
         {
-            timer -= 1f / fps;
+            timer -= 1f / rate;
             index = (index + 1) % frames.Length;             // 空3：转到最后一张后回到 0
             image.sprite = frames[index];
         }
