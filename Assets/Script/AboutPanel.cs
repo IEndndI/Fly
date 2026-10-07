@@ -28,6 +28,7 @@ public class AboutPanel : MonoBehaviour
         var root = (RectTransform)transform;
         root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
         group = GetComponent<CanvasGroup>(); group.alpha = 0f;
+        gameObject.AddComponent<Bleed>();                                    // 钴蓝底伸到屏幕边
         var bg = gameObject.AddComponent<Image>(); bg.color = Cobalt;        // 整屏钴蓝，也挡住下面的点击
 
         // 1920×1080 的版面，居中；纸 1440×840
@@ -60,7 +61,7 @@ public class AboutPanel : MonoBehaviour
 
         // 底线 + 返回
         Img(sheet, new Vector2(552, 728), new Vector2(824, 2), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.3f));
-        T(sheet, "滚轮翻看 · ESC / 右键 关闭", uiFont, 12f, new Vector2(552, 762), new Vector2(500, 18), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 4f, TextAlignmentOptions.TopLeft);
+        T(sheet, UIFrame.Touch ? "上下滑动翻看 · 点「返回」关闭" : "滚轮翻看 · ESC / 右键 关闭", uiFont, 12f, new Vector2(552, 762), new Vector2(500, 18), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 4f, TextAlignmentOptions.TopLeft);
         var back = R("Back", sheet, new Vector2(1176, 748), new Vector2(200, 48));
         var bi = back.gameObject.AddComponent<Image>(); bi.color = Cobalt;
         T(back, "返回　<size=11>BACK</size>", uiFont, 18f, Vector2.zero, new Vector2(200, 48), Paper, 2f, TextAlignmentOptions.Center);

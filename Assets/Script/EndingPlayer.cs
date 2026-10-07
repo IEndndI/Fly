@@ -21,6 +21,8 @@ public class EndingPlayer : MonoBehaviour
         r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero;
         screen = GetComponent<RawImage>(); if (screen == null) screen = gameObject.AddComponent<RawImage>();
         screen.color = Color.white; screen.raycastTarget = false;
+        if (GetComponent<Bleed>() == null) gameObject.AddComponent<Bleed>();          // v1.1：铺到屏幕边，按比例裁切，不拉伸
+        if (GetComponent<CoverUV>() == null) gameObject.AddComponent<CoverUV>();
         group = GetComponent<CanvasGroup>(); if (group == null) group = gameObject.AddComponent<CanvasGroup>();
         group.alpha = 0f; group.blocksRaycasts = false;
         rt = new RenderTexture(1920, 1080, 0);

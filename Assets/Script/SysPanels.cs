@@ -118,7 +118,7 @@ public class SysPanels : MonoBehaviour
                 if (n == "Background" || n == "BG_Line" || n == "Stage" || n == "TitleScreen" || n == "SysPanel") continue;   // SysPanel 是这页自己，别动
                 Hide(list, c.gameObject);
             }
-        for (int i = 1; i <= 5; i++) Hide(list, GameObject.Find("Canvas/TitleScreen/Item0" + i));   // 标题的菜单不印（画面留着）
+        for (int i = 1; i <= 5; i++) Hide(list, UIFrame.Find("TitleScreen/Item0" + i));   // 标题的菜单不印（画面留着）
         return list;
     }
 
@@ -239,9 +239,12 @@ public class SysPanels : MonoBehaviour
 
         // 页眉
         Txt(panel, "第 7 幕 · 系统页 · System", UiFont, 12f, new Vector2(24f, -48f), new Vector2(600f, 16f), TextAlignmentOptions.TopLeft, Paper, 9f);
-        var closeBtn = Rect("Close", panel, new Vector2(24f + 1112f - 220f, -40f), new Vector2(220f, 32f));
+        // 返回：做成看得出来的按钮（v1.1，手机上原来那行小字像装饰）——纸色 2px 框，手机上再大一圈
+        float cbw = UIFrame.Touch ? 220f : 180f, cbh = UIFrame.Touch ? 56f : 48f;
+        var closeBtn = Rect("Close", panel, new Vector2(24f + 1112f - cbw, -28f), new Vector2(cbw, cbh));
         var cbImg = closeBtn.gameObject.AddComponent<Image>(); cbImg.color = new Color(0, 0, 0, 0);
-        Txt(closeBtn, "返回 · Esc", UiFont, 12f, new Vector2(0f, -8f), new Vector2(220f, 16f), TextAlignmentOptions.TopRight, Paper, 9f);
+        Frame2(closeBtn, Paper);
+        Txt(closeBtn, UIFrame.Touch ? "← 返回" : "← 返回　<size=11>ESC</size>", UiFont, UIFrame.Touch ? 24f : 18f, Vector2.zero, new Vector2(cbw, cbh), TextAlignmentOptions.Center, Paper, 2f);
         closeBtn.gameObject.AddComponent<Button>().onClick.AddListener(Close);
 
         // 四个标签（01 存档 / 02 读档 / 03 回想 / 04 设置）

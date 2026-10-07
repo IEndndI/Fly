@@ -59,10 +59,8 @@ public class GameChrome : MonoBehaviour
         marks.AddComponent<PageMarks>().Init(dialogue, font);
     }
 
-    // ───────── 宽屏适配（安卓 / iOS / Mac）：画布只往大处长、谁都不裁；背景 cover 铺满；中间那批跟着中线走 ─────────
+    // ───────── 宽屏适配（安卓 / iOS / Mac）：画布只往大处长、谁都不裁；背景 cover 铺满；界面居中交给 UIFrame ─────────
     float fittedW = -1f;
-    List<RectTransform> centerRts;
-    readonly List<float> centerOrigX = new List<float>();
 
     void FitWide()
     {
@@ -72,29 +70,7 @@ public class GameChrome : MonoBehaviour
         // 注：每帧找一次 Canvas 成本可以忽略（就两个父级），保持代码短
         float cw = crt.rect.width, ch = crt.rect.height;
         if (cw <= 1f || Mathf.Abs(cw - fittedW) < 0.5f) return;    // 还没布局好 / 没变：不动
-        if (fittedW < 0f)                                          // 第一次：登记要跟着中线走的物体（只登记左侧定死的）
-        {
-            var scaler = GetComponentInParent<CanvasScaler>();
-            if (scaler != null && scaler.uiScaleMode == CanvasScaler.ScaleMode.ScaleWithScreenSize)
-                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;   // 画布 ≥ 设计尺寸，不裁任何东西
-            centerRts = new List<RectTransform>();
-            if (dialogue != null && dialogue.dialogueText != null && dialogue.dialogueText.transform.parent is RectTransform)
-                AddCenter((RectTransform)dialogue.dialogueText.transform.parent);                 // 对话框
-            foreach (string n in new[] { "Stage", "ChoiceBox", "ChoicePanel", "NamePlate" })
-            {
-                var go = GameObject.Find("Canvas/" + n);
-                if (go != null) AddCenter((RectTransform)go.transform);
-            }
-            foreach (var rt in centerRts) centerOrigX.Add(rt.anchoredPosition.x);
-        }
-        fittedW = cw;
-        float dx = (cw - 1920f) * 0.5f;                            // 多出来的宽度的一半 = 往右挪多少
-        for (int i = 0; i < centerRts.Count; i++)
-        {
-            var rt = centerRts[i];
-            if (rt == null) continue;
-            rt.anchoredPosition = new Vector2(centerOrigX[i] + dx, rt.anchoredPosition.y);
-        }
+        fittedW = cw;                                              // v1.1：界面整体放进居中的 Frame（UIFrame），这里只管背景 cover
         float cover = Mathf.Max(cw / 1920f, ch / 1080f);           // 背景：cover（不拉伸，多出来的裁掉）
         RectTransform bgRt = dialogue != null && dialogue.backgroundImage != null ? dialogue.backgroundImage.rectTransform : null;
         RectTransform lineRt = dialogue != null && dialogue.backgroundLine != null ? (RectTransform)dialogue.backgroundLine.transform : null;
@@ -105,20 +81,6 @@ public class GameChrome : MonoBehaviour
             rt.anchoredPosition = Vector2.zero; rt.sizeDelta = new Vector2(1920f, 1080f);
             rt.localScale = new Vector3(cover, cover, 1f);
         }
-        var flash = GameObject.Find("Canvas/FlashOverlay");        // 闪白层：拉到满
-        if (flash != null)
-        {
-            var fr = (RectTransform)flash.transform;
-            fr.anchorMin = Vector2.zero; fr.anchorMax = Vector2.one; fr.offsetMin = fr.offsetMax = Vector2.zero;
-        }
-    }
-
-    void AddCenter(RectTransform rt)
-    {
-        if (rt == null) return;
-        foreach (var e in centerRts) if (e == rt || rt.IsChildOf(e)) return;    // 同一个或它的子物体：不重复登记
-        if (!Mathf.Approximately(rt.anchorMin.x, 0f) || !Mathf.Approximately(rt.anchorMax.x, 0f)) return;   // 只动左边钉死的
-        centerRts.Add(rt);
     }
 
     // 把表格切成段：label 行开一段；有台词的行才算一句

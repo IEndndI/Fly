@@ -60,7 +60,7 @@ public class PageFx : MonoBehaviour
         }
         if (tintTargets == null || tintTargets.Length == 0)
         {
-            var bg = GameObject.Find("Canvas/Background"); var line = GameObject.Find("Canvas/BG_Line");
+            var bg = UIFrame.Find("Background"); var line = UIFrame.Find("BG_Line");
             tintTargets = new[] { bg ? bg.GetComponent<Image>() : null, line ? line.GetComponent<Image>() : null };
         }
         Level = 0;

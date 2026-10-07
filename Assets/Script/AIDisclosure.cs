@@ -57,6 +57,7 @@ public class AIDisclosure : MonoBehaviour
         Shown = true; Active = true;
         var r = (RectTransform)transform;
         r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero; r.SetAsLastSibling();
+        gameObject.AddComponent<Bleed>();                                                     // 纸色底伸到屏幕边（宽屏 / 平板）
         var bgImg = gameObject.AddComponent<Image>(); bgImg.color = Paper;                    // 挡住后面的标题，也接住点击
         group = gameObject.AddComponent<CanvasGroup>();
         se = gameObject.AddComponent<AudioSource>(); se.playOnAwake = false; se.volume = SaveSystem.Sfx;

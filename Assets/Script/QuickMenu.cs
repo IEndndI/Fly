@@ -15,6 +15,8 @@ public class QuickMenu : MonoBehaviour
     static readonly Color Cobalt = new Color(0f, 0.278f, 0.671f);
     static readonly Color Paper = new Color(0.949f, 0.925f, 0.875f);
     static readonly string[] Names = { "Auto", "Skip", "Log", "Save", "Menu" };
+    static readonly string[] Zh = { "自动", "快进", "回想", "存档", "菜单" };
+    Image[] chips = new Image[5];                // 手机上：每格一块浅色底 + 粗框，一看就是按钮
 
     TextMeshProUGUI[] labels = new TextMeshProUGUI[5];
     Image[] rules = new Image[5];
@@ -43,10 +45,24 @@ public class QuickMenu : MonoBehaviour
             if (font != null) t.font = font;
             t.text = "<alpha=#80>0" + (i + 1) + "<alpha=#FF>  " + Names[i].ToUpper(); t.fontSize = 12f; t.characterSpacing = 9f; t.raycastTarget = false;
             labels[i] = t;
+            chips[i] = go.GetComponent<Image>();
             var r = new GameObject("Rule", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             r.rectTransform.SetParent(rt, false); r.rectTransform.anchorMin = new Vector2(0f, 0f); r.rectTransform.anchorMax = new Vector2(1f, 0f);
             r.rectTransform.pivot = new Vector2(0.5f, 0f); r.rectTransform.anchoredPosition = new Vector2(0f, 4f); r.rectTransform.sizeDelta = new Vector2(0f, 1f);
             r.raycastTarget = false; rules[i] = r;
+        }
+        if (UIFrame.Touch)                       // v1.1 手机 / 平板：整条放大 1.7 倍，中文标签，带底色，手指好点
+        {
+            root.localScale = Vector3.one * 1.7f;
+            root.anchoredPosition = new Vector2(-72f, -24f);
+            for (int i = 0; i < 5; i++)
+            {
+                var rt = (RectTransform)chips[i].transform; rt.sizeDelta = new Vector2(w, 34f);
+                labels[i].text = Zh[i] + "<size=8><alpha=#99>  " + Names[i].ToUpper() + "</size>";
+                labels[i].characterSpacing = 2f; labels[i].fontSize = 14f; labels[i].alignment = TextAlignmentOptions.Center;
+                labels[i].rectTransform.anchorMin = Vector2.zero; labels[i].rectTransform.anchorMax = Vector2.one;
+                labels[i].rectTransform.offsetMin = new Vector2(0f, 4f); labels[i].rectTransform.offsetMax = Vector2.zero;
+            }
         }
     }
 
@@ -82,8 +98,9 @@ public class QuickMenu : MonoBehaviour
         {
             bool on = (i == 0 && DialogueManager.autoMode) || (i == 1 && DialogueManager.skipMode);
             labels[i].color = c;
-            rules[i].color = new Color(c.r, c.g, c.b, on ? 1f : 0.3f);
-            rules[i].rectTransform.sizeDelta = new Vector2(0f, on ? 4f : 1f);
+            rules[i].color = new Color(c.r, c.g, c.b, on ? 1f : UIFrame.Touch ? 0.8f : 0.3f);
+            rules[i].rectTransform.sizeDelta = new Vector2(0f, on ? 4f : UIFrame.Touch ? 2f : 1f);
+            if (UIFrame.Touch) { Color bg = Color.Lerp(Paper, Cobalt, GameChrome.DarkK); chips[i].color = new Color(bg.r, bg.g, bg.b, 0.72f); }
         }
     }
 }

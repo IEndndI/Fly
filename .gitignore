@@ -5,6 +5,8 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Build_Android/
+/Build_Mac/
+/Build_iOS/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 /[Mm]emoryCaptures/
@@ -41,3 +43,7 @@ Thumbs.db
 *_DoNotShip/
 *_BackUpThisFolder_ButDontShipItWithYourGame/
 /Release/
+
+# MCP 截图（测试用）
+/Assets/Screenshots/
+/Assets/Screenshots.meta

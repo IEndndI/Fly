@@ -49,6 +49,7 @@ public class TitleScreen : MonoBehaviour
             l[5].num = "06"; items = l.ToArray();
         }
         root = (RectTransform)transform;
+        PrintMargin.Create(root.parent, uiFont);                             // 宽屏 / 平板多出来的两边：印张的纸边（最底层）
         root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
 
         // 画面：三帧轮流
@@ -110,18 +111,17 @@ public class TitleScreen : MonoBehaviour
     void BuildCover()
     {
         coverCols = new RectTransform[12];
+        var ex = UIFrame.Extra(root);                                     // 屏幕比 16:9 宽 / 高时，两边各多出多少
         for (int i = 0; i < 12; i++)
         {
-            float l = i == 0 ? 0 : 120 + i * 142 - 12, r = i == 11 ? 1920 : 120 + i * 142 + 118 + 12;
+            float l = i == 0 ? -ex.x : 120 + i * 142 - 12, r = i == 11 ? 1920 + ex.x : 120 + i * 142 + 118 + 12;
             var go = new GameObject("Cover" + (i + 1), typeof(RectTransform), typeof(Image));
             var rt = go.GetComponent<RectTransform>(); rt.SetParent(root, false);
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
-            rt.anchoredPosition = new Vector2(l, 0f); rt.sizeDelta = new Vector2(r - l + 1, 1080f);
+            rt.anchoredPosition = new Vector2(l, ex.y); rt.sizeDelta = new Vector2(r - l + 1, 1080f + 2f * ex.y);
             var img = go.GetComponent<Image>(); img.color = Cobalt; img.raycastTarget = false;
             coverCols[i] = rt;
         }
-        float cw = root.rect.width;            // 宽屏：末栏补到画布右缘
-        if (cw > 1920.5f) coverCols[11].sizeDelta = new Vector2(coverCols[11].sizeDelta.x + (cw - 1920f), 1080f);
     }
 
     // 「关于」第一次出现：别的入场都走完以后，这一行从左边滑进来、纸色条刷过一遍、盖个章；
@@ -178,6 +178,14 @@ public class TitleScreen : MonoBehaviour
 
     IEnumerator CoverLift()
     {
+        yield return null;                                                   // 等画布尺寸定下来（Awake 时还没按屏幕算好），再把两边的栏伸到屏幕边
+        var ex = UIFrame.Extra(root);
+        coverCols[0].anchoredPosition = new Vector2(-ex.x, ex.y);
+        coverCols[0].sizeDelta = new Vector2(120 + 118 + 12 + ex.x + 1, 1080f + 2f * ex.y);
+        float l11 = 120 + 11 * 142 - 12;
+        coverCols[11].sizeDelta = new Vector2(1920f + ex.x - l11 + 1, 1080f + 2f * ex.y);
+        for (int i = 1; i < 11; i++) { coverCols[i].anchoredPosition = new Vector2(coverCols[i].anchoredPosition.x, ex.y); coverCols[i].sizeDelta = new Vector2(coverCols[i].sizeDelta.x, 1080f + 2f * ex.y); }
+        coverCols[11].anchoredPosition = new Vector2(l11, ex.y);
         Play("Fly/sfx_drop");
         float total = 0.45f + 11 * 0.03f;
         for (float t = 0f; t < total; t += Time.deltaTime)
@@ -274,10 +282,9 @@ public class TitleScreen : MonoBehaviour
         fitW = cw;
         if (picture != null)
         {
-            float cover = Mathf.Max(cw / 1920f, ch / 1080f);
             picture.anchorMin = picture.anchorMax = new Vector2(0.5f, 0.5f); picture.pivot = new Vector2(0.5f, 0.5f);
             picture.anchoredPosition = Vector2.zero; picture.sizeDelta = new Vector2(1920f, 1080f);
-            picture.localScale = new Vector3(cover, cover, 1f);
+            picture.localScale = Vector3.one;                                     // v1.1：不再放大裁切，菜单和画对得上
         }
     }
 
@@ -335,19 +342,20 @@ public class TitleScreen : MonoBehaviour
         leaving = true; Play("Fly/sfx_whoosh");
         int i = Mathf.Max(0, sel);
         float x0 = 120f, y0 = 616f + i * 56f, w0 = 402f, h0 = 56f, total = 0.5f;
-        float cw = root.rect.width, chh = root.rect.height;       // 铺满整块画布（宽屏上也不会漏边）
+        var ex = UIFrame.Extra(root);                             // 铺满整块屏幕（宽屏 / 平板上也不会漏边）
+        float L0 = -ex.x, cw = 1920f + ex.x, T0 = -ex.y, chh = 1080f + ex.y;
         flood.gameObject.SetActive(true); SetFlood(x0, y0, w0, h0);
         float v0 = music.volume;
         for (float t = 0f; t < total; t += Time.deltaTime)
         {
             if (t < 0.26f)                                        // ① 横拉满（260ms）
             {
-                float e = EaseInOut(t / 0.26f), l = Mathf.Lerp(x0, 0f, e), r = Mathf.Lerp(x0 + w0, cw, e);
+                float e = EaseInOut(t / 0.26f), l = Mathf.Lerp(x0, L0, e), r = Mathf.Lerp(x0 + w0, cw, e);
                 SetFlood(l, y0, r - l, h0);
             }
             else                                                  // ② 竖涨满（240ms）
             {
-                float e = EaseInOut((t - 0.26f) / 0.24f), top = Mathf.Lerp(y0, 0f, e), bot = Mathf.Lerp(y0 + h0, chh, e);
+                float e = EaseInOut((t - 0.26f) / 0.24f), top = Mathf.Lerp(y0, T0, e), bot = Mathf.Lerp(y0 + h0, chh, e);
                 SetFlood(0f, top, cw, bot - top);
             }
             music.volume = v0 * (1f - t / total);
@@ -394,7 +402,7 @@ public class TitleScreen : MonoBehaviour
         FitWide();
         var boilSrc = picture.GetComponent<BoilSprite>();
         var corners = new Vector3[4]; picture.GetWorldCorners(corners);       // [1] = 左上角
-        var strips = new RectTransform[12]; float cw = root.rect.width;
+        var strips = new RectTransform[12]; var sx = UIFrame.Extra(root);
         // 视频停在「飞」字下半截还在横条拼合的那一帧：右下角那块先用 0.3 秒淡成完整的字，不然栏铺到之前会露着几条白缝
         var patch = new GameObject("FeiPatch", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasGroup)).GetComponent<RectTransform>();
         patch.SetParent(root, false); patch.SetSiblingIndex(picture.GetSiblingIndex() + 1);
@@ -410,11 +418,11 @@ public class TitleScreen : MonoBehaviour
         }
         for (int i = 0; i < 12; i++)
         {
-            float l = i == 0 ? 0 : 120 + i * 142 - 12, r = i == 11 ? Mathf.Max(1920f, cw) : 120 + i * 142 + 118 + 12;
+            float l = i == 0 ? -sx.x : 120 + i * 142 - 12, r = i == 11 ? 1920f + sx.x : 120 + i * 142 + 118 + 12;
             var sg = new GameObject("Strip" + (i + 1), typeof(RectTransform), typeof(RectMask2D));
             var srt = sg.GetComponent<RectTransform>(); srt.SetParent(root, false); srt.SetSiblingIndex(picture.GetSiblingIndex() + 1);
             srt.anchorMin = srt.anchorMax = new Vector2(0f, 1f); srt.pivot = new Vector2(0f, 1f);
-            srt.anchoredPosition = new Vector2(l, 0f); srt.sizeDelta = new Vector2(r - l + 1, 0f);
+            srt.anchoredPosition = new Vector2(l, sx.y); srt.sizeDelta = new Vector2(r - l + 1, 0f);
             var ig = new GameObject("Pic", typeof(RectTransform), typeof(Image));
             var irt = ig.GetComponent<RectTransform>(); irt.SetParent(srt, false);
             irt.anchorMin = irt.anchorMax = new Vector2(0f, 1f); irt.pivot = new Vector2(0f, 1f);
@@ -423,7 +431,7 @@ public class TitleScreen : MonoBehaviour
             var b = ig.AddComponent<BoilSprite>(); b.SetFrames(boilSrc.frames);
             strips[i] = srt;
         }
-        float ch = root.rect.height;
+        float ch = root.rect.height + 2f * sx.y;
         if (music.clip != null && !music.isPlaying) { music.volume = 0f; music.Play(); }
         float target = bgmVolume * SaveSystem.MusicScale, total = 0.45f + 11 * 0.06f, mv0 = music.volume;
         Play("Fly/sfx_slide"); int ticks = 0; bool stamped = false;

@@ -34,12 +34,12 @@ public class SceneCam : MonoBehaviour
         instance = this;
         if (backgroundImage == null)
         {
-            var go = GameObject.Find("Canvas/Background");
+            var go = UIFrame.Find("Background");
             if (go != null) backgroundImage = go.GetComponent<Image>();
         }
         if (backgroundLine == null)
         {
-            var go = GameObject.Find("Canvas/BG_Line");
+            var go = UIFrame.Find("BG_Line");
             if (go != null) backgroundLine = go.GetComponent<Image>();
         }
         // 世界图层统一成「居中、1920×1080」的坐标，镜头才好算（GameChrome 的宽屏 cover 也是这么摆的）

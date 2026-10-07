@@ -37,9 +37,11 @@ public class OpeningPlayer : MonoBehaviour
         }
         Played = true;
         var r = (RectTransform)transform;
-        r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero;
+        r.anchorMin = r.anchorMax = r.pivot = new Vector2(0.5f, 0.5f);                     // v1.1：原尺寸居中，不拉伸；两边用边缘像素延伸（和标题画面一致，接得上）
+        r.anchoredPosition = Vector2.zero; r.sizeDelta = new Vector2(1920f, 1080f);
         r.SetAsLastSibling();
         var screen = gameObject.AddComponent<RawImage>(); screen.raycastTarget = true;      // 播放时挡住标题的点击
+
         rt = new RenderTexture(1920, 1080, 0); screen.texture = rt;
         video = gameObject.AddComponent<VideoPlayer>();
         video.playOnAwake = false; video.isLooping = false; video.clip = clip;

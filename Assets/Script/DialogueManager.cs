@@ -364,8 +364,10 @@ public class DialogueManager : MonoBehaviour
                 }
                 else if (autoLock != null && autoLock.IsLocked)
                 {
-                    for (float w = 0f, need = autoLock.ReadTime(typedText); w < need; w += Time.deltaTime * FlightVideo.Speed) yield return null; // 锁住时：留够阅读时间，自己翻（长按 1.5 倍）
-                    while (FlightVideo.Instance != null && FlightVideo.Instance.Active && !FlightVideo.Instance.AtSegmentEnd) yield return null;   // 飞行画面也走完这句的那一段
+                    bool flying = FlightVideo.Instance != null && FlightVideo.Instance.Active;
+                    if (!flying)                                                   // 锁住时：留够阅读时间，自己翻
+                        for (float w = 0f, need = autoLock.ReadTime(typedText); w < need; w += Time.deltaTime) yield return null;
+                    while (flying && !FlightVideo.Instance.AtSegmentEnd) yield return null;   // 飞行中：文字追画面，画面走完这一段就翻
                     if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");
                 }
                 else if (!autoAdvance)
@@ -704,7 +706,7 @@ public class DialogueManager : MonoBehaviour
             dialogueText.text += letter;
             if (audioPlayer != null && "，。、！？“”…—：；（） ".IndexOf(letter) < 0)   // 每写一个字一声铅笔（标点不响）
                 audioPlayer.PlaySfx("Fly/sfx_pencil" + Random.Range(0, 4));
-            yield return new WaitForSeconds(SaveSystem.TextDelay / FlightVideo.Speed);   // 文字速度在设置里调（原来的 typingSpeed 不再用）
+            yield return new WaitForSeconds(FlightVideo.CharDelay(SaveSystem.TextDelay));   // 文字速度在设置里调（原来的 typingSpeed 不再用）
         }
         isTyping = false;
     }

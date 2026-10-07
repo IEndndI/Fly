@@ -318,22 +318,27 @@ public class ChapterCard : MonoBehaviour
         return dotLineSprite = Sprite.Create(tex, new Rect(0f, 0f, 6f, 1f), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
     }
 
-    // 宽屏适配：等画布尺寸定下来后，把最右一栏补到画布右缘（16:9 时差值是 0，什么都不动）
+    // 屏幕比例适配（v1.1）：整张扉页在居中的 1920×1080 里（UIFrame），等画布尺寸定下来后，
+    // 把最左、最右两栏伸到屏幕边，所有栏上下也伸满（16:9 时差值是 0，什么都不动）
     IEnumerator Start()
     {
         yield return null;
-        var canvas = GetComponentInParent<Canvas>();
-        if (canvas == null) yield break;
-        float cw = ((RectTransform)canvas.transform).rect.width;
-        float delta = cw - 1920f;
-        if (delta < 0.5f) yield break;
-        RectTransform last = null; float maxRight = -1f;
+        var ex = UIFrame.Extra((RectTransform)transform);
+        if (ex.x < 0.5f && ex.y < 0.5f) yield break;
+        RectTransform first = null, last = null; float minL = 1e9f, maxR = -1e9f;
         foreach (var c in columns)
         {
-            float right = c.anchoredPosition.x + c.sizeDelta.x * (1f - c.pivot.x);
-            if (right > maxRight) { maxRight = right; last = c; }
+            float left = c.anchoredPosition.x - c.sizeDelta.x * c.pivot.x, right = left + c.sizeDelta.x;
+            if (left < minL) { minL = left; first = c; }
+            if (right > maxR) { maxR = right; last = c; }
+            if (ex.y > 0.5f) { c.sizeDelta = new Vector2(c.sizeDelta.x, c.sizeDelta.y + 2f * ex.y); c.anchoredPosition += new Vector2(0f, ex.y * (2f * c.pivot.y - 1f)); }   // 上下各伸 ex.y（轴心在顶边时整体上移 ex.y）
         }
-        if (last != null) last.sizeDelta = new Vector2(last.sizeDelta.x + delta, last.sizeDelta.y);
+        if (last != null) last.sizeDelta = new Vector2(last.sizeDelta.x + ex.x, last.sizeDelta.y);
+        if (first != null && first != last)
+        {
+            first.sizeDelta = new Vector2(first.sizeDelta.x + ex.x, first.sizeDelta.y);
+            first.anchoredPosition -= new Vector2(ex.x * (1f - first.pivot.x), 0f);
+        }
     }
 
     // —— 给系统页用的三个入口（2026-10-06）——
