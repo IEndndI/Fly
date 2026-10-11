@@ -24,11 +24,11 @@ public class AIDisclosure : MonoBehaviour
 
     class Row { public string cn, en, rg, h, a; public int ai; public bool done; public TextMeshProUGUI val; public Image mark; }
     readonly Row[] rows = {
-        new Row { cn = "故事与文本", en = "STORY & TEXT", ai = 15, rg = "10–20%", h = "故事、人物、梦境与两个结局；全部初稿与定稿。", a = "结构上的意见；逐句校对与润色。" },
+        new Row { cn = "故事与文本", en = "STORY & TEXT", ai = 20, rg = "15–25%", h = "故事、人物、梦境与两个结局；口述全文，定稿由我决定。", a = "把口述整理成初稿；结构意见、校对与润色（DeepSeek）。" },
         new Row { cn = "立绘", en = "CHARACTER ART", ai = 15, rg = "10–20%", h = "全部立绘手绘（线稿与上色）。", a = "转成蜡笔与水彩质感，合进画面。" },
         new Row { cn = "背景、界面与画面", en = "PICTURES & UI", ai = 90, rg = "85–95%", h = "美术方向；逐轮审阅与修改意见。", a = "以代码绘制全部背景、界面与插图。" },
         new Row { cn = "动态与演出", en = "MOTION & STAGING", ai = 90, rg = "85–95%", h = "镜头与演出的构思。", a = "动画、转场与镜头的实现。" },
-        new Row { cn = "程序", en = "PROGRAMMING", ai = 97, rg = "95–100%", h = "测试与反馈；Unity 框架的一部分。", a = "几乎全部代码。" },
+        new Row { cn = "程序", en = "PROGRAMMING", ai = 97, rg = "95–100%", h = "测试与反馈；Unity 框架的一部分。", a = "几乎全部代码（Claude；有一段由 DeepSeek 接手）。" },
         new Row { cn = "音乐与音效", en = "MUSIC & SOUND", ai = 100, rg = "100%", h = "风格与情绪方向。", a = "全部音乐与音效，以程序合成。" },
         new Row { cn = "整体", en = "THE WHOLE WORK", ai = 60, rg = "55–65%", h = "创意、方向、取舍与最终审定。", a = "各部分的执行与实现。" },
     };
@@ -45,7 +45,7 @@ public class AIDisclosure : MonoBehaviour
     Sprite dot; AudioSource se;
     int cur; float d; bool snapped, aiming, flying, auto, finished, intro = true;
     TextMeshProUGUI stat, repoNote; CanvasGroup gliderDrop, guide; Image finger, fingerRing; readonly List<Image> guideArc = new List<Image>(); bool touched; float guideT;
-    public const string REPO_URL = "https://github.com/IEndndI/Fly";   // GitHub 仓库地址（Application.OpenURL）
+    public const string REPO_URL = "https://github.com/IEndndI/Fly-MakingOf";   // GitHub 仓库地址（Application.OpenURL）
     class Anim { public RectTransform rt; public CanvasGroup g; public float delay; public int kind; public Vector2 home; }
     readonly List<Anim> anims = new List<Anim>();
 
@@ -92,7 +92,7 @@ public class AIDisclosure : MonoBehaviour
         In(Cap("FLIGHT LOG / 000", 688, 32, 260), 0.25f, 0);
         In(Cap("ALTITUDE / 12 M · 坡顶 HILLTOP", 972, 32, 400), 0.3f, 0);
         In(Cap("飞 / FLY — 创作声明 · STATEMENT", 1200, 32, 600, TextAlignmentOptions.TopRight), 0.35f, 0);
-        In(Cap("ENDND × CLAUDE OPUS 5.5 — 2026.10", 120, 1032, 560), 0.4f, 0);
+        In(Cap("ENDND × CLAUDE OPUS 5.5 × DEEPSEEK — 2026.10", 120, 1032, 560), 0.4f, 0);
         In(Cap("P. 000", 1500, 1032, 300, TextAlignmentOptions.TopRight), 0.45f, 0);
         // 印刷色标（钴蓝 / 浅钴蓝 / 黄 / 纸 / 墨）
         float sx = 688;
@@ -107,7 +107,7 @@ public class AIDisclosure : MonoBehaviour
         In(Cap("N°00 — 创作声明 · STATEMENT", 120, 112, 686), 0.3f, 0);
         In(Txt("创作声明：\n此项目由 <color=#0047AB>AI</color> 辅助完成", uiFont, 46f, 120, 136, 686, 124, FontStyles.Bold), 0.4f, 0);
         In(Img("bar", 120, 268, 686, 5, Cobalt), 0.65f, 1);                                  // 粗钴蓝条：版式的骨头
-        var body = Txt("此故事出自于作者的梦。在这个作品中，故事与文本、立绘主要由人类创作，画面、动画程序、音乐由 Claude Opus 5.5 完成。",
+        var body = Txt("此故事出自于作者的梦。故事与文本、立绘主要由人类创作；画面、动画、程序、音乐由 Claude Opus 5.5 完成，DeepSeek 协助文字校对与部分程序。",
             textFont, 18f, 120, 288, 686, 64); body.enableWordWrapping = true; body.lineSpacing = 14f; In(body, 0.75f, 0);
         // 大数字：整体 AI ≈ 60%（入场时从 0 数上来）
         stat = Txt("0", uiFont, 112f, 112, 352, 190, 120, FontStyles.Bold, TextAlignmentOptions.TopRight); In(stat, 0.9f, 0);
@@ -137,7 +137,7 @@ public class AIDisclosure : MonoBehaviour
         detail = Txt("", textFont, 14f, 120, 868, 686, 60); detail.enableWordWrapping = true; detail.lineSpacing = 10f; In(detail, 2.0f, 0);
 
         windBtn = MakeButton("或者，等一阵风　<size=11><alpha=#AA>LET THE WIND<alpha=#FF></size>", 120, 944, 330, 44, false, Wind); In(windBtn.targetGraphic, 2.05f, 0);
-        var gh = MakeButton("GitHub · 全部开源 ↗", 476, 944, 330, 44, true, OpenRepo); In(gh.targetGraphic, 2.1f, 0);
+        var gh = MakeButton("GitHub · 制作过程全公开 ↗", 476, 944, 330, 44, true, OpenRepo); In(gh.targetGraphic, 2.1f, 0);
         repoNote = Cap("", 476, 994, 400); repoNote.alpha = 0f;
         goBtn = MakeButton("开始阅读　<size=11>BEGIN →</size>", 1114, 384, 280, 48, true, Finish);
         goGroup = goBtn.gameObject.AddComponent<CanvasGroup>(); goGroup.alpha = 0f; goGroup.interactable = goGroup.blocksRaycasts = false;

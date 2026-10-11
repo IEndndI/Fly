@@ -61,18 +61,37 @@ public class AboutPanel : MonoBehaviour
 
         // 底线 + 返回
         Img(sheet, new Vector2(552, 728), new Vector2(824, 2), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.3f));
-        T(sheet, UIFrame.Touch ? "上下滑动翻看 · 点「返回」关闭" : "滚轮翻看 · ESC / 右键 关闭", uiFont, 12f, new Vector2(552, 762), new Vector2(500, 18), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 4f, TextAlignmentOptions.TopLeft);
+        T(sheet, UIFrame.Touch ? "上下滑动翻看 · 点「返回」关闭" : "滚轮翻看 · ESC / 右键 关闭", uiFont, 12f, new Vector2(552, 762), new Vector2(380, 18), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.7f), 4f, TextAlignmentOptions.TopLeft);
         var back = R("Back", sheet, new Vector2(1176, 748), new Vector2(200, 48));
         var bi = back.gameObject.AddComponent<Image>(); bi.color = Cobalt;
         T(back, "返回　<size=11>BACK</size>", uiFont, 18f, Vector2.zero, new Vector2(200, 48), Paper, 2f, TextAlignmentOptions.Center);
         back.gameObject.AddComponent<Button>().onClick.AddListener(Close);
+        // 制作过程：剧本、分镜、和 AI 的对话全部公开的仓库（2px 钴蓝框）
+        var mk = R("MakingOf", sheet, new Vector2(956, 748), new Vector2(200, 48));
+        mk.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+        Img(mk, new Vector2(0, 0), new Vector2(200, 2), Cobalt);
+        Img(mk, new Vector2(0, 46), new Vector2(200, 2), Cobalt);
+        Img(mk, new Vector2(0, 0), new Vector2(2, 48), Cobalt);
+        Img(mk, new Vector2(198, 0), new Vector2(2, 48), Cobalt);
+        T(mk, "制作过程　<size=11>MAKING-OF ↗</size>", uiFont, 17f, Vector2.zero, new Vector2(200, 48), Cobalt, 1f, TextAlignmentOptions.Center);
+        mk.gameObject.AddComponent<Button>().onClick.AddListener(() => Application.OpenURL(AIDisclosure.REPO_URL));
     }
 
     static string LoadText()
     {
         var ta = Resources.Load<TextAsset>("About");
         string s = ta != null ? ta.text.Replace("\r", "").Trim() : "";
-        return s.Length > 0 ? s : "（作者还在写。）";
+        if (s.Length == 0) s = "（作者还在写。）";
+        // 致谢名单：Resources/Credits.txt，一行一个名字（# 开头的是说明，不显示）；没填就不出现
+        var cr = Resources.Load<TextAsset>("Credits");
+        if (cr != null)
+        {
+            var names = new System.Collections.Generic.List<string>();
+            foreach (var l in cr.text.Replace("\r", "").Split('\n')) { var n = l.Trim(); if (n.Length > 0 && !n.StartsWith("#")) names.Add(n); }
+            if (names.Count > 0)
+                s += "\n\n<size=14><color=#0047AB88>——————————————　　致谢 · THANKS</color></size>\n\n<size=22><color=#1F1F29CC>感谢试玩、提出意见的你们：\n" + string.Join("、", names) + "</color></size>";
+        }
+        return s;
     }
 
     void Update()

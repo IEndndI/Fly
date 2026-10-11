@@ -2,11 +2,13 @@
 
 一部短篇视觉小说（FVN）。一个想飞的孩子，和他醒来以后的事。
 
-> 此故事出自于作者的梦。故事与文本、立绘主要由人类创作，画面、动画程序、音乐由 Claude Opus 5.5 完成。整体而言，AI 参与约 60%。
+> 此故事出自于作者的梦。故事与文本、立绘主要由人类创作；画面、动画、程序、音乐由 Claude Opus 5.5 完成，DeepSeek 协助文字校对与部分程序。整体而言，AI 参与约 60%。
+>
+> 完整的制作过程（剧本流程、动态分镜、和 AI 的对话记录）公开在 [IEndndI/Fly-MakingOf](https://github.com/IEndndI/Fly-MakingOf)。
 
 - 引擎：Unity 2022.3（UGUI + TextMeshPro），**没有使用任何第三方 VN 插件**，整套对话系统是自己搭的
 - 篇幅：约 20–30 分钟，五章，两个结局
-- 平台：Windows（安卓版在试）
+- 平台：Windows / 安卓 / Mac
 
 ## 下载与游玩
 
@@ -60,7 +62,7 @@ Assets/
 ## 鸣谢
 
 - 字体：HarmonyOS Sans SC、霞鹜文楷、站酷快乐体
-- 制作：Endnd × Claude Opus 5.5，2026 年国庆
+- 制作：Endnd × Claude Opus 5.5（DeepSeek 协助文字校对与部分程序），2026 年国庆
 
 ## 许可
 

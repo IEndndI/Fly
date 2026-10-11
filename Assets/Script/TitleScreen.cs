@@ -62,6 +62,10 @@ public class TitleScreen : MonoBehaviour
         var frames = new Sprite[3];
         for (int i = 0; i < 3; i++) frames[i] = Resources.Load<Sprite>("Sprites/Fly/UI/title_v" + i);
         boil.SetFrames(frames[0] != null ? frames : new Sprite[0]);
+        // 画里左下角印的是「V0.1」：盖一块同色的底，印上真实的版本号（Project Settings 里的 Version）
+        var ver = MakeRect("Version", picture, new Vector2(116, -1028), new Vector2(52, 24));
+        ver.GetComponent<Image>().color = new Color(0f, 0.267f, 0.639f);
+        Text(ver, "V" + Application.version + " ·", 12f, new Vector2(4, -12), new Vector2(60, 24), new Color(0.93f, 0.91f, 0.86f), TextAlignmentOptions.MidlineLeft, uiFont, 0.5f);
 
         // 菜单：五行，每行 402 × 56，从 (120, 616) 起（AE 坐标）
         for (int i = 0; i < items.Length; i++) BuildItem(items[i], i);
