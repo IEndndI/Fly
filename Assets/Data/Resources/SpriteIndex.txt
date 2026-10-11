@@ -124,9 +124,6 @@ streetnight_base	Sprites/Fly/BG/streetnight_base
 streetnight_line0	Sprites/Fly/BG/streetnight_line0
 streetnight_line1	Sprites/Fly/BG/streetnight_line1
 streetnight_line2	Sprites/Fly/BG/streetnight_line2
-Sub_伤心	Sprites/Sub_伤心
-Sub_微笑	Sprites/Sub_微笑
-Sub_普通	Sprites/Sub_普通
 title_v0	Sprites/Fly/UI/title_v0
 title_v1	Sprites/Fly/UI/title_v1
 title_v2	Sprites/Fly/UI/title_v2
@@ -160,5 +157,3 @@ ui_slant	Sprites/Fly/UI/ui_slant
 妈妈特写_smile_line0	Sprites/Fly/Char/妈妈特写_smile_line0
 妈妈特写_smile_line1	Sprites/Fly/Char/妈妈特写_smile_line1
 妈妈特写_smile_line2	Sprites/Fly/Char/妈妈特写_smile_line2
-小明_微笑	Sprites/小明_微笑
-小明_疑惑	Sprites/小明_疑惑
