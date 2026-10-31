@@ -44,7 +44,7 @@ public class PageMarks : MonoBehaviour
         foldGroup = fr.GetComponent<CanvasGroup>(); foldGroup.alpha = 0f; foldGroup.blocksRaycasts = false;
         hole = MakeTri(fr, "Hole", new Color(0.847f, 0.812f, 0.737f)); hole.Set(new Vector2(0, 112), Vector2.zero, new Vector2(112, 0));
         flap = MakeTri(fr, "Flap", new Color(0.914f, 0.882f, 0.812f)); flap.stroke = 2f; flap.strokeColor = Cobalt;
-        saveText = Txt(fr, "", 12f, new Vector2(128, 32), new Vector2(460, 18), Cobalt, TextAlignmentOptions.BottomLeft); saveText.characterSpacing = 6f;
+        saveText = Txt(fr, "", UIFrame.Read(12f, 16f), new Vector2(128, 32), new Vector2(560, UIFrame.Read(18f, 24f)), Cobalt, TextAlignmentOptions.BottomLeft); saveText.characterSpacing = 6f;
 
         // 码数牌：右上角 260×180（AE (1540,120)），贴右缘
         yard = new GameObject("Yards", typeof(RectTransform), typeof(Image), typeof(CanvasGroup), typeof(RectMask2D)).GetComponent<RectTransform>();

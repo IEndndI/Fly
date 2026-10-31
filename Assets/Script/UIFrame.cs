@@ -18,6 +18,10 @@ public static class UIFrame
     public static bool Touch => Application.isMobilePlatform || ForceTouch;   // 手机 / 平板：按钮放大
 #endif
 
+    // 要读的字在手机上用多大（v1.2）：电脑字号 / 手机字号分别写，每处按版面挑一个合适的，不是整体乘倍数
+    // 只给"传递信息"的字用；英文小标、编号、页码这些"营造气氛"的小字不用它，手机上保持原样
+    public static float Read(float pc, float phone) => Touch ? phone : pc;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Hook() { SceneManager.sceneLoaded += (s, m) => AdoptAll(s); }
 

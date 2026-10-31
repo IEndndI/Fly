@@ -256,7 +256,7 @@ public class SysPanels : MonoBehaviour
             var cellBg = NewImage("Bg", cell, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             cellBg.color = new Color(0, 0, 0, 0);
             var num = Txt(cell, "0" + (i + 1), UiFont, 12f, new Vector2(14f, -22f), new Vector2(28f, 16f), TextAlignmentOptions.MidlineLeft, Paper, 5f);
-            var zh = Txt(cell, TabInfo[i][0], LabelFont != null ? LabelFont : UiFont, 18f, new Vector2(48f, -22f), new Vector2(120f, 24f), TextAlignmentOptions.MidlineLeft, Paper, 0f);
+            var zh = Txt(cell, TabInfo[i][0], LabelFont != null ? LabelFont : UiFont, UIFrame.Read(18f, 22f), new Vector2(48f, -22f), new Vector2(120f, 24f), TextAlignmentOptions.MidlineLeft, Paper, 0f);
             var en = Txt(cell, TabInfo[i][1].Split(' ')[0].ToUpper(), UiFont, 11f, new Vector2(260f - 14f - 90f, -22f), new Vector2(90f, 16f), TextAlignmentOptions.MidlineRight, Paper, 8f);
             var ln = Rect("Rule", cell, new Vector2(0f, -43f), new Vector2(260f, 1f));
             ln.gameObject.AddComponent<Image>().color = new Color(Paper.r, Paper.g, Paper.b, 0.45f);
@@ -336,7 +336,7 @@ public class SysPanels : MonoBehaviour
     TextMeshProUGUI headRight;                     // 页眉右边那截（回想页要用来显示 p. X / Y）
     void Header(string left, string right)
     {
-        Txt(sheet, left, UiFont, 12f, new Vector2(0f, -24f), new Vector2(800f, 16f), TextAlignmentOptions.TopLeft, Cobalt, 9f);
+        Txt(sheet, left, UiFont, UIFrame.Read(12f, 16f), new Vector2(0f, -24f), new Vector2(800f, UIFrame.Read(16f, 22f)), TextAlignmentOptions.TopLeft, Cobalt, 9f);
         headRight = Txt(sheet, right, UiFont, 12f, new Vector2(0f, -24f), new Vector2(1112f, 16f), TextAlignmentOptions.TopRight, Cobalt, 9f);
         var ln = Rect("HLine", sheet, new Vector2(0f, -52f), new Vector2(1112f, 1f));
         ln.gameObject.AddComponent<Image>().color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.35f);
@@ -378,11 +378,11 @@ public class SysPanels : MonoBehaviour
             var r = rowInfo[s.row];
             string no = "N°" + (i + 1).ToString("00");
             Txt(cell, no + " · " + r.chap + "." + r.serial.ToString("00"), UiFont, 11f, new Vector2(0f, -160f), new Vector2(200f, 14f), TextAlignmentOptions.TopLeft, Cobalt, 5f);
-            if (s.auto) Txt(cell, "折角 · 自动", UiFont, 11f, new Vector2(0f, -160f), new Vector2(260f, 14f), TextAlignmentOptions.TopRight, Cobalt, 5f);
-            Txt(cell, "第" + ChapterNums[r.chap] + "章 · " + ChapterTitles[Mathf.Clamp(r.chap, 1, 5)], UiFont, 14f, new Vector2(0f, -178f), new Vector2(260f, 20f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
-            var t3 = Txt(cell, Clean(lines[s.row].text), TextFont != null ? TextFont : UiFont, 13f, new Vector2(0f, -198f), new Vector2(260f, 20f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.75f), 0f);
+            if (s.auto) Txt(cell, "折角 · 自动", UiFont, UIFrame.Read(11f, 14f), new Vector2(0f, -160f), new Vector2(260f, 14f), TextAlignmentOptions.TopRight, Cobalt, 5f);
+            Txt(cell, "第" + ChapterNums[r.chap] + "章 · " + ChapterTitles[Mathf.Clamp(r.chap, 1, 5)], UiFont, UIFrame.Read(14f, 19f), new Vector2(0f, -178f), new Vector2(260f, UIFrame.Read(20f, 24f)), TextAlignmentOptions.TopLeft, Cobalt, 0f);
+            var t3 = Txt(cell, Clean(lines[s.row].text), TextFont != null ? TextFont : UiFont, UIFrame.Read(13f, 17f), new Vector2(0f, UIFrame.Read(-198f, -203f)), new Vector2(260f, UIFrame.Read(20f, 22f)), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.75f), 0f);
             t3.overflowMode = TextOverflowModes.Ellipsis;
-            Txt(cell, s.date, UiFont, 11f, new Vector2(0f, -218f), new Vector2(260f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 0f);
+            Txt(cell, s.date, UiFont, UIFrame.Read(11f, 14f), new Vector2(0f, UIFrame.Read(-218f, -226f)), new Vector2(260f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 0f);
         }
         else
         {
@@ -390,7 +390,7 @@ public class SysPanels : MonoBehaviour
             var crossImg = cross.gameObject.AddComponent<Image>();
             crossImg.raycastTarget = false; crossImg.sprite = RegSprite(); crossImg.color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.55f);
             Txt(cell, "N°" + (i + 1).ToString("00"), UiFont, 11f, new Vector2(0f, -160f), new Vector2(200f, 14f), TextAlignmentOptions.TopLeft, Cobalt, 5f);
-            Txt(cell, "空", UiFont, 11f, new Vector2(0f, -160f), new Vector2(260f, 14f), TextAlignmentOptions.TopRight, Cobalt, 5f);
+            Txt(cell, "空", UiFont, UIFrame.Read(11f, 15f), new Vector2(0f, -160f), new Vector2(260f, 14f), TextAlignmentOptions.TopRight, Cobalt, 5f);
         }
 
         // 选中：3px 钴蓝内框
@@ -521,12 +521,11 @@ public class SysPanels : MonoBehaviour
     void BuildLogPage()
     {
         int upto = -1;
-        if (inGame && dm != null) upto = dm.CurrentIndex;
-        else if (SaveSystem.SavedRow >= 0) upto = SaveSystem.SavedRow;
+        if (inGame && dm != null) upto = dm.CurrentIndex;   // 只在游戏里显示读过的句子；标题界面还没开始读，回想是空的
         var rows = BuildLogRows(upto);
         string head = rows.Count > 0
-            ? "回想 · 读过的 " + rows.Count + " 句" + (inGame ? " · 点一句回到那里" : "")
-            : "回想 · 上次读到折角处";
+            ? "回想 · 读过的 " + rows.Count + " 句 · 点一句回到那里"
+            : "回想 · 还没有读过的句子";
         Header(head, "p. 1 / 1");
 
         // 两个竖栏、每栏 544 宽；放不下就翻页（分镜：column-width 544 / gap 24）
@@ -539,7 +538,7 @@ public class SysPanels : MonoBehaviour
             string s = string.IsNullOrEmpty(e.name) ? body
                 : "<b>" + e.name + "</b>" + (e.think ? "<size=12> · 心声</size>" : "") + "　" + body;
             if (e.book) s = "<size=11>书中　</size>" + body;
-            float fs = e.book ? 15f : 17f;
+            float fs = e.book ? UIFrame.Read(15f, 19f) : UIFrame.Read(17f, 21f);
             var probe = Txt(sheet, s, TextFont != null ? TextFont : UiFont, fs, Vector2.zero, new Vector2(TextW, 28f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
             probe.enableWordWrapping = true; probe.lineSpacing = e.book ? 26f : 28f;
             float fh = Mathf.Max(28f, probe.GetPreferredValues(s, TextW, 0f).y);
@@ -662,14 +661,14 @@ public class SysPanels : MonoBehaviour
         var reset = Rect("Reset", sheet, new Vector2(SL + SC1, -by), new Vector2(280f, 52f));
         reset.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0);
         Frame2(reset, Cobalt);
-        Txt(reset, "恢复默认　<size=11>RESET</size>", UiFont, 17f, Vector2.zero, new Vector2(280f, 52f), TextAlignmentOptions.Center, Cobalt, 2f);
+        Txt(reset, "恢复默认　<size=11>RESET</size>", UiFont, UIFrame.Read(17f, 20f), Vector2.zero, new Vector2(280f, 52f), TextAlignmentOptions.Center, Cobalt, 2f);
         reset.gameObject.AddComponent<Button>().onClick.AddListener(() => { PlaySfx("Fly/sfx_select"); SaveSystem.ResetSettings(); ApplyAudio(); SetTab("settings"); });
 
         if (inGame)                                                                             // 游戏里：合上书，回到标题
         {
             var outBtn = Rect("Exit", sheet, new Vector2(SL + SC2, -by), new Vector2(320f, 52f));
             var oi = outBtn.gameObject.AddComponent<Image>(); oi.color = Cobalt; oi.raycastTarget = true;
-            Txt(outBtn, "合上书，回到标题　<size=11>CLOSE THE BOOK</size>", UiFont, 17f, Vector2.zero, new Vector2(320f, 52f), TextAlignmentOptions.Center, Paper, 2f);
+            Txt(outBtn, "合上书，回到标题　<size=11>CLOSE THE BOOK</size>", UiFont, UIFrame.Read(17f, 20f), Vector2.zero, new Vector2(320f, 52f), TextAlignmentOptions.Center, Paper, 2f);
             outBtn.gameObject.AddComponent<Button>().onClick.AddListener(() =>
             {
                 PlaySfx("Fly/sfx_select");
@@ -724,7 +723,7 @@ public class SysPanels : MonoBehaviour
                 bool on = Mathf.Abs(get() - opts[k]) < 0.01f;
                 var bi = b.gameObject.AddComponent<Image>(); bi.color = on ? Cobalt : new Color(0, 0, 0, 0);
                 if (!on) Frame2(b, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f));
-                Txt(b, show(opts[k]), UiFont, 15f, Vector2.zero, new Vector2(bw, 42f), TextAlignmentOptions.Center, on ? Paper : Cobalt, 4f);
+                Txt(b, show(opts[k]), UiFont, UIFrame.Read(15f, 19f), Vector2.zero, new Vector2(bw, 42f), TextAlignmentOptions.Center, on ? Paper : Cobalt, 4f);
                 float v = opts[k];
                 b.gameObject.AddComponent<Button>().onClick.AddListener(() => { set(v); PlaySfx("Fly/sfx_select"); RefreshPage(); });
             }

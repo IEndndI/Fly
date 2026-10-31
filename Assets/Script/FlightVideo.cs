@@ -14,6 +14,7 @@ public class FlightVideo : MonoBehaviour
     public string clipPath = "Video/flight";
 
     public bool Active => on;
+    public float Clock => fc;                // 飞行时钟 = 视频放到第几秒（立绘的 at(秒) 看它）
     public bool AtSegmentEnd => !on || fc >= segB - 0.02f || lineClock > (segB - segA) + 3f;   // 这句的画面走完了没有（锁住时 DialogueManager 等它）；保险：最多等这么久
     public bool Dark => on && fc >= 41f;            // 深空以后画面是暗的（分镜同样从 41 秒起换纸色字）
     // 长按 = 1.5 倍速：画面、打字、阅读等待一起快；音乐音效不变（DialogueManager 读 Speed）
@@ -108,7 +109,12 @@ public class FlightVideo : MonoBehaviour
         bool decoding = video.isPlaying && video.frame >= 0 && video.time > 0.01;   // 视频在实打实地出画面
         if (decoding) hasFrame = true;
         group.alpha = Mathf.MoveTowards(group.alpha, on && prepared && hasFrame ? 1f : 0f, Time.deltaTime / (on ? 0.35f : 0.6f));
-        if (!on || video.clip == null) { if (video.isPlaying && group.alpha <= 0f) { video.Pause(); hasFrame = false; } return; }
+        if (!on || video.clip == null)
+        {
+            if (video.isPlaying && group.alpha <= 0f) { video.Pause(); hasFrame = false; }
+            holding = false; badge.alpha = Mathf.MoveTowards(badge.alpha, 0f, Time.deltaTime / 0.15f);   // 视频结束时「1.5×」要是正亮着，也让它淡掉（不然会一直挂到结局）
+            return;
+        }
         bool locked = autoLock != null && autoLock.IsLocked;
         holding = locked && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space) || Input.touchCount > 0);
         float dt = Mathf.Min(0.25f, Time.deltaTime) * Speed;       // 长按：时钟整体 1.5 倍
@@ -127,6 +133,8 @@ public class FlightVideo : MonoBehaviour
         bool moving = fc < limit - 0.01f;
         if (moving)
         {
+            // 自救：VideoPlayer 自己把准备好的状态丢了（开关菜单页时会遇到），这边却还以为准备好了 → 永远不播。重新准备，从时钟的位置接着放
+            if (!video.isPlaying && !video.isPrepared && prepared) { prepared = false; pendingSeek = fc; video.Prepare(); }
             if (!video.isPlaying && video.isPrepared) { if (Mathf.Abs((float)video.time - fc) > 0.5f) { video.time = fc; } video.Play(); }
             video.playbackSpeed = Speed;                                  // 只有 1 或 1.5，不再忽快忽慢（安卓上变速会卡）
             if (decoding && Mathf.Abs((float)video.time - fc) > 1.5f) Seek(fc);   // 差太多才重来（重来要零点几秒，不常发生）

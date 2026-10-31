@@ -530,6 +530,14 @@ public class DialogueManager : MonoBehaviour
             if (string.IsNullOrWhiteSpace(part)) continue;
             Command cmd = LoadCommand(part.Trim());
 
+            // at(秒)：飞行视频放到这一秒才出场（跟着画面，不跟着句子）
+            if (cmd.namedArgs.TryGetValue("at", out string atText) && float.TryParse(atText, out float at)
+                && FlightVideo.Instance != null && FlightVideo.Instance.Active && FlightVideo.Instance.Clock < at)
+            {
+                StartCoroutine(ShowAtClock(part, speaker, at));
+                continue;
+            }
+
             string characterName;
             string fileName;
             if (cmd.name.Contains("_"))
@@ -563,6 +571,13 @@ public class DialogueManager : MonoBehaviour
             if (cmd.namedArgs.TryGetValue("h", out string hText)) float.TryParse(hText, out height);   // 空4
             if (sprite != null) stage.Show(characterName, sprite, lines, cmd.hasPos, cmd.pos, height);  // 空5
         }
+    }
+
+    IEnumerator ShowAtClock(string part, string speaker, float at)
+    {
+        while (FlightVideo.Instance != null && FlightVideo.Instance.Active && FlightVideo.Instance.Clock < at) yield return null;
+        if (FlightVideo.Instance != null && FlightVideo.Instance.Active)
+            ShowCharacters(part, speaker);  // 时钟已经过了 at，会直接显示（视频要是先结束了，就不出来了）
     }
 
     // 隐藏列：TRUE = 当前说话人，all = 所有人，其他 = 角色名（可逗号并列）
@@ -604,10 +619,12 @@ public class DialogueManager : MonoBehaviour
     {
         int s = row;
         while (s > 0 && !(dialogueLines[s].flow != null && dialogueLines[s].flow.StartsWith("label:"))) s--;
-        string bg = null, bgm = null, type = null, speaker = null;
+        string bg = null, bgm = null, type = null, speaker = null, sprites = null;
         for (int i = s; i < row; i++)
         {
             DialogueLine l = dialogueLines[i];
+            if (!string.IsNullOrEmpty(l.hideTarget)) sprites = null;                         // 立绘：只记"最后一次隐藏之后"还在台上的那张
+            if (!string.IsNullOrEmpty(l.characterSpriteName)) sprites = l.characterSpriteName;
             if (!string.IsNullOrEmpty(l.backgroundSpriteName)) bg = l.backgroundSpriteName;
             if (!string.IsNullOrEmpty(l.bgmName)) bgm = l.bgmName;
             if (l.lineType != null) type = l.lineType;
@@ -621,6 +638,8 @@ public class DialogueManager : MonoBehaviour
             }
         }
         ApplySpeakerAndVisuals(new DialogueLine { backgroundSpriteName = bg, bgmName = bgm, lineType = type, speakerName = speaker }, speaker ?? currentSpeaker);
+        stage.HideAll();                                                                        // 别的章的立绘别带过来
+        if (sprites != null) ShowCharacters(sprites, speaker ?? currentSpeaker);
     }
 
     // 跳到表格的某一行（回想里点一句、读档页读档用）：先把会一直赖着的状态全部收掉，再从那里重开
@@ -756,6 +775,13 @@ public class DialogueManager : MonoBehaviour
         if (effectPlayer.CardBusy)
         {
             while (effectPlayer.CardBusy) yield return null;
+            yield break;
+        }
+
+        // 3D 飞行同理：飞多久由玩家决定，飞完才翻
+        if (FlightSession.Running)
+        {
+            while (FlightSession.Running) yield return null;
             yield break;
         }
 

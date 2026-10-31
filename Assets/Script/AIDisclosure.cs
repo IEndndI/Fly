@@ -6,7 +6,7 @@ using TMPro;
 
 // N°00 · 创作声明（分镜 AI 说明的「飞行记录」那一页）：启动游戏后最先看到。
 // 七项 AI 参与比例，每一项都要亲手从坡顶放飞一架滑翔机：拖动瞄准（往右越远 = AI 占比越高），落在刻度上才算数；
-// 也可以「等一阵风」一次全部吹到位。七次都落地后出现「开始阅读」，接开场视频（OpeningPlayer 等它结束）。
+// 也可以「等一阵风」：剩下的一起抛出去，三秒左右全部落地。七次都落地后出现「开始阅读」，接开场视频（OpeningPlayer 等它结束）。
 // 画面（天空、坡、太阳、小孩、滑翔机）是分镜导出的图（Sprites/Fly/UI/ai_*），其余全部在这里生成。
 // 坐标照分镜：1920×1080、左上原点；整页放在居中的 1920×1080 舞台里，宽屏两边是纸色。
 public class AIDisclosure : MonoBehaviour
@@ -25,7 +25,7 @@ public class AIDisclosure : MonoBehaviour
     class Row { public string cn, en, rg, h, a; public int ai; public bool done; public TextMeshProUGUI val; public Image mark; }
     readonly Row[] rows = {
         new Row { cn = "故事与文本", en = "STORY & TEXT", ai = 20, rg = "15–25%", h = "故事、人物、梦境与两个结局；口述全文，定稿由我决定。", a = "把口述整理成初稿；结构意见、校对与润色（DeepSeek）。" },
-        new Row { cn = "立绘", en = "CHARACTER ART", ai = 15, rg = "10–20%", h = "全部立绘手绘（线稿与上色）。", a = "转成蜡笔与水彩质感，合进画面。" },
+        new Row { cn = "立绘", en = "CHARACTER ART", ai = 8, rg = "5–10%", h = "全部立绘手绘：铅笔线稿、水彩上色。", a = "拍照时手机 AI 修图；撕纸边与登场动画（Claude）。" },
         new Row { cn = "背景、界面与画面", en = "PICTURES & UI", ai = 90, rg = "85–95%", h = "美术方向；逐轮审阅与修改意见。", a = "以代码绘制全部背景、界面与插图。" },
         new Row { cn = "动态与演出", en = "MOTION & STAGING", ai = 90, rg = "85–95%", h = "镜头与演出的构思。", a = "动画、转场与镜头的实现。" },
         new Row { cn = "程序", en = "PROGRAMMING", ai = 97, rg = "95–100%", h = "测试与反馈；Unity 框架的一部分。", a = "几乎全部代码（Claude；有一段由 DeepSeek 接手）。" },
@@ -128,19 +128,20 @@ public class AIDisclosure : MonoBehaviour
         {
             float y = 596 + i * 38, dl = 1.55f + i * 0.06f;
             var n = Txt("0" + (i + 1), uiFont, 12f, 120, y + 12, 40, 18); n.alpha = 0.7f; In(n, dl, 5);
-            In(Txt(rows[i].cn + "  <size=10><alpha=#99>" + rows[i].en + "<alpha=#FF></size>", uiFont, 18f, 160, y + 7, 420, 26), dl, 5);
+            In(Txt(rows[i].cn + "  <size=10><alpha=#99>" + rows[i].en + "<alpha=#FF></size>", uiFont, UIFrame.Read(18f, 21f), 160, y + 6, 420, 28), dl, 5);
             var rg = Txt(rows[i].rg, uiFont, 12f, 560, y + 12, 120, 18, FontStyles.Normal, TextAlignmentOptions.TopRight); rg.alpha = 0.6f; In(rg, dl, 5);
             rows[i].val = Txt("—", uiFont, 19f, 690, y + 7, 116, 26, FontStyles.Bold, TextAlignmentOptions.TopRight); rows[i].val.alpha = 0.25f; In(rows[i].val, dl, 5);
             rows[i].mark = Img("cur", 104, y + 8, 4, 24, Sun); rows[i].mark.enabled = false;
             In(Img("rule", 120, y + 38, 686, 1, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.22f)), dl, 1);
         }
-        detail = Txt("", textFont, 14f, 120, 868, 686, 60); detail.enableWordWrapping = true; detail.lineSpacing = 10f; In(detail, 2.0f, 0);
+        detail = Txt("", textFont, UIFrame.Read(14f, 17f), 120, 868, 686, 70); detail.enableWordWrapping = true; detail.lineSpacing = UIFrame.Read(10f, 2f); In(detail, 2.0f, 0);
 
         windBtn = MakeButton("或者，等一阵风　<size=11><alpha=#AA>LET THE WIND<alpha=#FF></size>", 120, 944, 330, 44, false, Wind); In(windBtn.targetGraphic, 2.05f, 0);
         var gh = MakeButton("GitHub · 制作过程全公开 ↗", 476, 944, 330, 44, true, OpenRepo); In(gh.targetGraphic, 2.1f, 0);
         repoNote = Cap("", 476, 994, 400); repoNote.alpha = 0f;
         goBtn = MakeButton("开始阅读　<size=11>BEGIN →</size>", 1114, 384, 280, 48, true, Finish);
         goGroup = goBtn.gameObject.AddComponent<CanvasGroup>(); goGroup.alpha = 0f; goGroup.interactable = goGroup.blocksRaycasts = false;
+        var skip = MakeButton("跳过　<size=11><alpha=#AA>SKIP →<alpha=#FF></size>", 1640, 96, 160, 36, false, Skip); In(skip.targetGraphic, 0.6f, 0);   // 右上角，随时跳过（也可以按 Esc / 返回键）
 
         // 刻度尺（AI 参与比例 = 飞多远）
         for (int v = 0; v <= 100; v += 5)
@@ -226,7 +227,7 @@ public class AIDisclosure : MonoBehaviour
         foreach (var a in anims) { a.g.alpha = 1f; a.rt.localScale = Vector3.one; if (a.kind == 0 || a.kind == 5) a.rt.anchoredPosition = a.home; }
         stat.text = "60"; gliderDrop.alpha = 1f;
         intro = false;
-        Setup(0);
+        if (PlayerPrefs.GetInt(SeenKey, 0) == 1) StartCoroutine(WindRun(true)); else Setup(0);
     }
 
     void OpenRepo()
@@ -281,6 +282,7 @@ public class AIDisclosure : MonoBehaviour
     void Update()
     {
         AnimateGuide();
+        if (Input.GetKeyDown(KeyCode.Escape)) { Skip(); return; }
         if (intro || finished || flying || auto) return;
         if (Input.GetMouseButtonDown(0) && InSky(out Vector2 p)) { touched = true; aiming = true; SetD(p.x); Play("sfx_tick"); }
         else if (aiming && Input.GetMouseButton(0)) { Vector2 q = Mouse(); SetD(q.x); }
@@ -361,9 +363,9 @@ public class AIDisclosure : MonoBehaviour
         flying = false;
     }
 
-    void Landed(int k, List<Image> mine)
+    void Landed(int k, List<Image> mine, bool advance = true, bool sound = true)
     {
-        Play("sfx_land"); Play("sfx_stamp");
+        if (sound) { Play("sfx_land"); Play("sfx_stamp"); }
         rows[k].done = true; rows[k].val.text = rows[k].ai + "%"; rows[k].val.alpha = 1f;
         foreach (var im in mine) { im.color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.32f); im.rectTransform.sizeDelta = new Vector2(3.5f, 3.5f); }   // 飞过的路线留下淡淡的铅笔线
         float x = X(rows[k].ai);
@@ -377,6 +379,7 @@ public class AIDisclosure : MonoBehaviour
         var lab = Txt("0" + (k + 1) + " · " + rows[k].ai + "%", uiFont, 11f, edge ? x - 118 : x + 16, G - 46 - same * 18, 100, 16, FontStyles.Bold, edge ? TextAlignmentOptions.TopRight : TextAlignmentOptions.TopLeft);
         lab.characterSpacing = 4f;
         glider.gameObject.SetActive(false);
+        if (!advance) return;                                                          // 一阵风：WindRun 自己收尾
         int next = System.Array.FindIndex(rows, rr => !rr.done);
         if (next < 0) StartCoroutine(AllLanded());
         else StartCoroutine(After(auto ? 0.35f : 0.8f, () => Setup(next)));
@@ -390,25 +393,70 @@ public class AIDisclosure : MonoBehaviour
         StartCoroutine(WindRun());
     }
 
-    IEnumerator WindRun()
+    // 一阵风：剩下的滑翔机一起抛出去，各飞各的，全部落地后直接收尾。原来是一架一架排队飞，要等二十来秒
+    // quick = 第二次打开时自动吹的那一阵：更快、更密，一秒多全部落地
+    IEnumerator WindRun(bool quick = false)
     {
-        touched = true; auto = true; windBtn.interactable = false; Play("sfx_swoosh");
-        int k;
-        while ((k = System.Array.FindIndex(rows, rr => !rr.done)) >= 0)
-        {
-            yield return new WaitForSeconds(0.5f);
-            if (cur != k) Setup(k);
-            d = rows[k].ai; snapped = true; Preview(); Play("sfx_tick");
-            yield return new WaitForSeconds(0.3f);
-            yield return StartCoroutine(Fly(k, d, true));
-            yield return new WaitForSeconds(0.45f);
-        }
+        touched = true; auto = true; windBtn.interactable = false; Play("sfx_swoosh"); if (!quick) { Play("sfx_fly"); Play("sfx_whoosh"); }
+        foreach (Transform c in targetRoot) Destroy(c.gameObject);
+        foreach (var p in preview) p.enabled = false;
+        readout.alpha = 0f; glider.gameObject.SetActive(false);
+        int left = 0;
+        for (int k = 0; k < rows.Length; k++)
+            if (!rows[k].done) { left++; StartCoroutine(WindFly(k, left * (quick ? 0.09f : 0.22f), quick ? 0.55f : 1f, () => left--)); }
+        while (left > 0) yield return null;
         auto = false;
+        StartCoroutine(AllLanded());
+    }
+
+    // 一阵风里的一架：自己的滑翔机图；轨迹是一串很淡的小点，落地后慢慢褪掉（七条一直留着会叠成一团）；落地照常盖章，但不去排下一项
+    IEnumerator WindFly(int k, float delay, float speed, System.Action done)
+    {
+        yield return new WaitForSeconds(delay);
+        float dd = rows[k].ai, dur = (1.1f + dd * 0.012f) * speed; int laid = 0;
+        var g = Img("WindGlider", LP.x, LP.y, 112, 44, Color.white); var rt = g.rectTransform; rt.pivot = glider.pivot;
+        g.gameObject.AddComponent<BoilSprite>().SetFrames(gliderFrames);
+        var trail = new List<Image>();
+        for (float t = 0f; t < dur; t += Time.deltaTime)
+        {
+            float u = t / dur, e = u < 0.5f ? 2f * u * u : 1f - Mathf.Pow(-2f * u + 2f, 2f) / 2f;
+            Vector2 p = Bez(dd, k, e);
+            rt.anchoredPosition = new Vector2(p.x, -p.y); rt.localEulerAngles = new Vector3(0, 0, -Tan(dd, k, e) * 0.8f * Mathf.Rad2Deg);
+            while (laid < Mathf.FloorToInt(e * 30f))                                   // 隔一点放一个，比手扔的那条稀、淡
+            {
+                Vector2 q = Bez(dd, k, laid / 30f); var im = Img("wtrail", q.x, q.y, 4, 4, new Color(Sun.r, Sun.g, Sun.b, 0.55f)); im.sprite = dot;
+                im.rectTransform.pivot = new Vector2(0.5f, 0.5f); im.rectTransform.anchoredPosition = new Vector2(q.x, -q.y);
+                trail.Add(im); laid++;
+            }
+            yield return null;
+        }
+        Destroy(g.gameObject);
+        Landed(k, new List<Image>(), false, !(speed < 1f) || k % 2 == 0);   // 快风：落地声隔一架响一次，不然七声挤在一起太吵
+        done();
+        for (float t = 0f; t < 0.8f; t += Time.deltaTime)
+        {
+            foreach (var im in trail) if (im != null) im.color = new Color(Sun.r, Sun.g, Sun.b, 0.55f * (1f - t / 0.8f));
+            yield return null;
+        }
+        foreach (var im in trail) if (im != null) Destroy(im.gameObject);
+    }
+
+    // 以前看过（完成过一次）：入场后自动吹一阵快风，七项一秒多全部落地，「开始阅读」马上能点。声明还在，只是不用再玩一遍
+    const string SeenKey = "Fly.DisclosureDone";
+
+    // 右上角「跳过」：随时直接进游戏（声明的文字已经在页面上了）
+    bool skipping;
+    void Skip()
+    {
+        if (skipping) return;
+        skipping = true; PlayerPrefs.SetInt(SeenKey, 1); PlayerPrefs.Save();
+        StartCoroutine(Leave());
     }
 
     IEnumerator AllLanded()
     {
         finished = true; windBtn.interactable = false;
+        PlayerPrefs.SetInt(SeenKey, 1); PlayerPrefs.Save();                              // 记住：下次打开直接填好
         foreach (var r in rows) r.mark.enabled = false;
         foreach (Transform c in targetRoot) Destroy(c.gameObject);
         detail.text = "<b>07 — 整体</b>\n<b>作者</b>　" + rows[6].h + "\n<b>AI</b>　　" + rows[6].a;
@@ -424,7 +472,7 @@ public class AIDisclosure : MonoBehaviour
         goGroup.interactable = goGroup.blocksRaycasts = true;
     }
 
-    void Finish() { if (finished) StartCoroutine(Leave()); }
+    void Finish() { if (finished && !skipping) { skipping = true; StartCoroutine(Leave()); } }
 
     IEnumerator Leave()
     {

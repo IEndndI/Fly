@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using TMPro;
 
 // 结局（分镜第 9 幕）：网格归位、「飞」、蜡笔小点落地、最后那句手写、六页片尾、合上——
 // 这一段在分镜里是画在 canvas 上的 46 秒动画，这里直接播从分镜录下来的视频：Resources/Video/ending_a、ending_b（VP8 webm，导入成 VideoClip）。
@@ -12,8 +13,13 @@ public class EndingPlayer : MonoBehaviour
     public string folder = "Video";                  // Resources 下的文件夹
     public string bgm = "Fly/bgm_ending:vol(0.35)";            // 表格 BGM 列的写法
     public float fade = 0.8f;
+    [Header("片尾名单（视频 10–34 秒那几页，内容在 Resources/EndCredits.txt）")]
+    public TMP_FontAsset creditsFont;                // 小字、说明、校样
+    public TMP_FontAsset creditsNameFont;            // 大号名字
+    public TMP_FontAsset creditsNumFont;             // 巨大的空心页码
 
     VideoPlayer video; RawImage screen; CanvasGroup group; RenderTexture rt;
+    EndCredits credits;
 
     void Awake()
     {
@@ -33,6 +39,10 @@ public class EndingPlayer : MonoBehaviour
         video.audioOutputMode = VideoAudioOutputMode.None;       // 视频本身没有声音，音乐走 AudioPlayer
         video.source = VideoSource.VideoClip;
         gameObject.AddComponent<HoldToSpeed>();                   // 长按 = 4 倍速（松开恢复）
+        // 片尾名单：叠在视频上面的一层，跟着视频时间走（v1.2 起不再用视频里画死的那几页）
+        credits = new GameObject("EndCredits", typeof(RectTransform)).AddComponent<EndCredits>();
+        credits.transform.SetParent(transform, false);
+        credits.video = video;
     }
 
     public IEnumerator Play(string branch, AudioPlayer audio, System.Func<string, Command> load)
@@ -50,6 +60,9 @@ public class EndingPlayer : MonoBehaviour
         }
         PlayerPrefs.SetInt("Fly.Cleared", 1); PlayerPrefs.Save();   // 通关：标题多出「关于」
         if (audio != null && load != null) audio.PlayBGM(load(bgm));
+        credits.audioPlayer = audio;
+        credits.font = creditsFont; credits.nameFont = creditsNameFont; credits.numFont = creditsNumFont;
+        credits.Running = true;
         video.Play();
         DialogueManager.blockUntil = float.MaxValue;              // 结尾整段锁住
         for (float t = 0f; t < fade; t += Time.deltaTime) { group.alpha = t / fade; yield return null; }
@@ -61,10 +74,12 @@ public class EndingPlayer : MonoBehaviour
         for (t0 = Time.time; !done && Time.time - t0 < (float)video.clip.length + 3f;)
         {
             if (video.time >= video.clip.length - 0.06) { video.Pause(); break; }   // 停在最后一帧（播完 VideoPlayer 会跳回第 0 帧）
+            if (credits.Busy) t0 += Time.deltaTime;                  // 名单在放（视频暂停着）：这段时间不算进超时
             yield return null;
         }
         video.loopPointReached -= onEnd;
         GetComponent<HoldToSpeed>().Enabled = false;
+        credits.Running = false;
         // 压到黑场，标题从黑场里 0.9 秒淡出来（分镜 finishEnding）
         yield return new WaitForSeconds(0.3f);
         for (float t = 0f; t < 0.4f; t += Time.deltaTime) { float k = 1f - t / 0.4f; screen.color = new Color(k, k, k, 1f); yield return null; }

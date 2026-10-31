@@ -4631,6 +4631,9 @@ MonoBehaviour:
   folder: Video
   bgm: Fly/bgm_ending:vol(0.35)
   fade: 0.8
+  creditsFont: {fileID: 11400000, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
+  creditsNameFont: {fileID: 11400000, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
+  creditsNumFont: {fileID: 11400000, guid: 2b75fd5402b91544fb91020dbf03aadd, type: 2}
 --- !u!1 &967335698
 GameObject:
   m_ObjectHideFlags: 0

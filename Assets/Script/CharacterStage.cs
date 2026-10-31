@@ -15,8 +15,10 @@ public class CharacterStage : MonoBehaviour
     public void Show(string characterName, Sprite sprite, Sprite[] lines, bool hasPos, Vector2 aePos, float height)
     {
         Image img;
+        bool isNew = false;
         if (!onStage.TryGetValue(characterName, out img))
         {
+            isNew = true;
             // 台上还没有这个人：按预制体生成一个
             img = Instantiate(characterPrefab, stageRoot);
             img.name = characterName;
@@ -30,6 +32,7 @@ public class CharacterStage : MonoBehaviour
             }
         }
 
+        Sprite before = img.sprite;
         img.sprite = sprite;
         if (hasPos) img.rectTransform.anchoredPosition = AEToUnity(aePos);
 
@@ -41,14 +44,27 @@ public class CharacterStage : MonoBehaviour
             img.rectTransform.sizeDelta = new Vector2(width, height);         // 空3
         }
         if (hasPos) img.rectTransform.anchoredPosition = AEToUnity(aePos);
-    
+
+        // 纸片动作（PaperSprite）：新登场 = 按上书页；换了表情 = 轻轻一跳
+        PaperSprite paper = img.GetComponent<PaperSprite>();
+        if (paper == null) paper = img.gameObject.AddComponent<PaperSprite>();
+        if (isNew) paper.Enter();
+        else if (before != sprite) paper.Swap();
+    }
+
+    // 下场：有纸片动作就让它淡出再销毁，没有就直接销毁
+    void Remove(Image img)
+    {
+        PaperSprite paper = img.GetComponent<PaperSprite>();
+        if (paper != null) paper.Leave();
+        else Destroy(img.gameObject);
     }
 
     public void Hide(string characterName)
     {
         if (onStage.TryGetValue(characterName, out Image img))
         {
-            Destroy(img.gameObject);
+            Remove(img);
             onStage.Remove(characterName);
         }
         else
@@ -61,7 +77,7 @@ public class CharacterStage : MonoBehaviour
     {
         foreach (Image img in onStage.Values)
         {
-            Destroy(img.gameObject);
+            Remove(img);
         }
         onStage.Clear();
     }

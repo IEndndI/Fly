@@ -51,7 +51,7 @@ public class QuickMenu : MonoBehaviour
             r.rectTransform.pivot = new Vector2(0.5f, 0f); r.rectTransform.anchoredPosition = new Vector2(0f, 4f); r.rectTransform.sizeDelta = new Vector2(0f, 1f);
             r.raycastTarget = false; rules[i] = r;
         }
-        if (UIFrame.Touch)                       // v1.1 手机 / 平板：整条放大 1.7 倍，中文标签，带底色，手指好点
+        // 整条放大 1.7 倍，中文标签，带底色（v1.1 原来只给手机用；v1.2 起电脑上也一样）
         {
             root.localScale = Vector3.one * 1.7f;
             root.anchoredPosition = new Vector2(-72f, -24f);
@@ -98,9 +98,9 @@ public class QuickMenu : MonoBehaviour
         {
             bool on = (i == 0 && DialogueManager.autoMode) || (i == 1 && DialogueManager.skipMode);
             labels[i].color = c;
-            rules[i].color = new Color(c.r, c.g, c.b, on ? 1f : UIFrame.Touch ? 0.8f : 0.3f);
-            rules[i].rectTransform.sizeDelta = new Vector2(0f, on ? 4f : UIFrame.Touch ? 2f : 1f);
-            if (UIFrame.Touch) { Color bg = Color.Lerp(Paper, Cobalt, GameChrome.DarkK); chips[i].color = new Color(bg.r, bg.g, bg.b, 0.72f); }
+            rules[i].color = new Color(c.r, c.g, c.b, on ? 1f : 0.8f);
+            rules[i].rectTransform.sizeDelta = new Vector2(0f, on ? 4f : 2f);
+            Color bg = Color.Lerp(Paper, Cobalt, GameChrome.DarkK); chips[i].color = new Color(bg.r, bg.g, bg.b, 0.72f);
         }
     }
 }

@@ -178,6 +178,10 @@ public class EffectPlayer : MonoBehaviour
             foreach (GameObject go in sceneObjects)
                 if (go.name == cmd.arg) go.SetActive(cmd.name == "show");
         }
+        else if (cmd.name == "fly3d")   // fly3d:first / fly3d:second —— 3D 飞行（FlightSession），飞完剧情才往下走
+        {
+            if (FlightSession.Enabled) StartCoroutine(FlightSession.Run(cmd.arg));
+        }
         else Debug.LogWarning("未知效果：" + cmd.name);
     }
 
