@@ -1,0 +1,130 @@
+# 界面文字的翻译：中文<Tab>英文<Tab>日文。代码里写中文、外面套 Loc.T(…)；这里查不到就显示中文。
+# 带 {0} {1} 的是拼接句的模板（Loc.F）。\n = 换行。英文、日文由 Claude 翻译，可以直接改。
+故事与文本	Story & Text	物語と文章
+立绘	Character Art	立ち絵
+背景、界面与画面	Backgrounds, UI & Pictures	背景・UI・画面
+动态与演出	Motion & Staging	動きと演出
+程序	Programming	プログラム
+音乐与音效	Music & Sound	音楽と効果音
+整体	The Whole Work	全体
+故事、人物、梦境与两个结局；口述全文，定稿由我决定。	The story, characters, the dream and both endings; I dictated the whole text and made the final calls.	物語、登場人物、夢、二つの結末。全文を口述し、最終稿は私が決めた。
+把口述整理成初稿；结构意见、校对与润色（DeepSeek）。	Turned the dictation into a first draft; structural notes, proofreading and polish (DeepSeek).	口述を初稿に整理。構成の意見、校正、推敲（DeepSeek）。
+全部立绘手绘：铅笔线稿、水彩上色。	All character art drawn by hand: pencil lines, watercolour.	立ち絵はすべて手描き：鉛筆の線画、水彩の色塗り。
+拍照时手机 AI 修图；撕纸边与登场动画（Claude）。	Phone AI clean-up when photographing; torn-paper edges and entrance animation (Claude).	撮影時のスマホAI補正；紙をちぎった縁と登場アニメ（Claude）。
+美术方向；逐轮审阅与修改意见。	Art direction; reviewed every round and gave notes.	アートディレクション；毎回のレビューと修正指示。
+以代码绘制全部背景、界面与插图。	Drew every background, the UI and the illustrations in code.	背景・UI・挿絵をすべてコードで描画。
+镜头与演出的构思。	Ideas for the camera and staging.	カメラと演出の構想。
+动画、转场与镜头的实现。	Built the animation, transitions and camera work.	アニメーション、場面転換、カメラワークの実装。
+测试与反馈；Unity 框架的一部分。	Testing and feedback; part of the Unity framework.	テストとフィードバック；Unityの土台の一部。
+几乎全部代码（Claude；有一段由 DeepSeek 接手）。	Almost all of the code (Claude; DeepSeek took over for one stretch).	ほぼすべてのコード（Claude。一部はDeepSeekが引き継ぎ）。
+风格与情绪方向。	Style and mood direction.	スタイルと雰囲気の方向づけ。
+全部音乐与音效，以程序合成。	All music and sound, synthesised in code.	音楽と効果音はすべてプログラムで合成。
+创意、方向、取舍与最终审定。	The idea, the direction, the choices and the final say.	着想、方向性、取捨選択、最終判断。
+各部分的执行与实现。	Carrying out and building each part.	各パートの制作と実装。
+N°00 · 读之前 · BEFORE YOU READ	N°00 · BEFORE YOU READ	N°00 · 読む前に · BEFORE YOU READ
+ALTITUDE / 12 M · 坡顶 HILLTOP	ALTITUDE / 12 M · HILLTOP	ALTITUDE / 12 M · 丘の上 HILLTOP
+飞 / FLY — 创作声明 · STATEMENT	飞 / FLY — STATEMENT	飞 / FLY — 制作について · STATEMENT
+N°00 — 创作声明 · STATEMENT	N°00 — STATEMENT	N°00 — 制作について · STATEMENT
+创作声明：\n此项目由 <color=#0047AB>AI</color> 辅助完成	Statement:\nmade with the help of <color=#0047AB>AI</color>	制作について：\n<color=#0047AB>AI</color> の力を借りて完成
+此故事出自于作者的梦。故事与文本、立绘主要由人类创作；画面、动画、程序、音乐由 Claude Opus 5.5 完成，DeepSeek 协助文字校对与部分程序。	From the author's dream. Story, text and character art: mainly a human. Pictures, animation, code and music: Claude Opus 5.5; DeepSeek helped proofread and with some code. This English translation is by Claude.	作者の夢から生まれた物語。物語・文章・立ち絵は主に人間が制作し、画面・アニメーション・プログラム・音楽は Claude Opus 5.5、DeepSeek が校正とプログラムの一部を担当。日本語訳も Claude によるものです。
+AI 参与 · OVERALL	AI SHARE · OVERALL	AIの関与 · OVERALL
+整体而言，AI 参与约 60%。	Overall, AI did about 60%.	全体で、AIの関与は約60%。
+区间 55–65% · 按各部分分量加权	RANGE 55–65% · WEIGHTED BY PART	幅 55–65% · 各パートの比重で加重
+✓ 七项均已核对 · ALL CONFIRMED	✓ ALL SEVEN CONFIRMED	✓ 7項目すべて確認 · ALL CONFIRMED
+若您反感 AI 创作，此作品可能并不适合你。	If you would rather not read AI-assisted work, this may not be for you.	AIを使った創作が苦手な方には、合わないかもしれません。
+飞行记录 · FLIGHT LOG	FLIGHT LOG	飛行記録 · FLIGHT LOG
+区间 · RANGE          AI	RANGE          AI	幅 · RANGE          AI
+或者，等一阵风　<size=11><alpha=#AA>LET THE WIND<alpha=#FF></size>	Or, wait for the wind　<size=11><alpha=#AA>ALL AT ONCE<alpha=#FF></size>	または、風を待つ　<size=11><alpha=#AA>LET THE WIND<alpha=#FF></size>
+GitHub · 制作过程全公开 ↗	GitHub · making-of ↗	GitHub · 制作過程 ↗
+开始阅读　<size=11>BEGIN →</size>	Start reading　<size=11>→</size>	読みはじめる　<size=11>BEGIN →</size>
+跳过　<size=11><alpha=#AA>SKIP →<alpha=#FF></size>	Skip　<size=11><alpha=#AA>→<alpha=#FF></size>	スキップ　<size=11><alpha=#AA>SKIP →<alpha=#FF></size>
+AI 参与比例 → / DISTANCE	AI SHARE → / DISTANCE	AIの割合 → / DISTANCE
+坡顶 / HILLTOP	HILLTOP	丘の上 / HILLTOP
+请滑动屏幕，瞄准掷出的滑翔机\n到它该落下的刻度，松手，放飞。	Drag to aim the glider\nat its mark on the scale, then let go.	画面をスライドしてグライダーを狙い、\n落ちるべき目盛りで指を離して飛ばそう。
+七次飞行，均已落地。	Seven flights, all landed.	七回の飛行、すべて着地。
+近了一点。再试一次。	A little short. Try again.	少し手前。もう一度。
+远了一点。再试一次。	A little far. Try again.	少し遠い。もう一度。
+<b>0{0} — {1}</b>\n<b>作者</b>　{2}\n<b>AI</b>　　{3}	<b>0{0} — {1}</b>\n<b>Author</b>　{2}\n<b>AI</b>　　{3}	<b>0{0} — {1}</b>\n<b>作者</b>　{2}\n<b>AI</b>　　{3}
+关于	About	あとがき
+作者的话\nA NOTE FROM THE AUTHOR	A NOTE FROM\nTHE AUTHOR	作者より\nA NOTE FROM THE AUTHOR
+上下滑动翻看 · 点「返回」关闭	Swipe to scroll · tap Back to close	上下にスワイプ · 「戻る」で閉じる
+滚轮翻看 · ESC / 右键 关闭	Scroll to read · ESC / right-click to close	ホイールで送る · ESC / 右クリックで閉じる
+返回　<size=11>BACK</size>	Back	戻る　<size=11>BACK</size>
+制作过程　<size=11>MAKING-OF ↗</size>	Making-of ↗	制作過程　<size=11>MAKING-OF ↗</size>
+（作者还在写。）	(Still being written.)	（作者が執筆中。）
+致谢 · THANKS	THANKS	謝辞 · THANKS
+感谢试玩、提出意见的你们：	Thank you to everyone who played and gave feedback:	遊んで、意見をくれたみなさんへ：
+即将自动播放	Auto-play ahead	まもなく自動再生
+自动播放中	Auto-playing	自動再生中
+点击已锁定 · CLICKS LOCKED	CLICKS LOCKED	クリック無効 · CLICKS LOCKED
+已解锁	Unlocked	解除
+第{0}章 · Chapter {1}	Chapter {1}	第{0}章 · Chapter {1}
+N°{1} · 第{0}章	N°{1} · Chapter {1}	N°{1} · 第{0}章
+第{0}章 · {1}	Chapter {2} · {1}	第{0}章 · {1}
+仲夏夜	Midsummer Night	夏至の夜
+最高的地方	The Highest Place	いちばん高い場所
+折角	The Folded Corner	折り目
+鸟群	The Flock	鳥の群れ
+十一月	November	十一月
+七月 · 仲夏夜	July · Midsummer Night	七月 · 夏至の夜
+七月 · 祖父家的草坡	July · Grandpa's Grassy Slope	七月 · 祖父の家の草の丘
+雨季 · 房间	Rainy Season · His Room	雨の季節 · 部屋
+梦 · 没有边际的天空	Dream · A Sky Without Edges	夢 · 果てのない空
+十一月 · 草坡	November · The Grassy Slope	十一月 · 草の丘
+“今天是仲夏夜，你忘了吗？我们要去你的祖父家。”	“It's Midsummer Night, did you forget? We're going to your grandpa's.”	「今日は夏至の夜よ、忘れたの？　おじいちゃんの家に行くのよ。」
+他忽然想，这大概就是最高的地方。	It occurred to him that this was probably the highest place.	ふと思った。ここがたぶん、いちばん高い場所なのだと。
+有一天他在收拾房间，从柜子底下翻出一本还折着角的书。	One day, tidying his room, he found a book under the cabinet with its corner still folded.	ある日、部屋を片づけていると、棚の下から角を折ったままの本が出てきた。
+飞翔好像和走路一样简单。	Flying seemed as easy as walking.	飛ぶことは、歩くのと同じくらい簡単に見えた。
+草坡还在。七月的阳光铺满山丘——不是七月，是十一月。	The slope was still there. July sun across the hill — no, not July. November.	草の丘はまだそこにあった。七月の日差しが丘を覆って——いや、七月じゃない。十一月だ。
+书中 · IN THE BOOK · 第 7 章	IN THE BOOK · CHAPTER 7	本の中 · IN THE BOOK · 第7章
+台词 · LINE	LINE	台詞 · LINE
+心声 · THOUGHT	THOUGHT	心の声 · THOUGHT
+书中 · IN THE BOOK	IN THE BOOK	本の中 · IN THE BOOK
+旁白 · NARRATION	NARRATION	地の文 · NARRATION
+心声	thought	心の声
+书中	In the book	本の中
+N°09 · 片尾 · Credits	N°09 · Credits	N°09 · エンドロール · Credits
+片尾 · {0} 页	Credits · {0} pages	エンドロール · {0} ページ
+图 {0} · {1}	Fig. {0} · {1}	図 {0} · {1}
+折角 · 已自动存档 · 1.{0}	Dog-eared · autosaved · 1.{0}	折り目 · オートセーブ済み · 1.{0}
+码 · Yards	YARDS	ヤード · Yards
+步 · Steps	STEPS	歩 · Steps
+自动	Auto	オート
+快进	Skip	スキップ
+回想	Log	ログ
+存档	Save	セーブ
+读档	Load	ロード
+菜单	Menu	メニュー
+设置	Settings	設定
+开始	Start	はじめる
+继续	Continue	つづき
+合上笔记	Close	閉じる
+← NEW · 通关后多出来的一页	← NEW · a page that appears after the ending	← NEW · クリア後に増えたページ
+Save · 12 个档位	12 slots	Save · 12 スロット
+Load · 12 个档位	12 slots	Load · 12 スロット
+Log · 读过的句子	Lines you have read	Log · 読んだ文
+N°07 · 系统页	N°07 · SYSTEM	N°07 · システム
+第 7 幕 · 系统页 · System	Act 7 · System	第7幕 · システム · System
+← 返回	← Back	← 戻る
+← 返回　<size=11>ESC</size>	← Back　<size=11>ESC</size>	← 戻る　<size=11>ESC</size>
+1–4 切换 · 方向键选择 · Enter 确认 · Esc 返回	1–4 switch tabs · arrows to choose · Enter to confirm · Esc to go back	1–4 タブ切替 · 矢印で選択 · Enter で決定 · Esc で戻る
+现在 · 第{0}章 {1}.{2}	Now · Chapter {1} · {1}.{2}	現在 · 第{0}章 {1}.{2}
+从标题打开	Opened from the title	タイトルから開きました
+存档 · 点一个档位，把这一页写进去	Save · tap a slot to write this page into it	セーブ · スロットを選んでこのページを記録
+读档 · 点一个档位，从那里继续读	Load · tap a slot to read on from there	ロード · スロットを選んで続きから
+档位 01–12	SLOTS 01–12	スロット 01–12
+折角 · 自动	Dog-ear · auto	折り目 · オート
+空	Empty	空き
+回想 · 读过的 {0} 句 · 点一句回到那里	Log · {0} lines read · tap one to go back there	ログ · 読んだ文 {0} · タップでその場面へ
+回想 · 还没有读过的句子	Log · nothing read yet	ログ · まだ読んだ文はありません
+改动立即生效 · CHANGES APPLY AT ONCE	CHANGES APPLY AT ONCE	変更はすぐ反映 · CHANGES APPLY AT ONCE
+文字速度	Text speed	文字の速さ
+自动间隔	Auto delay	オート間隔
+对话条	Text box	テキスト枠
+音乐	Music	音楽
+音效	Sound	効果音
+环境声	Ambience	環境音
+梦境帧率	Dream FPS	夢のコマ数
+语言	Language	言語
+恢复默认　<size=11>RESET</size>	Reset　<size=11>DEFAULTS</size>	初期設定に戻す　<size=11>RESET</size>
+合上书，回到标题　<size=11>CLOSE THE BOOK</size>	Close the book　<size=11>TO TITLE</size>	本を閉じてタイトルへ　<size=11>CLOSE</size>

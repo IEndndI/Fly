@@ -23,9 +23,14 @@
 
 谢谢你飞到这里。</color></size>
 
+<size=14><color=#0047AB88>——————————————　　译文与字体 · TRANSLATION & TYPE</color></size>
+
+<size=20><color=#1F1F29CC>英文版、日文版由 Claude（Anthropic）从中文原文翻译。日文版字体：Klee One（The Klee Project Authors）、Zen Kaku Gothic New（The Zen Kaku Gothic Project Authors），均为 SIL Open Font License 1.1。</color></size>
+
 <size=14><color=#0047AB88>——————————————　　更新说明 · CHANGELOG</color></size>
 
 <size=20><color=#1F1F29CC><b><color=#0047AB>v1.2</color></b>　2026.11　正式版
+· 加入英文版、日文版（Claude 翻译）：第一次打开时选择语言，之后可在「设置」里切换
 · 加入立绘：Cus 的七张，作者手绘、水彩上色，撕纸边，会动
 · 片尾名单重做，点一下翻一页；加入鸣谢页
 · 创作声明：「等一阵风」更快，第二次打开不用再扔一遍，可以跳过；立绘的 AI 占比改为 5–10%

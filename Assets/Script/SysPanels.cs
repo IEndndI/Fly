@@ -135,7 +135,7 @@ public class SysPanels : MonoBehaviour
 
         var loader = GetComponent<DialogueLoader>();
         if (loader == null) loader = gameObject.AddComponent<DialogueLoader>();
-        lines = loader.LoadDialogueFromFile("Fly");
+        lines = loader.LoadDialogueFromFile("Fly"); Loc.TranslateLines(lines);   // 回想、存档预览也显示译文
         ScanRows();
         ReadSlots();
 
@@ -257,7 +257,7 @@ public class SysPanels : MonoBehaviour
             cellBg.color = new Color(0, 0, 0, 0);
             var num = Txt(cell, "0" + (i + 1), UiFont, 12f, new Vector2(14f, -22f), new Vector2(28f, 16f), TextAlignmentOptions.MidlineLeft, Paper, 5f);
             var zh = Txt(cell, TabInfo[i][0], LabelFont != null ? LabelFont : UiFont, UIFrame.Read(18f, 22f), new Vector2(48f, -22f), new Vector2(120f, 24f), TextAlignmentOptions.MidlineLeft, Paper, 0f);
-            var en = Txt(cell, TabInfo[i][1].Split(' ')[0].ToUpper(), UiFont, 11f, new Vector2(260f - 14f - 90f, -22f), new Vector2(90f, 16f), TextAlignmentOptions.MidlineRight, Paper, 8f);
+            var en = Txt(cell, Loc.Small(TabInfo[i][1].Split(' ')[0].ToUpper(), TabInfo[i][0]), UiFont, 11f, new Vector2(260f - 14f - 90f, -22f), new Vector2(90f, 16f), TextAlignmentOptions.MidlineRight, Paper, 8f);
             var ln = Rect("Rule", cell, new Vector2(0f, -43f), new Vector2(260f, 1f));
             ln.gameObject.AddComponent<Image>().color = new Color(Paper.r, Paper.g, Paper.b, 0.45f);
             var btn = cell.gameObject.AddComponent<Button>(); btn.transition = Selectable.Transition.None;
@@ -297,14 +297,14 @@ public class SysPanels : MonoBehaviour
     void RefreshLabel()
     {
         int idx = inGame && dm != null ? dm.CurrentIndex : -1;
-        slT.text = TabInfo[System.Array.IndexOf(TabIds, tab)][0];
-        slE.text = TabInfo[System.Array.IndexOf(TabIds, tab)][1];
+        slT.text = Loc.T(TabInfo[System.Array.IndexOf(TabIds, tab)][0]);
+        slE.text = Loc.T(TabInfo[System.Array.IndexOf(TabIds, tab)][1]);
         if (inGame && idx >= 0 && idx < rowInfo.Length)
         {
             var r = rowInfo[idx];
-            slM.text = "现在 · 第" + ChapterNums[r.chap] + "章 " + r.chap + "." + r.serial.ToString("00");
+            slM.text = Loc.F("现在 · 第{0}章 {1}.{2}", ChapterNums[r.chap], r.chap, r.serial.ToString("00"));
         }
-        else slM.text = "从标题打开";
+        else slM.text = Loc.T("从标题打开");
     }
 
     // ───────── 切页 ─────────
@@ -379,7 +379,7 @@ public class SysPanels : MonoBehaviour
             string no = "N°" + (i + 1).ToString("00");
             Txt(cell, no + " · " + r.chap + "." + r.serial.ToString("00"), UiFont, 11f, new Vector2(0f, -160f), new Vector2(200f, 14f), TextAlignmentOptions.TopLeft, Cobalt, 5f);
             if (s.auto) Txt(cell, "折角 · 自动", UiFont, UIFrame.Read(11f, 14f), new Vector2(0f, -160f), new Vector2(260f, 14f), TextAlignmentOptions.TopRight, Cobalt, 5f);
-            Txt(cell, "第" + ChapterNums[r.chap] + "章 · " + ChapterTitles[Mathf.Clamp(r.chap, 1, 5)], UiFont, UIFrame.Read(14f, 19f), new Vector2(0f, -178f), new Vector2(260f, UIFrame.Read(20f, 24f)), TextAlignmentOptions.TopLeft, Cobalt, 0f);
+            Txt(cell, Loc.F("第{0}章 · {1}", ChapterNums[r.chap], Loc.T(ChapterTitles[Mathf.Clamp(r.chap, 1, 5)]), r.chap), UiFont, UIFrame.Read(14f, 19f), new Vector2(0f, -178f), new Vector2(260f, UIFrame.Read(20f, 24f)), TextAlignmentOptions.TopLeft, Cobalt, 0f);
             var t3 = Txt(cell, Clean(lines[s.row].text), TextFont != null ? TextFont : UiFont, UIFrame.Read(13f, 17f), new Vector2(0f, UIFrame.Read(-198f, -203f)), new Vector2(260f, UIFrame.Read(20f, 22f)), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.75f), 0f);
             t3.overflowMode = TextOverflowModes.Ellipsis;
             Txt(cell, s.date, UiFont, UIFrame.Read(11f, 14f), new Vector2(0f, UIFrame.Read(-218f, -226f)), new Vector2(260f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 0f);
@@ -524,7 +524,7 @@ public class SysPanels : MonoBehaviour
         if (inGame && dm != null) upto = dm.CurrentIndex;   // 只在游戏里显示读过的句子；标题界面还没开始读，回想是空的
         var rows = BuildLogRows(upto);
         string head = rows.Count > 0
-            ? "回想 · 读过的 " + rows.Count + " 句 · 点一句回到那里"
+            ? Loc.F("回想 · 读过的 {0} 句 · 点一句回到那里", rows.Count)
             : "回想 · 还没有读过的句子";
         Header(head, "p. 1 / 1");
 
@@ -536,8 +536,8 @@ public class SysPanels : MonoBehaviour
         {
             string body = Clean(e.text);
             string s = string.IsNullOrEmpty(e.name) ? body
-                : "<b>" + e.name + "</b>" + (e.think ? "<size=12> · 心声</size>" : "") + "　" + body;
-            if (e.book) s = "<size=11>书中　</size>" + body;
+                : "<b>" + e.name + "</b>" + (e.think ? "<size=12> · " + Loc.T("心声") + "</size>" : "") + "　" + body;
+            if (e.book) s = "<size=11>" + Loc.T("书中") + "　</size>" + body;
             float fs = e.book ? UIFrame.Read(15f, 19f) : UIFrame.Read(17f, 21f);
             var probe = Txt(sheet, s, TextFont != null ? TextFont : UiFont, fs, Vector2.zero, new Vector2(TextW, 28f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
             probe.enableWordWrapping = true; probe.lineSpacing = e.book ? 26f : 28f;
@@ -608,7 +608,7 @@ public class SysPanels : MonoBehaviour
         {
             var l = lines[i];
             if (inB && a >= 0 && i >= a && i < b) continue;                 // 走的是 B 就跳过 A 那一段
-            if (l.speakerName != null) name = l.speakerName;
+            if (l.speakerName != null) name = Loc.Story(l.speakerName);
             if (string.IsNullOrEmpty(l.text) || (l.flow != null && l.flow.StartsWith("option:"))) continue;
             var r = rowInfo[i];
             list.Add(new LogRow
@@ -637,7 +637,7 @@ public class SysPanels : MonoBehaviour
 
     // ───────── 设置 ─────────
     // ───────── 设置（瑞士网格：版面四周 56 边距；三栏 = 名称 280 · 滑杆 600 · 数值 160，栏距 40；线最少 2px）─────────
-    const float SL = 56f, SW = 1120f, SC1 = 0f, SC2 = 320f, SC3 = 960f, SRow = 78f, STop = 176f;
+    const float SL = 56f, SW = 1120f, SC1 = 0f, SC2 = 320f, SC3 = 960f, SRow = 70f, STop = 176f;   // v1.3 多了「语言」一行：行高 78 → 70
 
     void BuildSettingsPage()
     {
@@ -655,8 +655,11 @@ public class SysPanels : MonoBehaviour
         AddSetRow(4, "音效", "SOUND", 0f, 1f, 0.05f, () => SaveSystem.Sfx, v => { SaveSystem.Sfx = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + "%", null);
         AddSetRow(5, "环境声", "AMBIENCE", 0f, 1f, 0.05f, () => SaveSystem.Ambience, v => { SaveSystem.Ambience = v; ApplyAudio(); }, v => Mathf.RoundToInt(v * 100f) + "%", null);
         AddSetRow(6, "梦境帧率", "DREAM FPS", 0f, 0f, 0f, () => SaveSystem.DreamFps, v => SaveSystem.DreamFps = v, v => Mathf.RoundToInt(v) + " fps", new float[] { 6f, 8f, 12f, 24f });
+        // v1.3 语言：三格段选。换了以后这一页马上换成新语言；剧本从下一句（或下次读档）开始换
+        AddSetRow(7, "语言", "LANGUAGE", 0f, 0f, 0f, () => System.Array.IndexOf(Loc.Codes, Loc.Lang), v => Loc.Lang = Loc.Codes[Mathf.RoundToInt(v)],
+            v => new[] { "中文", "English", "日本語" }[Mathf.Clamp(Mathf.RoundToInt(v), 0, 2)], new float[] { 0f, 1f, 2f });
 
-        float by = STop + 7 * SRow + 28f;
+        float by = STop + 8 * SRow + 28f;
         // 恢复默认：2px 钴蓝框
         var reset = Rect("Reset", sheet, new Vector2(SL + SC1, -by), new Vector2(280f, 52f));
         reset.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0);
@@ -708,7 +711,7 @@ public class SysPanels : MonoBehaviour
         Bar(row, new Vector2(0f, -(SRow - 2f)), new Vector2(SW, 2f), new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.22f));   // 行线 2px
         Txt(row, (i + 1).ToString("00"), UiFont, 12f, new Vector2(SC1, -22f), new Vector2(32f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 4f);
         var zhT = Txt(row, zh, UiFont, 22f, new Vector2(SC1 + 40f, -16f), new Vector2(240f, 28f), TextAlignmentOptions.TopLeft, Cobalt, 0f);
-        Txt(row, en, UiFont, 11f, new Vector2(SC1 + 40f, -46f), new Vector2(240f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 8f);
+        Txt(row, Loc.Small(en, zh), UiFont, 11f, new Vector2(SC1 + 40f, -46f), new Vector2(240f, 16f), TextAlignmentOptions.TopLeft, new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.6f), 8f);
         var val = Txt(row, "", UiFont, 24f, new Vector2(SC3, -22f), new Vector2(160f, 30f), TextAlignmentOptions.TopRight, Cobalt, 0f);
         val.fontStyle = FontStyles.Bold;
 
@@ -861,7 +864,7 @@ public class SysPanels : MonoBehaviour
         trig.triggers.Add(e);
     }
 
-    static string Clean(string s) { return s == null ? "" : s.Replace("{nw}", "").Replace("{w}", ""); }
+    static string Clean(string s) { return s == null ? "" : s.Replace("{nw}", "").Replace("{w}", "").Replace("{p}", " "); }
 
     static Canvas FindTopCanvas()
     {
@@ -902,7 +905,7 @@ public class SysPanels : MonoBehaviour
         rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
         rt.anchoredPosition = pos; rt.sizeDelta = box;
         var t = go.GetComponent<TextMeshProUGUI>(); if (f != null) t.font = f;
-        t.text = s; t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
+        t.text = Loc.T(s); t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
         t.enableWordWrapping = false; t.raycastTarget = false;
         return t;
     }

@@ -71,7 +71,7 @@ public class EndCredits : MonoBehaviour
         T(stage, "N°09 · 片尾 · Credits", font, 12f, 120, 48, 600, Cobalt, TextAlignmentOptions.TopLeft, 6f);
         pageOf = T(stage, "", font, 12f, 1800, 48, 300, Cobalt, TextAlignmentOptions.TopRight, 6f);
         footNo = T(stage, "", font, 12f, 1800, 1048, 300, Cobalt, TextAlignmentOptions.TopRight, 6f);
-        T(stage, "片尾 · " + pages.Count.ToString("00") + " 页", font, 12f, 120, 920, 400, Cobalt, TextAlignmentOptions.TopLeft, 6f);
+        T(stage, Loc.F("片尾 · {0} 页", pages.Count.ToString("00")), font, 12f, 120, 920, 400, Cobalt, TextAlignmentOptions.TopLeft, 6f);
 
         // 左：图（从左往右擦出来，同时慢慢推远）
         picMask = R("Pic", stage, new Vector2(120, 200), new Vector2(828, 466));
@@ -216,7 +216,7 @@ public class EndCredits : MonoBehaviour
         for (int v = 0; v < 3; v++) lines[v] = Resources.Load<Sprite>("Sprites/Fly/BG/" + p.bg + "_line" + v);
         picLine.GetComponent<BoilSprite>().SetFrames(lines[0] != null ? lines : new Sprite[0]);
         picLine.enabled = lines[0] != null;
-        caption.text = "图 " + (k + 1).ToString("00") + " · " + p.caption;
+        caption.text = Loc.F("图 {0} · {1}", (k + 1).ToString("00"), p.caption);
         role.text = p.role; nameT.text = p.name; note.text = p.note;
         pageOf.text = (k + 1).ToString("00") + " / " + pages.Count.ToString("00");
         footNo.text = (52 + k).ToString("000");
@@ -250,7 +250,7 @@ public class EndCredits : MonoBehaviour
     static List<Page> Load()
     {
         var list = new List<Page>();
-        var ta = Resources.Load<TextAsset>("EndCredits");
+        var ta = Resources.Load<TextAsset>(Loc.Res("EndCredits"));
         if (ta == null) { Debug.LogWarning("找不到 Resources/EndCredits.txt"); return list; }
         var buf = new List<string>();
         foreach (string raw in (ta.text.Replace("\r", "") + "\n\n").Split('\n'))
@@ -318,7 +318,7 @@ public class EndCredits : MonoBehaviour
     {
         var t = R("T", parent, Vector2.zero, new Vector2(w, size * 1.5f)).gameObject.AddComponent<TextMeshProUGUI>();
         if (f != null) t.font = f;
-        t.text = s; t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
+        t.text = Loc.T(s); t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
         t.enableWordWrapping = false; t.raycastTarget = false;
         Place(t.rectTransform, x, baseline, size, al == TextAlignmentOptions.TopRight);
         return t;

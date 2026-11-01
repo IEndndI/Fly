@@ -62,7 +62,7 @@ public class PageMarks : MonoBehaviour
 
     void FindRows()
     {
-        var L = dm.dialogueLines; if (L == null) return;
+        var L = dm.sourceLines ?? dm.dialogueLines; if (L == null) return;
         for (int i = 0; i < L.Count; i++)
             if (L[i].text != null && L[i].text.Contains(FoldKey)) { foldRow = i; break; }
         if (foldRow < 0) return;
@@ -102,24 +102,24 @@ public class PageMarks : MonoBehaviour
         float fp = EOut(Mathf.Clamp01((Time.time - foldT0) / 0.52f));
         hole.color = new Color(hole.color.r, hole.color.g, hole.color.b, fp);
         flap.Set(new Vector2(0, 112), new Vector2(112, 0), new Vector2(fp * 112f, fp * 112f));
-        string s = Time.time - foldT0 > 0.42f ? "折角 · 已自动存档 · 1." + foldNo.ToString("00") : "";
+        string s = Time.time - foldT0 > 0.42f ? Loc.F("折角 · 已自动存档 · 1.{0}", foldNo.ToString("00")) : "";
         if (saveText.text != s) saveText.text = s;
     }
 
     void OnLine(int idx)
     {
         curYard = null; yardK = -1; doneT = -1f; lineT0 = Time.time;
-        var L = dm.dialogueLines;
+        var L = dm.sourceLines ?? dm.dialogueLines;
         if (L == null || idx < 0 || idx >= L.Count || L[idx].text == null) { yardN = -99; return; }
         foreach (var y in Yards) if (L[idx].text.Contains(y.key)) { curYard = y; break; }
         if (curYard == null) yardN = -99;
-        else { yardLab.text = curYard.lab ?? "码 · Yards"; stallT = -9f; }
+        else { yardLab.text = Loc.T(curYard.lab ?? "码 · Yards"); stallT = -9f; }
     }
 
     void UpdateYard()
     {
         if (curYard == null) { yardGroup.alpha = Mathf.MoveTowards(yardGroup.alpha, 0f, Time.deltaTime / 0.3f); return; }
-        string full = DialogueManager.currentLine == null ? "" : DialogueManager.currentLine.Replace("{w}", "");
+        string full = DialogueManager.currentLine == null ? "" : DialogueManager.currentLine.Replace("{w}", "").Replace("{p}", "");
         float rv = full.Length > 0 && dm.dialogueText != null ? Mathf.Clamp01(dm.dialogueText.text.Length / (float)full.Length) : 0f;
         if (rv >= 1f && doneT < 0f) doneT = Time.time;
         var Y = curYard;
@@ -160,7 +160,7 @@ public class PageMarks : MonoBehaviour
         var rt = new GameObject("T", typeof(RectTransform)).GetComponent<RectTransform>();
         rt.SetParent(parent, false); rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.zero; rt.anchoredPosition = pos; rt.sizeDelta = box;
         var t = rt.gameObject.AddComponent<TextMeshProUGUI>(); if (font != null) t.font = font;
-        t.text = s; t.fontSize = size; t.color = c; t.alignment = al; t.enableWordWrapping = false; t.raycastTarget = false;
+        t.text = Loc.T(s); t.fontSize = size; t.color = c; t.alignment = al; t.enableWordWrapping = false; t.raycastTarget = false;
         return t;
     }
 }

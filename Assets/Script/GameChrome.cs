@@ -130,9 +130,9 @@ public class GameChrome : MonoBehaviour
         string sec = secOf[idx]; int no = noOf[idx], N = nOf[idx];
         int ch = sec == "第一章" ? 1 : sec == "第二章" ? 2 : sec == "第三章" ? 3 : sec == "第四章" ? 4 : 5;   // A / B 属于第五章
         var info = chapterCard != null && ch - 1 < chapterCard.chapters.Length ? chapterCard.chapters[ch - 1] : null;
-        chap.text = info != null ? "第" + info.numeral + "章 · " + info.title : sec;
+        chap.text = info != null ? Loc.F("第{0}章 · {1}", info.numeral, Loc.Lang == "en" ? info.english : Loc.T(info.title), ch) : sec;
         scene.text = ch + "." + no.ToString("00");
-        place.text = info != null ? info.place : "";
+        place.text = info != null ? Loc.T(info.place) : "";
         LayoutHead();
         line.text = "L." + ch.ToString("00") + no.ToString("00");
         count.text = no.ToString("00") + " / " + N.ToString("00");

@@ -1,0 +1,116 @@
+# 剧本译文：中文原句<Tab>英文<Tab>日文。游戏照常读中文剧本 Fly.txt，显示时按原句查这张表；查不到（比如新加的句子）就显示中文。
+# 改了原句，这里也要跟着改（不然那一句会变回中文）。{w} {nw} 要和原句一样保留。英文、日文由 Claude 翻译。
+妈妈	Mom	お母さん
+祖父	Grandpa	おじいちゃん
+Cus	Cus	Cus
+把滑翔机仔细地停靠好	Park the glider carefully	グライダーを丁寧にしまう
+回家，去告诉妈妈	Go home and tell Mom	家に帰って、お母さんに話す
+滑翔机已爬升至山顶，他眼前是全新的世界景象：高高的盖那罗山令人眩晕，有的山峰笔直耸立呈角锥形，有的则是圆锥状。太阳已向下倾斜，每一座山头都沐着深紫色的阴影，闪出珐琅似的光彩。	The glider had climbed to the summit, and a whole new world lay before him: the towering Ganaro peaks made him dizzy, some rising sheer as pyramids, others round as cones.{p}The sun had begun to sink, and every peak was bathed in deep violet shadow, gleaming like enamel.	グライダーは山頂まで昇り、彼の目の前にはまったく新しい世界が広がっていた。高くそびえるガナロ山は目がくらむほどで、ある峰は角錐のようにまっすぐ立ち、ある峰は円錐の形をしていた。{p}太陽はもう傾きはじめ、どの山頂も深い紫の影を浴びて、琺瑯のような光を放っていた。
+“Cus！要出门了，你准备好了吗？”	“Cus! We're heading out. Are you ready?”	「Cus！　もう出かけるよ、準備はできた？」
+“等一下，妈妈，我这章还没看完呢。”	“Just a minute, Mom, I haven't finished this chapter.”	「ちょっと待って、お母さん。まだこの章、読み終わってないの。」
+Cus听见房间外传来母亲的声音，趴在床上将书捧得更紧了一些。	Cus heard his mother's voice outside the room, and lying on the bed he held the book a little tighter.	部屋の外から母の声が聞こえて、ベッドにうつ伏せたCusは本を少しきつく抱えた。
+“那我提前帮你把东西拿到门口好吗？”	“Then shall I take your things to the door for you?”	「じゃあ、先に荷物を玄関まで持っていってあげようか？」
+Cus只发出了简短的鼻音。他目不转睛地盯着书中的文字，看着书中主人公将滑翔机滑到各个世界的角落。	Cus only made a short sound through his nose. His eyes stayed fixed on the page, following the hero of the book as he glided his glider to every corner of the world.	Cusは短く鼻を鳴らしただけだった。目は本の文字から離れず、物語の主人公がグライダーで世界のあらゆる隅へ滑っていくのを追っていた。
+书中的文字仿佛有着地心引力，拉着他往想象中的天空坠落。可是，一切很快被推向章节末尾。	The words on the page seemed to have their own gravity, pulling him down into an imagined sky. But all too soon, everything was pushed toward the end of the chapter.	本の文字には重力があるみたいで、彼を想像の空へと落としていく。けれど、すべてはすぐに章の終わりへと押し流された。
+Cus恋恋不舍地在书的左下角轻轻折上一个角，标记着看到了这里。	Reluctantly, Cus gently folded down the bottom left corner of the page, to mark where he had stopped.	名残惜しそうに、Cusはページの左下の角をそっと折って、ここまで読んだしるしにした。
+“来了，妈妈。”	“Coming, Mom.”	「今行くよ、お母さん。」
+Cus飞速穿上放在床沿的帆布鞋。床还保持着刚睡醒时蓬松的模样，他将书小心地放在枕边，随即飞奔下楼，发现母亲已经提着袋子在玄关处站好。	Cus pulled on the canvas shoes by the bed in a flash. The bed was still rumpled from sleep;{p}he laid the book carefully by the pillow, then raced downstairs to find his mother already waiting at the door with the bags.	Cusはベッドの縁に置いたキャンバスシューズを素早く履いた。ベッドは起きたばかりのふくらんだままで、彼は本をそっと枕元に置くと、階段を駆け下りた。母はもう袋を提げて、玄関に立っていた。
+推开门，熟悉的小镇模样浮现。走在被绿草包裹的石板路上，他问：	He pushed the door open, and the familiar little town appeared. Walking along the stone path wrapped in green grass, he asked:	扉を開けると、見慣れた小さな町が現れた。緑の草に包まれた石畳を歩きながら、彼はたずねた。
+“妈妈，我们去哪里？”	“Mom, where are we going?”	「お母さん、どこに行くの？」
+妈妈用手抚摸了一下他的头。	Mom stroked his head.	母は彼の頭をそっとなでた。
+“今天是仲夏夜，你忘了吗？我们要去你的祖父家。”	“It's Midsummer Night, did you forget? We're going to your grandpa's.”	「今日は夏至の夜よ、忘れたの？　おじいちゃんの家に行くのよ。」
+草坡上的风是甜的。七月的阳光铺满山丘，草尖挂着露珠晃了一下，碎成细小的光点。	The wind on the slope was sweet. July sun covered the hill; a dewdrop on a blade of grass trembled once and broke into tiny points of light.	草の丘の風は甘かった。七月の日差しが丘いっぱいに広がり、草の先の露がひとつ揺れて、小さな光の粒に砕けた。
+但他心无旁骛，紧盯着前方的小坡，双手紧握着操控盘。飞行帽的条带顺着风搭在他的肩上。	But he noticed none of it. He stared at the little rise ahead, both hands tight on the controls. The strap of his flying cap lay on his shoulder in the wind.	けれど彼は脇目もふらず、前方の小さな坂を見つめ、両手で操縦桿を握りしめていた。飛行帽のベルトが風に流れて、肩にかかっていた。
+“好了吗？”	“Ready?”	「いいか？」
+“好了。”	“Ready.”	「いいよ。」
+Cus大声喊道。	Cus shouted.	Cusは大きな声で答えた。
+没想到祖父的后院就有这样一台滑翔机。Cus看到它的第一眼，就恳求祖父同意让他试一下。那橙黄的金属外壳，乌黑的支撑杆，还有里面令人眼花缭乱的操作面板，将他折服。	Who would have thought Grandpa kept a glider like this in his backyard. The moment Cus saw it, he begged Grandpa to let him try.{p}The orange-yellow metal shell, the jet-black struts, the dazzling control panel inside: it won him over completely.	まさか祖父の裏庭にこんなグライダーがあるなんて。ひと目見た瞬間から、Cusは乗らせてほしいと祖父にせがんだ。橙色の金属の機体、真っ黒な支柱、中の目がくらむような計器盤。{p}すっかり心を奪われていた。
+祖父默许后，他坐进驾驶舱，凭借在书中对滑翔机的理解，很快掌握了全部要领。这是第一次尝试起飞。	Once Grandpa nodded, he climbed into the cockpit, and with everything he'd learned about gliders from the book, he soon had the hang of it all. This was his first try at taking off.	祖父がうなずくと、彼は操縦席に乗りこみ、本で覚えたグライダーの知識で、すぐにすべての要領をつかんだ。これが初めての離陸だった。
+母亲在旁边用手遮住阳光，好像叮嘱了几句，但被风扇声淹没了。	His mother stood to one side, shading her eyes from the sun. She seemed to call out a few words of caution, but the roar of the fan drowned them out.	母はそばで手をかざして日差しをさえぎり、何か言い聞かせているようだったが、ファンの音にかき消された。
+没有倒数，没有仪式。他推着操纵杆，紧盯着前方上坡的边缘。风刚好从身后推过来，他就跑了。九码、八码。	No countdown, no ceremony. He pushed the stick forward, eyes on the edge of the slope ahead. The wind came at his back just then, and he went. Nine yards. Eight.	カウントダウンも、儀式もない。彼は操縦桿を押し、前方の坂の縁を見つめた。ちょうど風が背中を押してきて、彼は走り出した。九ヤード、八ヤード。
+旋转的扇叶搅动地上的草。还剩五码时，地面忽然软了。还剩一码，没有一码了，地面已经看不见了。	The spinning blades churned the grass. Five yards left, and the ground went suddenly soft. One yard left, then no yards at all; the ground had vanished.	回転する羽根が地面の草をかき乱す。残り五ヤードで、地面が急にやわらかくなった。残り一ヤード、いや、もうない。地面はもう見えなかった。
+他离开了地面，起初只是悬浮，沿着草尖滑行。母亲的声音在后方追着他：“慢一点。”	He left the ground. At first he only hovered, skimming the tips of the grass. His mother's voice chased him from behind: “Slow down.”	彼は地面を離れた。はじめはただ浮かんで、草の先をなぞるように滑っていた。後ろから母の声が追いかけてくる。「ゆっくりね。」
+然后风变了，像是托举着他，像是整片天空深处一只巨大的温柔的手掌将他往上捧。	Then the wind changed, as if it were lifting him, as if a huge, gentle hand deep in the whole sky were cupping him upward.	それから風が変わった。彼を持ち上げるように、空全体の奥にある大きなやさしい手のひらが、彼をすくい上げるように。
+草坡迅速缩小，母亲的身影变成一个小点，地面光滑得像铺成一块绿色的绒布。河流变成绒布上蓝色的细线。	The slope shrank fast. His mother became a tiny dot, and the ground grew smooth as a sheet of green velvet. The river became a thin blue thread across it.	草の丘はみるみる小さくなり、母の姿は小さな点になって、地面は緑のビロードを敷いたようになめらかになった。川はその上の青い細い糸になった。
+而他还在上升。云层扑面，起初像棉花糖一样柔软地擦过他的手臂，然后变薄、变透明，他穿过去了。	And still he rose. Clouds rushed at him, brushing his arms soft as cotton candy at first, then thinning, turning clear, and he was through.	それでも彼はまだ昇っていく。雲が顔に押し寄せ、はじめは綿あめのようにやわらかく腕をかすめ、やがて薄く、透きとおって、彼は突き抜けた。
+云层之上，那寂灭天空的一段布满前所未见的蓝，比所有的蓝都深，清凉，像是在缓缓流淌。再往上，紫色渐尽，露出宇宙的黑。	Above the clouds, that still and silent stretch of sky was filled with a blue he had never seen, deeper than every other blue, cool, as if slowly flowing.{p}Higher still, the violet faded away and the black of space showed through.	雲の上、静まりかえった空のひと区切りは、見たこともない青に満ちていた。どんな青よりも深く、ひんやりとして、ゆっくり流れているようだった。{p}さらに上では紫がしだいに消え、宇宙の黒がのぞいた。
+一切美得多么难以言传，多么安静、明丽而慷慨，浓稠地铺满整个视野。点缀着的星向他眨眼，密密麻麻的，触手可及。	It was all so beautiful, beyond words: so quiet, so bright, so generous, poured thick across his whole field of view.{p}Scattered stars winked at him, countless, close enough to touch.	すべてが言葉にできないほど美しかった。静かで、明るく、惜しみなく、視界いっぱいに濃く広がっていた。散りばめられた星が彼にまたたいた。びっしりと、手が届きそうなほど近くに。
+风声消失。这里没有风，没有声音，滑翔机的翼面不再震颤。这是安静的滑行。	The sound of the wind was gone. There was no wind here, no sound; the wings no longer trembled. This was a quiet glide.	風の音が消えた。ここには風も、音もなく、グライダーの翼はもう震えなかった。静かな滑空だった。
+他往前漂着，回首，自己已来到了地月系的边缘。小行星挂着炫彩铺在他脚下，成了沉浮的、浩瀚的星球。	He drifted on and looked back: he had come to the edge of the Earth–Moon system. Asteroids hung below him in dazzling colour, a vast, rising and falling sea of worlds.	前へ漂いながら振り返ると、もう地球と月の境目まで来ていた。小惑星がきらめく色をまとって足もとに広がり、浮き沈みする、果てしない星々になっていた。
+翻折。蓝紫色。青光。离散出梦幻的色彩。	Folding. Blue-violet. Cyan light. Scattering into dreamlike colours.	折りたたまれる。青紫。青い光。夢のような色が散っていく。
+白色的、潮湿的月亮跳着快步穿过半球形的湖穹顶。星星默默地跟随，串起了一道星河，像是通往天堂的缆车道。	A white, damp moon skipped quickly across the hemispherical dome of a lake. The stars followed in silence, stringing themselves into a river of stars, like a cable car line to heaven.	白く湿った月が、半球形の湖の天蓋を小走りに横切っていく。星たちは黙ってついていき、一筋の星の川をつないだ。天国へ向かうロープウェイの道のように。
+好安静。	So quiet.	なんて静かなんだろう。
+他忽然想，这大概就是最高的地方。笃定的、平静的直觉。就像水往低处流一样自然，他就是知道。	It occurred to him that this was probably the highest place. A sure, calm instinct. As natural as water running downhill, he simply knew.	ふと思った。ここがたぶん、いちばん高い場所なのだと。確かで、静かな直感。水が低いほうへ流れるのと同じくらい自然に、彼にはただわかった。
+此刻，脚下这个高度是他所能达到的最远的地方。还没有害怕，也没有不舍，只是张开手臂，让那片沉默的、缀满星辰的黑暗从指缝间流过，然后缓缓地开始下降。	Right now, this height beneath him was the farthest he could ever reach. No fear yet, no reluctance;{p}he only opened his arms and let that silent, star-strewn darkness run through his fingers, and then, slowly, began to descend.	いま足もとにあるこの高さが、彼にたどり着ける一番遠い場所だった。{p}まだ怖さも、名残惜しさもなく、ただ両腕を広げて、星を散りばめた沈黙の闇を指のあいだに流し、それからゆっくりと降りはじめた。
+母亲在坡脚。	His mother was at the foot of the slope.	母は丘のふもとにいた。
+“看到了什么？”	“What did you see?”	「何が見えた？」
+“星星，好多星星。”	“Stars. So many stars.”	「星。星がたくさん。」
+母亲笑了。她扶着他从驾驶室跳下，落地时踉跄了一步，膝盖沾了草汁。夕阳把两个人的影子拉得很长，叠在一起，铺在回家的路上。	His mother laughed. She helped him jump down from the cockpit; he stumbled as he landed, grass stains on his knees.{p}The setting sun stretched their two shadows long, laid one over the other along the road home.	母は笑った。操縦席から飛び降りる彼を支えると、彼は着地でよろけて、ひざに草の汁がついた。夕日がふたりの影を長く伸ばし、重ねて、帰り道に敷いていた。
+后面的事，想说些什么，但忘了。只是空气冷了一点，下了几场雨，草坡上的路被泥糊住了，滑翔机靠在墙角，翼面上覆了一层薄灰。应该是这样。	What came after, he meant to say something about it, but forgot.{p}Only that the air grew a little colder, it rained a few times, the path up the slope was smeared with mud, and the glider leaned in a corner by the wall, a thin layer of dust on its wings.{p}That must have been how it was.	そのあとのことは、何か言おうとしたけれど、忘れてしまった。{p}ただ空気が少し冷たくなって、何度か雨が降り、丘の道は泥でふさがれ、グライダーは壁の隅に立てかけられて、翼に薄くほこりが積もった。たぶん、そういうことだった。
+想到等天晴了再说，然后天晴了，就是这样。日子一天挨着一天，像书一样翻过去就翻过去了。偶尔感觉到纸张的毛边，也没有回头去看。	He thought he'd wait until the weather cleared, and then it cleared, and that was that. The days came one after another and turned over like the pages of a book.{p}Now and then he felt the rough edge of a page, but he didn't turn back to look.	晴れたらにしようと思って、そして晴れて、それきりだった。日々は一日ずつ続いて、本のページのようにめくられていった。ときどき紙のけば立ちを感じても、振り返って見ることはなかった。
+有一天他在收拾房间，从柜子底下翻出一本还折着角的书。	One day, tidying his room, he found a book under the cabinet with its corner still folded.	ある日、部屋を片づけていると、棚の下から角を折ったままの本が出てきた。
+还是那本，封面旧了，那澄澈的蓝变成了泛着黄的浅绿色。	The same book. The cover had aged; that clear blue had turned a pale, yellowing green.	あの本だった。表紙は古び、あの澄んだ青は黄ばんだ淡い緑に変わっていた。
+他想，	He thought,	彼は思った。
+多久了？	How long has it been?	どれくらい経ったんだろう？
+想不起来。	He couldn't remember.	思い出せなかった。
+那天晚上他做了一个梦。	That night he had a dream.	その夜、彼は夢を見た。
+天空很大，大得失去了边际。蓝，不像真的。晴云没有瑕疵，像是颜料刷上去的。	The sky was huge, so huge it had lost its edges. Blue, not like the real thing. The fair clouds were flawless, as if painted on.	空は大きかった。大きすぎて果てがなかった。青い。本物じゃないみたいに。晴れた雲には傷ひとつなく、絵の具で塗ったようだった。
+然后他看见了很多滑翔机，像迁徙的鸟群，从天空的一端飞向另一端，或是交错着，在天空下面。	Then he saw many gliders, like birds migrating, flying from one end of the sky to the other, or crossing each other, beneath the sky.	それから、たくさんのグライダーが見えた。渡り鳥の群れのように、空の端から端へ飛んでいき、あるいは交差しながら、空の下を。
+它们的姿态好像就是那样的，飞翔好像和走路一样简单。他站在地上，仰着头。	That seemed to be simply how they were; flying seemed as easy as walking. He stood on the ground, looking up.	それが当たり前の姿のようだった。飛ぶことは、歩くのと同じくらい簡単に見えた。彼は地面に立って、見上げていた。
+风从他身边经过，却没有托住他。地面很平、很硬。他踟蹰了一下，望了望自己的周围。他身边什么都没有。	The wind went past him but did not hold him up. The ground was flat and hard. He hesitated, and looked around him. There was nothing beside him.	風は彼のそばを通り過ぎたけれど、彼を支えはしなかった。地面は平らで、かたかった。彼はためらって、まわりを見回した。そばには何もなかった。
+一个人坐着滑翔机飞过来，近在咫尺。滑翔机上的人看见了他，笑了一下，挥了挥手，然后扬长而去。	Someone flew toward him in a glider, close enough to touch. The person in the glider saw him, smiled, waved, and sailed away.	誰かがグライダーに乗って、すぐそばまで飛んできた。グライダーの人は彼に気づいて、少し笑い、手を振って、そのまま去っていった。
+他想喊，可是那声音被那片蓝色吞掉了。所有的滑翔机继续飞，交织成网。	He wanted to shout, but the sound was swallowed by all that blue. All the gliders kept flying, weaving themselves into a net.	叫ぼうとしたけれど、その声はあの青に飲みこまれた。すべてのグライダーは飛びつづけ、網のように織りあわさっていった。
+他醒了。	He woke up.	彼は目を覚ました。
+窗外天还没亮，但他已经完全清醒了，胸腔里堵着什么。	It wasn't light outside yet, but he was wide awake, something lodged in his chest.	窓の外はまだ暗かったが、彼はすっかり目が冴えていて、胸に何かがつかえていた。
+小时候搭积木搭得很高，塌了，他放声哭了出来，哭声仿佛要挣破楼宇，穿过天空，在宇宙游荡。不是因为难过，只是想哭。	When he was little, he once built a tower of blocks very high, and it fell, and he burst out crying, a cry that seemed to break through the buildings, cross the sky and wander through space.{p}Not because he was sad. He just wanted to cry.	小さいころ、積み木をとても高く積んで、崩れて、彼は声をあげて泣いた。その泣き声は建物を突き破り、空を越えて、宇宙をさまようようだった。悲しかったからじゃない。ただ、泣きたかった。
+他翻身坐起来，思忖着。	He rolled over and sat up, thinking.	彼は寝返りをうって起き上がり、考えこんだ。
+草坡还在。七月的阳光铺满山丘——不是七月，是十一月，草黄了，露水不再，风从正面吹过来，干，冷。他站在坡顶。	The slope was still there. July sun across the hill — no, not July. November. The grass had yellowed, the dew was gone, and the wind blew in his face, dry and cold.{p}He stood at the top of the slope.	草の丘はまだそこにあった。七月の日差しが丘を覆って——いや、七月じゃない。十一月だ。草は黄ばみ、露はなく、風は正面から吹きつけて、乾いて、冷たかった。彼は丘の上に立っていた。
+他望向那架滑翔机。有一颗螺丝松动，他用手捏着发锈的边缘，转紧。	He looked over at the glider. A screw had come loose; he pinched its rusty edge with his fingers and turned it tight.	彼はあのグライダーを見た。ネジがひとつゆるんでいて、彼は錆びた縁を指でつまんで、締めた。
+凑近细看，表面的漆泛白，手指抚摸上去，发出粉尘摩擦的声响，像是趴在床底将书拖出来的时候一样。	Up close, the paint had faded white. When he ran his fingers over it, it made a dusty, scraping sound, like the time he'd lain on the floor and dragged the book out from under the bed.	近づいてよく見ると、表面の塗装は白っぽくなっていた。指でなでると、粉がこすれるような音がした。ベッドの下にうつ伏せて、本を引っぱり出したときと同じように。
+母亲没有来，他没有告诉她。	His mother hadn't come. He hadn't told her.	母は来なかった。彼は母に言っていなかった。
+好了。他对自己说。	Ready, he told himself.	よし。彼は自分に言った。
+他站起来，坐进滑翔机。	He stood up and climbed into the glider.	彼は立ち上がり、グライダーに乗りこんだ。
+依照一样的操作。不对。上次风从背后来。他推操纵杆，稍微转了一下滑翔机的方向，等了一会。	The same steps as before. No, wait. Last time the wind came from behind. He pushed the stick, turned the glider a little, and waited.	前と同じ手順で。いや、違う。前は風が背中から来た。彼は操縦桿を押して、グライダーの向きを少し変え、しばらく待った。
+风向变了，从背后推。九码，八码。风扇声呼啸。第七码，地面没有变软。三码，两码。	The wind turned and pushed from behind. Nine yards. Eight. The fan roared. At the seventh yard, the ground did not go soft. Three yards. Two.	風向きが変わって、背中から押してきた。九ヤード、八ヤード。ファンがうなる。七ヤード目、地面はやわらかくならなかった。三ヤード、二ヤード。
+他拼命地拉起操纵杆，但滑翔机还在跑，轮子还在地上。风呼啦呼啦地拍在他脸上。像是一只学飞的幼鸟。又落下了。	He hauled back on the stick with everything he had, but the glider was still running, its wheels still on the ground. The wind slapped at his face. Like a fledgling learning to fly. Down again.	彼は必死に操縦桿を引いたが、グライダーはまだ走っていて、車輪はまだ地面の上だった。風がばたばたと顔を打つ。飛び方を覚えようとするひな鳥のように。また落ちた。
+他记得飞起来应该是什么感觉。风应该是托着他的，像一只手掌，温柔地把他往上捧。	He remembered what flying was supposed to feel like. The wind was supposed to hold him up, like a palm, gently cupping him upward.	飛ぶときの感覚を、彼は覚えていた。風は彼を支えてくれるはずだった。手のひらのように、やさしく上へすくい上げて。
+再试。推得更猛。草坡的坡度他记得应该在第三码——第三码，第二码，地面硬邦邦的，震了一下。	Again. Push harder. The slope, he remembered, should fall away at the third yard — the third yard, the second, the ground hard as stone, and a jolt.	もう一度。もっと強く押す。丘の傾斜は三ヤード目のはずだった——三ヤード目、二ヤード目、地面はかたいまま、がたんと揺れた。
+滑翔机还是那个滑翔机，草坡还是那个草坡，只不过风吹来时，没有捧住他，从他身后到身前，风只是吹，抓不住的，留不下的。	The glider was the same glider, the slope the same slope; only when the wind came, it did not cup him up. From behind him to in front of him, the wind only blew, ungraspable, unkeepable.	グライダーはあのグライダーのまま、丘はあの丘のまま。ただ風が吹いてきても、彼をすくい上げはしなかった。背中から前へ、風はただ吹いて、つかめず、とどまらなかった。
+他停下来。双手握成拳，砸在膝盖上。	He stopped. His hands balled into fists and struck his knees.	彼は止まった。両手を握りしめて、ひざを打った。
+滑翔机微微侧身。一边的机翼向下倾斜，泛着天空冷白的光。	The glider tilted slightly. One wing dipped toward the ground, catching the cold white light of the sky.	グライダーがわずかに傾いた。片方の翼が下がり、空の冷たい白い光を帯びていた。
+他坐在草坡上很久。	He sat on the slope for a long time.	彼は長いあいだ、草の丘に座っていた。
+太阳快落下去了，天边烧成橘红色，云层被镶了一圈金边。和那天一模一样。	The sun was almost down; the horizon burned orange-red, and the clouds were rimmed with gold. Exactly like that day.	太陽はもうすぐ沈みそうで、空の端は橙色に燃え、雲は金色に縁どられていた。あの日とまったく同じだった。
+他想起母亲，想告诉她什么——“我又去飞了，没飞起来。”然后呢？{nw}	He thought of his mother, wanted to tell her something — “I tried to fly again. I couldn't.” And then what?{nw}	彼は母のことを思い、何かを伝えたくなった——「また飛びに行ったけど、飛べなかった。」それから？{nw}
+Cus推着滑翔机，仔细地、慢慢地将它停在院子的角落。机翼在右侧划破了铁网。他的动作轻了一些，好像在碰一件很旧的、纸质的、手工的作品。	Cus pushed the glider and parked it in the corner of the yard, carefully, slowly. On the right, a wing scraped through the wire fence.{p}His movements grew gentler, as if he were touching something very old, made of paper, made by hand.	Cusはグライダーを押して、庭の隅に丁寧に、ゆっくりとしまった。右の翼が金網をこすった。彼の手つきは少しやさしくなった。とても古い、紙でできた、手作りのものに触れるように。
+机翼上的油漆，透过落日的光，变成一片暗红。草也染成了暗绿，像被琥珀封住了，在这个夜晚。	The paint on the wings, in the light of the setting sun, turned a dark red. The grass was dyed a dark green too, as if sealed in amber, on this night.	翼の塗装は、落ちる日の光を受けて、暗い赤に変わった。草も暗い緑に染まり、琥珀に閉じこめられたようだった。この夜に。
+他走下草坡，风从后面推着他走，一切逐渐沉入夜色里。他知道不会再有那架滑翔机，不会有风从背后推他，也不会再有那三码后的一下。	He walked down the slope, the wind pushing him from behind, and everything slowly sank into the night.{p}He knew there would be no more of that glider, no wind pushing at his back, no more of that lift after the third yard.	彼は丘を下りた。風が後ろから彼を押し、すべてがゆっくりと夜の色に沈んでいった。{p}もうあのグライダーはない、背中を押す風もない、三ヤードのあとのあのひと押しも、もうないのだと彼は知っていた。
+回家的路上，天彻底黑了下来，路灯一盏一盏亮起来，在脚下照出一圈阴影。他走过每一个光斑，走过一格一格的地砖。	On the way home, the sky went fully dark, and the streetlights came on one by one, each casting a ring of shadow at his feet.{p}He walked through every pool of light, across every square of paving.	帰り道、空はすっかり暗くなり、街灯がひとつ、またひとつと灯って、足もとに丸い影を落とした。彼はひとつひとつの光の輪を、一枚一枚の敷石を越えて歩いた。
+光斑倏然又让他想起了在宇宙中看到的月亮。他抬起头，云已被吹散，群星渐显。	Suddenly the pools of light reminded him of the moon he had seen in space. He looked up; the clouds had blown away, and the stars were coming out.	光の輪が、ふと宇宙で見た月を思い出させた。見上げると、雲は吹き払われ、星々が少しずつ現れていた。
+那高度，那片安静的、缀满星辰的黑。取不回来，也不可能复刻。	That height. That quiet, star-strewn black. He couldn't take it back, and it could never be made again.	あの高さ、星を散りばめた静かな黒。取り戻せないし、もう二度と再現できない。
+可星还在对他眨眼呢，星星看着Cus，就如同他在那天望着它们一样。	But the stars were still winking at him. The stars were looking at Cus, just as he had looked at them that day.	それでも星はまだ彼にまたたいていた。星はCusを見ていた。あの日、彼が星を見上げていたのと同じように。
+我飞到过宇宙，是吗？	I flew all the way to space, didn't I?	ぼくは宇宙まで飛んだんだよね？
+他伫立在道路中间，周围一切就在那里，站在他身边。路灯的强光在他虹膜中晃出同地球一样的蓝绿色，周围飞虫的白点环绕，像是银河的碎片播撒下来，生出一丝熟悉感。宁静，而他又感受到了。	He stood still in the middle of the road, and everything around him was there, standing beside him. The glare of the streetlight swam in his eyes, the same blue-green as the Earth;{p}white specks of insects circled around, like fragments of the Milky Way scattered down, and something familiar stirred. Stillness, and he felt it again.	彼は道の真ん中に立ちつくした。まわりのすべてがそこにあって、彼のそばに立っていた。{p}街灯の強い光が彼の瞳の中で、地球と同じ青緑色に揺れ、まわりを飛ぶ虫の白い点が取り巻いて、天の川のかけらが降りまかれたようで、どこか懐かしさが生まれた。静けさ。{p}彼はまた、それを感じていた。
+他笑了一下，转过身去。	He smiled a little, and turned around.	彼は少し笑って、振り返った。
+风从背后推着他走，他踏过一个一个的光斑，没有回头。	The wind pushed him from behind as he walked; he stepped through one pool of light after another and did not look back.	風が後ろから彼を押して、彼はひとつひとつの光の輪を踏んで歩き、振り返らなかった。
+草坡在他身后沉下去，他没有再看。	The slope sank away behind him. He didn't look at it again.	草の丘は彼の後ろで沈んでいき、彼はもう見なかった。
+油烟机嗡嗡响着，锅里的菜发出刺啦刺啦的声音。	The range hood hummed, and the food in the pan sizzled.	換気扇がうなり、鍋の中の料理がじゅうじゅうと音を立てていた。
+“回来了，去哪了？”	“You're back. Where did you go?”	「おかえり。どこに行ってたの？」
+“草坡。”	“The slope.”	「草の丘。」
+母亲的手动了一下，没回头。	His mother's hand paused for a moment. She didn't turn around.	母の手が一瞬止まった。振り返りはしなかった。
+“又去开滑翔机了？”	“Flying the glider again?”	「またグライダーに乗りに行ったの？」
+“没飞起来……”	“I couldn't get it up...”	「飛べなかった……」
+他以为她会说没关系，或者下次再试——那种轻飘飘的、什么都解决不了的安慰。可母亲关了火，转过身来看着他。	He thought she would say it didn't matter, or try again next time — that kind of light, airy comfort that solves nothing.{p}But his mother turned off the stove, turned around and looked at him.	大丈夫よ、とか、また今度やってみればいい、とか言われると思っていた——ふわふわした、何も解決しない慰めを。でも母は火を止めて、振り向いて彼を見た。
+“你小时候搭积木，倒了，你就哭。我问你哭什么，你说，它不会再一模一样了。”	“When you were little and your blocks fell down, you'd cry. I asked you why, and you said, it'll never be exactly the same again.”	「小さいころ、積み木が倒れると、あなたは泣いたの。どうして泣くのって聞いたら、もう同じにはならないからって。」
+Cus接着母亲未说完的话：	Cus finished what his mother hadn't said:	Cusは、母が言いかけた言葉の続きを言った。
+“但我后面搭了一个矮一些的。”	“But then I built a shorter one.”	「でも、そのあと少し低いのを積んだんだ。」
+母亲抚摸着他的头，笑着，一如往常。	His mother stroked his head and smiled, the same as always.	母は彼の頭をなでて、笑った。いつものように。
+一阵风过，母亲的声音淹没成了耳鸣。回过神，他又奔跑在前往草坡的路上。	A gust of wind passed, and his mother's voice drowned into a ringing in his ears. When he came to, he was running down the road to the slope again.	風がひと吹きして、母の声は耳鳴りの中に沈んでいった。我に返ると、彼はまた草の丘へ向かう道を走っていた。
+踩上草坪，天黑得彻底，但他的正前方有一盏路灯正对着他，同太阳一样。	He stepped onto the grass. It was fully dark, but straight ahead a streetlight faced him, just like the sun.	芝生に足を踏み入れると、空はすっかり暗かった。けれど真正面に街灯がひとつ、太陽のように彼を照らしていた。
+他张开双臂，将手臂伸展到机翼的弧度。一步，三步，五步。第六步，他跳起来。	He spread his arms, stretching them into the curve of a wing. One step, three steps, five. On the sixth step, he jumped.	彼は両腕を広げ、翼の弧の形に伸ばした。一歩、三歩、五歩。六歩目で、跳んだ。
+他的双手仿佛兜住了一小口风，把他托离地面——半米，也许不到半米。风从他张开的手指尖穿过，凉凉的，带着晚秋枯草的气味。然后他落了下来。	His hands seemed to catch a small mouthful of wind, lifting him off the ground — half a metre, maybe less than half a metre.{p}The wind slipped through his outstretched fingertips, cool, smelling of dry late-autumn grass. Then he came down.	両手が小さなひと口の風を受けとめたように、彼を地面から持ち上げた——五十センチ、いや、五十センチもなかったかもしれない。広げた指先を風がすり抜けていった。{p}ひんやりとして、晩秋の枯れ草のにおいがした。それから彼は落ちた。
+半米。	Half a metre.	五十センチ。
+不过只是半米。他望向天空。那个深邃浩瀚的宇宙，他干脆躺在草地上，就这样望着它。没有星星，路灯太亮了，把星星都盖住了。	Only half a metre. He looked at the sky. That deep, vast universe. He simply lay down on the grass and looked up at it like that. No stars;{p}the streetlight was too bright, it hid them all.	たったの五十センチ。彼は空を見た。あの深く果てしない宇宙を。彼はいっそ草の上に寝転んで、そのまま見上げた。星はなかった。街灯が明るすぎて、星をすべて隠していた。
+但他知道它们在那里，就在那云层的后面，那层光的后面，和之前他看到的一模一样，密密麻麻。	But he knew they were there, just behind the clouds, behind that layer of light, exactly as he had seen them before, countless.	それでも彼は、星がそこにあると知っていた。雲の向こう、あの光の層の向こうに。前に見たときとまったく同じに、びっしりと。
+他没有回头。但他知道，如果他回头，看到的会是和那天一样的景象。	He didn't look back. But he knew that if he did, he would see the same sight as that day.	彼は振り返らなかった。でも、もし振り返れば、あの日と同じ景色が見えるのだと知っていた。
+他站了起来，拍了拍膝盖上的土。	He stood up and brushed the dirt off his knees.	彼は立ち上がり、ひざの土を払った。
+星星还在，风还在。	The stars are still there. The wind is still there.	星はまだそこにある。風も、まだそこにある。

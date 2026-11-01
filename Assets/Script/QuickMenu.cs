@@ -58,13 +58,22 @@ public class QuickMenu : MonoBehaviour
             for (int i = 0; i < 5; i++)
             {
                 var rt = (RectTransform)chips[i].transform; rt.sizeDelta = new Vector2(w, 34f);
-                labels[i].text = Zh[i] + "<size=8><alpha=#99>  " + Names[i].ToUpper() + "</size>";
                 labels[i].characterSpacing = 2f; labels[i].fontSize = 14f; labels[i].alignment = TextAlignmentOptions.Center;
                 labels[i].rectTransform.anchorMin = Vector2.zero; labels[i].rectTransform.anchorMax = Vector2.one;
                 labels[i].rectTransform.offsetMin = new Vector2(0f, 4f); labels[i].rectTransform.offsetMax = Vector2.zero;
             }
         }
+        Relabel();
     }
+
+    // 标签文字：中文 / 日文大字 + 英文小字；英文版不再英文叠英文。游戏中途在设置里换语言时也重写一遍
+    void Relabel()
+    {
+        for (int i = 0; i < 5; i++)
+            labels[i].text = Loc.T(Zh[i]) + (Loc.Lang == "en" ? "" : "<size=8><alpha=#99>  " + Names[i].ToUpper() + "</size>");
+    }
+    void OnEnable() { Loc.Changed += Relabel; }
+    void OnDisable() { Loc.Changed -= Relabel; }
 
     void Press(int i)
     {

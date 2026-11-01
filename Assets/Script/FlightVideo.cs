@@ -16,6 +16,7 @@ public class FlightVideo : MonoBehaviour
     public bool Active => on;
     public float Clock => fc;                // 飞行时钟 = 视频放到第几秒（立绘的 at(秒) 看它）
     public bool AtSegmentEnd => !on || fc >= segB - 0.02f || lineClock > (segB - segA) + 3f;   // 这句的画面走完了没有（锁住时 DialogueManager 等它）；保险：最多等这么久
+    public float SegProgress => segB > segA ? (fc - segA) / (segB - segA) : 1f;   // 这句的画面走到几成了（0–1；{p} 翻页时看它）
     public bool Dark => on && fc >= 41f;            // 深空以后画面是暗的（分镜同样从 41 秒起换纸色字）
     // 长按 = 1.5 倍速：画面、打字、阅读等待一起快；音乐音效不变（DialogueManager 读 Speed）
     public static float Speed => Instance != null && Instance.holding ? 1.5f : 1f;
@@ -79,7 +80,7 @@ public class FlightVideo : MonoBehaviour
         if (!on || Mathf.Abs(fc - a) > 1.5f) { fc = a; Seek(a); }   // 从别处进来（第一句、读档、跳转）：直接从这段开头开始
         if (video.clip != null) b = Mathf.Min(b, (float)video.clip.length - 0.1f);   // 不能走到视频最末：VideoPlayer 播完会自己跳回第 0 帧
         on = true; segA = a; segB = b; lineT0 = Time.time; lineClock = 0f;
-        string line = (DialogueManager.currentLine ?? "").Replace("{w}", "");
+        string line = (DialogueManager.currentLine ?? "").Replace("{w}", "").Replace("{p}", "");
         float budget = Mathf.Max(0.4f, (segB - Mathf.Max(fc, segA)) * 0.55f);
         charDelay = line.Length > 0 ? budget / line.Length : SaveSystem.TextDelay;
     }

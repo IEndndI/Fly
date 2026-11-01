@@ -102,9 +102,10 @@ public class ChapterCard : MonoBehaviour
         int n = System.Array.FindIndex(chapters, c => c.id == id);
         if (n < 0) { Debug.LogWarning("章扉页里没有这一章：" + id); return false; }
         Chapter c = chapters[n];
-        numeral.text = c.numeral; title.text = c.title; english.text = c.english;
-        place.text = c.place; quote.text = c.quote; page.text = c.page;
-        caption.text = "第" + c.numeral + "章 · Chapter " + (n + 1).ToString("00");
+        numeral.text = c.numeral;
+        title.text = Loc.Lang == "en" ? c.english : Loc.T(c.title); english.text = Loc.Lang == "en" ? c.title : c.english;   // 英文版：英文标题放大，中文当副标题
+        place.text = Loc.T(c.place); quote.text = Loc.T(c.quote); page.text = c.page;
+        caption.text = Loc.F("第{0}章 · Chapter {1}", c.numeral, (n + 1).ToString("00"));
         Sprite[] frames = new Sprite[3];                                    // 这一章的蜡笔线，先收起来等着画
         for (int i = 0; i < 3; i++) frames[i] = Resources.Load<Sprite>("Sprites/Fly/Card/trail_" + c.ordinal + "_line" + i);
         trail.SetFrames(frames[0] != null ? frames : new Sprite[0]);
@@ -115,7 +116,7 @@ public class ChapterCard : MonoBehaviour
             tocRows[i].gameObject.SetActive(has);
             tocBacks[i].enabled = current;                                   // 本章反白
             if (!has) continue;
-            tocRows[i].text = (i + 1).ToString("00") + "　" + chapters[i].title + "<pos=88%>" + chapters[i].page;
+            tocRows[i].text = (i + 1).ToString("00") + "　" + (Loc.Lang == "en" ? chapters[i].english : Loc.T(chapters[i].title)) + "<pos=88%>" + chapters[i].page;
             tocRows[i].color = current ? Cobalt : new Color(Paper.r, Paper.g, Paper.b, i > n ? 0.42f : 1f);  // 没读到的压暗
             if (tocLines != null && tocLines[i] != null) tocLines[i].enabled = !current;                      // 白底那行不要行线（分镜 .toc.on 无阴影）
             if (tocDots != null && tocDots[i] != null) tocDots[i].color = current ? Cobalt : new Color(Paper.r, Paper.g, Paper.b, 0.55f);   // .toc.on .ld 变钴蓝
@@ -123,7 +124,7 @@ public class ChapterCard : MonoBehaviour
             if (tocDots != null && tocDots[i] != null) dotBase[i] = tocDots[i].color;
             if (tocLines != null && tocLines[i] != null) lineBase[i] = tocLines[i].color;
         }
-        if (numText != null) numText.text = "N°" + (n + 1).ToString("00") + " · 第" + c.numeral + "章";       // 分镜 gcN
+        if (numText != null) numText.text = Loc.F("N°{1} · 第{0}章", c.numeral, (n + 1).ToString("00"));       // 分镜 gcN
         return true;
     }
 

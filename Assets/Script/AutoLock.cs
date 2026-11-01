@@ -70,7 +70,7 @@ public class AutoLock : MonoBehaviour
     IEnumerator Arm()
     {
         IsLocked = true;
-        title.text = "即将自动播放"; sub.text = "AUTO-PLAY AHEAD";
+        title.text = Loc.T("即将自动播放"); sub.text = "AUTO-PLAY AHEAD";
         ring.fillAmount = 0f; ring.color = Cobalt; SetShackle(0f);
         float t = 0f; bool clicked = false;
         while (t < armTime)
@@ -86,7 +86,7 @@ public class AutoLock : MonoBehaviour
         // 圈合上：锁扣落下
         for (t = 0f; t < 0.28f; t += Time.deltaTime) { SetShackle(Mathf.Pow(t / 0.28f, 3f)); yield return null; }
         SetShackle(1f);
-        title.text = "自动播放中"; sub.text = "点击已锁定 · CLICKS LOCKED";
+        title.text = Loc.T("自动播放中"); sub.text = Loc.T("点击已锁定 · CLICKS LOCKED");
         run = null;
     }
 
@@ -94,7 +94,7 @@ public class AutoLock : MonoBehaviour
     {
         IsLocked = false;
         ring.fillAmount = 1f; ring.color = new Color(Cobalt.r, Cobalt.g, Cobalt.b, 0.45f); SetShackle(0f);
-        title.text = "已解锁"; sub.text = "UNLOCKED";
+        title.text = Loc.T("已解锁"); sub.text = "UNLOCKED";
         if (sound != null) sound.PlaySfx("Fly/sfx_unlock");
         yield return new WaitForSeconds(1.6f);
         for (float t = 0f; t < 0.45f; t += Time.deltaTime) { group.alpha = 1f - t / 0.45f; yield return null; }

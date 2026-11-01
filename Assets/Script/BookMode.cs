@@ -54,7 +54,7 @@ public class BookMode : MonoBehaviour
         var rt = go.GetComponent<RectTransform>(); rt.SetParent(panel, false);
         rt.anchorMin = rt.anchorMax = anchor; rt.pivot = anchor; rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(600f, 18f);
         var t = go.GetComponent<TextMeshProUGUI>(); if (labelFont != null) t.font = labelFont;
-        t.text = s; t.fontSize = 12f; t.characterSpacing = 9f; t.color = Cobalt; t.alignment = al;
+        t.text = Loc.T(s); t.fontSize = 12f; t.characterSpacing = 9f; t.color = Cobalt; t.alignment = al;
         t.enableWordWrapping = false; t.raycastTarget = false; t.alpha = 0f;
         return t;
     }

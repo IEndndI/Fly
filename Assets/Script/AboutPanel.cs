@@ -79,9 +79,9 @@ public class AboutPanel : MonoBehaviour
 
     static string LoadText()
     {
-        var ta = Resources.Load<TextAsset>("About");
+        var ta = Resources.Load<TextAsset>(Loc.Res("About"));
         string s = ta != null ? ta.text.Replace("\r", "").Trim() : "";
-        if (s.Length == 0) s = "（作者还在写。）";
+        if (s.Length == 0) s = Loc.T("（作者还在写。）");
         // 致谢名单：Resources/Credits.txt，一行一个名字（# 开头的是说明，不显示）；没填就不出现
         var cr = Resources.Load<TextAsset>("Credits");
         if (cr != null)
@@ -89,7 +89,7 @@ public class AboutPanel : MonoBehaviour
             var names = new System.Collections.Generic.List<string>();
             foreach (var l in cr.text.Replace("\r", "").Split('\n')) { var n = l.Trim(); if (n.Length > 0 && !n.StartsWith("#")) names.Add(n); }
             if (names.Count > 0)
-                s += "\n\n<size=14><color=#0047AB88>——————————————　　致谢 · THANKS</color></size>\n\n<size=22><color=#1F1F29CC>感谢试玩、提出意见的你们：\n" + string.Join("、", names) + "</color></size>";
+                s += "\n\n<size=14><color=#0047AB88>——————————————　　" + Loc.T("致谢 · THANKS") + "</color></size>\n\n<size=22><color=#1F1F29CC>" + Loc.T("感谢试玩、提出意见的你们：") + "\n" + string.Join(Loc.Lang == "zh" ? "、" : ", ", names) + "</color></size>";
         }
         return s;
     }
@@ -136,7 +136,7 @@ public class AboutPanel : MonoBehaviour
     {
         var t = R("T", parent, pos, box).gameObject.AddComponent<TextMeshProUGUI>();
         if (f != null) t.font = f;
-        t.text = s; t.fontSize = size; t.color = c; t.characterSpacing = spacing; t.alignment = al;
+        t.text = Loc.T(s); t.fontSize = size; t.color = c; t.characterSpacing = spacing; t.alignment = al;
         t.enableWordWrapping = false; t.raycastTarget = false;
         return t;
     }

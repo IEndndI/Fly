@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ public class EndingPlayer : MonoBehaviour
 
     VideoPlayer video; RawImage screen; CanvasGroup group; RenderTexture rt;
     EndCredits credits;
+    TextMeshProUGUI lastSub;                        // v1.3：结尾最后那句手写字（画死在视频里）的译文小字幕；中文版不出现
+    static readonly Dictionary<string, string> LastWord = new Dictionary<string, string> { { "a", "我飞到过宇宙，是吗？" }, { "b", "星星还在，风还在。" } };
 
     void Awake()
     {
@@ -43,6 +46,12 @@ public class EndingPlayer : MonoBehaviour
         credits = new GameObject("EndCredits", typeof(RectTransform)).AddComponent<EndCredits>();
         credits.transform.SetParent(transform, false);
         credits.video = video;
+        // 手写字在分镜里从 34.4 秒开始一个字一个字写（x 330、基线 y 640、字高 118），38 秒钴蓝色块盖过去：字幕放在它正下方
+        lastSub = new GameObject("LastWordSub", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
+        var sr = lastSub.rectTransform; sr.SetParent(transform, false);
+        sr.anchorMin = sr.anchorMax = new Vector2(0.5f, 0.5f); sr.pivot = new Vector2(0f, 1f);
+        sr.anchoredPosition = new Vector2(330f - 960f, 540f - 700f); sr.sizeDelta = new Vector2(1300f, 60f);
+        lastSub.fontSize = 30f; lastSub.color = new Color(0.204f, 0.251f, 0.369f, 1f); lastSub.raycastTarget = false; lastSub.alpha = 0f;
     }
 
     public IEnumerator Play(string branch, AudioPlayer audio, System.Func<string, Command> load)
@@ -63,6 +72,9 @@ public class EndingPlayer : MonoBehaviour
         credits.audioPlayer = audio;
         credits.font = creditsFont; credits.nameFont = creditsNameFont; credits.numFont = creditsNumFont;
         credits.Running = true;
+        string sub = Loc.Lang == "zh" ? "" : Loc.Story(LastWord[branch.ToLower()]);
+        if (creditsFont != null) lastSub.font = creditsFont;
+        lastSub.text = sub; lastSub.alpha = 0f;
         video.Play();
         DialogueManager.blockUntil = float.MaxValue;              // 结尾整段锁住
         for (float t = 0f; t < fade; t += Time.deltaTime) { group.alpha = t / fade; yield return null; }
@@ -75,11 +87,17 @@ public class EndingPlayer : MonoBehaviour
         {
             if (video.time >= video.clip.length - 0.06) { video.Pause(); break; }   // 停在最后一帧（播完 VideoPlayer 会跳回第 0 帧）
             if (credits.Busy) t0 += Time.deltaTime;                  // 名单在放（视频暂停着）：这段时间不算进超时
+            if (sub != "")                                            // 35.2 秒（手写写到一半）淡入，37.8 秒色块盖过来之前淡出
+            {
+                float vt = (float)video.time;
+                lastSub.alpha = Mathf.Clamp01((vt - 35.2f) / 0.6f) * Mathf.Clamp01((38.1f - vt) / 0.3f);
+            }
             yield return null;
         }
         video.loopPointReached -= onEnd;
         GetComponent<HoldToSpeed>().Enabled = false;
         credits.Running = false;
+        lastSub.alpha = 0f;
         // 压到黑场，标题从黑场里 0.9 秒淡出来（分镜 finishEnding）
         yield return new WaitForSeconds(0.3f);
         for (float t = 0f; t < 0.4f; t += Time.deltaTime) { float k = 1f - t / 0.4f; screen.color = new Color(k, k, k, 1f); yield return null; }

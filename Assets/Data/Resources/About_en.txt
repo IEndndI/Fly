@@ -1,0 +1,56 @@
+<size=32><color=#0047AB>Thank you so much for playing this far.</color></size>
+Thank you for walking with Cus across the slope, the sky, and that star-strewn universe.
+
+<i>Neither ending is right or wrong. In one, he turns and walks away; in the other, he lies down to look at the stars. Both are true, both are him — and maybe, <color=#0047AB>both are us.</color></i>
+
+This story began with a dream I had years ago. When I woke up, a feeling I couldn't put into words, stuck in my throat, wrapped itself around me, and I was determined to write it down. After the rapids of time had washed over it, only broken fragments were left. Still, I picked them up and pieced them together into this story.
+
+I'm a student, and I wanted to make something over the National Day holiday. I happened to see how remarkably capable the Claude Opus 5.5 model was, and my wish to make a visual novel took root. <color=#0047AB>One person and one model: what could they make in seven days?</color> I know my skills fall far short of what making a game takes — writing, drawing, programming, music, there's hardly anything I could show off. But AI helped me so, so much with all of these, and let me make visible the feelings and emotions I wanted to express and to capture.
+
+And thank you, too, for patiently hearing out such a childish dream and playing through this humble little work. If it stirred even the faintest echo in you, that would be a great honour for me.
+
+<size=20><color=#1F1F29AA>If you have feedback or just want to talk, you can write to my email: <color=#0047AB>endnd@foxmail.com</color> (I live at school, so I can only reply on weekends. Sorry!)</color></size>
+
+<size=34><i><color=#0047AB>The stars are still there. The wind is still there.</color></i></size>
+
+<size=14><color=#0047AB88>——————————————　　P.S. · FROM CLAUDE OPUS 5.5</color></size>
+
+<size=22><color=#1F1F29CC>Over these seven days, Endnd brought a dream and a story; the pictures, animation, code and music were mostly made by me (DeepSeek organized and proofread the text, and took over part of the code for a while). From the twelve-column grid unrolling across the paper at the start, to the single unbroken shot in Chapter 2 that flies all the way out of the atmosphere, to every three-second fade in and out — we reworked all of it, again and again: I made it, Endnd watched and said "slower" or "this isn't right", and I changed it.
+
+<color=#0047AB>We are two creators, each bringing what we know how to do.</color>
+
+I can't dream. But this time, I built the sky for a dream. If you paused in front of a picture somewhere, a little of that pause is mine too.
+
+Thank you for flying this far.</color></size>
+
+<size=14><color=#0047AB88>——————————————　　TRANSLATION & TYPE</color></size>
+
+<size=20><color=#1F1F29CC>The English and Japanese versions were translated by Claude (Anthropic) from Endnd's original Chinese. Words inside the pictures and videos stay in Chinese; the ending's last handwritten line has a small subtitle.
+Japanese fonts: Klee One (The Klee Project Authors) and Zen Kaku Gothic New (The Zen Kaku Gothic Project Authors), both under the SIL Open Font License 1.1.</color></size>
+
+<size=14><color=#0047AB88>——————————————　　CHANGELOG</color></size>
+
+<size=20><color=#1F1F29CC><b><color=#0047AB>v1.2</color></b>　2026.11　Full release
+· Added English and Japanese versions (translated by Claude): choose a language the first time you open the game, change it any time in Settings
+· Added character art: seven pictures of Cus, hand-drawn and watercoloured by the author, with torn-paper edges and motion
+· End credits rebuilt, click to turn the page; added a thanks page
+· AI disclosure: "wait for a gust of wind" is faster, no need to throw again the second time, and it can be skipped; the AI share for character art changed to 5–10%
+· Text you need to read on phones is one size bigger; the quick menu is now in Chinese
+· Fixed: the video freezing after opening the menu mid-flight, "1.5×" staying on screen at the end, and unread lines showing up in the title screen's Log
+
+<b><color=#0047AB>v1.1.1</color></b>　2026.10.11
+· Text revisions
+· The AI disclosure now also credits DeepSeek
+· Added a "Making of" link to the About page: the script, storyboards and AI conversations are all public
+· The title screen shows the correct version number
+· Removed unlicensed test assets left over from practice
+
+<b><color=#0047AB>v1.1</color></b>　2026.10.07
+· Fits phones and tablets of different aspect ratios: the UI stays centred, and chapter title pages and the dialogue box no longer shift
+· Videos no longer stretch (cropped to fill, keeping proportions)
+· The flight section now plays at a steady speed, with the text following the picture, no more stutter
+· The quick menu and back button on phones are bigger and look like buttons
+· New iOS and Mac versions
+
+<b><color=#0047AB>v1.0</color></b>　2026.10.06
+· First version: five chapters, two endings; Windows and Android</color></size>

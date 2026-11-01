@@ -51,6 +51,7 @@ public class DialogueManager : MonoBehaviour
     public static bool autoMode, skipMode;               // 快捷栏的 Auto / Skip（QuickMenu 切换）
 
     public List<DialogueLine> dialogueLines;
+    public List<DialogueLine> sourceLines;              // 中文原版（和 dialogueLines 行对行）
     public DialogueLoader loader;
     public string dialogueFileName = "Fly";
     public float typingSpeed = 0.05f;
@@ -220,11 +221,24 @@ public class DialogueManager : MonoBehaviour
         return result;
     }
 
+    // v1.3 游戏中途在设置里换语言：重读中文剧本再翻成新语言（行对行一样，读到哪一句不变），从下一句开始生效
+    void OnEnable() { Loc.Changed += ReloadLang; }
+    void OnDisable() { Loc.Changed -= ReloadLang; }
+    void ReloadLang()
+    {
+        if (dialogueLines == null || loader == null) return;
+        var fresh = loader.LoadDialogueFromFile(dialogueFileName);
+        Loc.TranslateLines(fresh);
+        if (fresh != null && fresh.Count == dialogueLines.Count) dialogueLines = fresh;
+    }
+
     void Start()
     {
         LoadSpriteIndex();
         if (autoLock == null) autoLock = FindObjectOfType<AutoLock>();
+        sourceLines = loader.LoadDialogueFromFile(dialogueFileName);                                     // 中文原版：码数牌、折角按原文认句子
         dialogueLines = loader.LoadDialogueFromFile(dialogueFileName);
+        Loc.TranslateLines(dialogueLines);                                                              // v1.3：按原句查 Loc/story.txt 换成译文
         BuildLabels();
         CheckLabels();
         int start = 0;
@@ -471,7 +485,7 @@ public class DialogueManager : MonoBehaviour
 
         if (line.speakerName != null)
         {
-            speakerNameText.text = line.speakerName;
+            speakerNameText.text = Loc.Story(line.speakerName);   // 名字只在显示时翻；currentSpeaker 保持原名，立绘按它找
             currentSpeaker = line.speakerName;
             StartCoroutine(Tweens.Tween(0.4f, Tweens.Bezier(0.34f, 1.56f, 0.64f, 1f),
                 p => namePlate.rectTransform.anchoredPosition = new Vector2(-24f * (1f - p), 0f)));
@@ -699,13 +713,37 @@ public class DialogueManager : MonoBehaviour
     IEnumerator TypeText(string content)
     {
         dialogueText.text = "";
-        string[] segments = content.Split(new string[] { "{w}" }, System.StringSplitOptions.None);
-
-        for (int s = 0; s < segments.Length; s++)
+        // v1.3 {p} = 翻页：译文比原文长，一句放不进三行时，在句号处切开。和 {w} 一样停下等点击，只是多一步——先把框擦干净
+        string[] pages = content.Split(new string[] { "{p}" }, System.StringSplitOptions.None);
+        for (int p = 0; p < pages.Length; p++)
         {
-            if (s > 0) yield return StartCoroutine(WaitForClick());
-            yield return StartCoroutine(TypeSegment(segments[s]));
+            if (p > 0) { yield return StartCoroutine(WaitPage(pages, p)); dialogueText.text = ""; }
+            string[] segments = pages[p].Split(new string[] { "{w}" }, System.StringSplitOptions.None);
+
+            for (int s = 0; s < segments.Length; s++)
+            {
+                if (s > 0) yield return StartCoroutine(WaitForClick());
+                yield return StartCoroutine(TypeSegment(segments[s]));
+            }
         }
+    }
+
+    // {p} 翻页前等什么：平时等点击；但自动播放锁住时点击是被吃掉的（只晃一下锁），等点击就永远卡住——
+    // 锁住 + 飞行中：跟着画面走，前面几页占整句的几成字，就等画面走到这一段的几成再翻；锁住但没在飞：留够这一页的阅读时间
+    IEnumerator WaitPage(string[] pages, int p)
+    {
+        if (autoLock == null || !autoLock.IsLocked) { yield return StartCoroutine(WaitForClick()); yield break; }
+        var fv = FlightVideo.Instance;
+        if (fv != null && fv.Active)
+        {
+            int done = 0, all = 0;
+            for (int i = 0; i < pages.Length; i++) { all += pages[i].Length; if (i < p) done += pages[i].Length; }
+            float frac = all > 0 ? (float)done / all : 1f;
+            while (fv.Active && fv.SegProgress < frac && !fv.AtSegmentEnd) yield return null;
+        }
+        else
+            for (float w = 0f, need = autoLock.ReadTime(pages[p - 1]); w < need; w += Time.deltaTime) yield return null;
+        if (audioPlayer != null) audioPlayer.PlaySfx("Fly/sfx_page");
     }
 
     IEnumerator TypeSegment(string segment)
@@ -827,18 +865,18 @@ public class DialogueManager : MonoBehaviour
                 namePlate.color = cobalt;
                 speakerNameText.color = paper;
                 namePlateLine.enabled = false;          // 空1：台词要不要描边？
-                modeLabel.text = "台词 · LINE";
+                modeLabel.text = Loc.T("台词 · LINE");
                 break;
             case "心声":
                 namePlate.gameObject.SetActive(true);
                 namePlate.color = paper;                // 空2：底色换成什么？
                 speakerNameText.color = cobalt;          // 空3：字换成什么颜色才看得见？
                 namePlateLine.enabled = true;
-                modeLabel.text = "心声 · THOUGHT";
+                modeLabel.text = Loc.T("心声 · THOUGHT");
                 break;
             default:                                   // 旁白、书中
                 namePlate.gameObject.SetActive(false);  // 空4
-                modeLabel.text = type == "书中" ? "书中 · IN THE BOOK" : "旁白 · NARRATION";
+                modeLabel.text = Loc.T(type == "书中" ? "书中 · IN THE BOOK" : "旁白 · NARRATION");
                 break;
         }
     }

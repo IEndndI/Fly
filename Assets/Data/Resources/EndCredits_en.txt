@@ -1,0 +1,67 @@
+# English end credits (translated by Claude from EndCredits.txt). Same format as EndCredits.txt; the background names (room, street…) must stay as they are.
+# If you change the Chinese version, change this one too.
+
+Story · 故事
+Endnd
+Original text: "Fly" · five chapters, two endings · three rounds of revision
+room | Chapter 1 · Midsummer Night
+Chapters | 5 chapters · 2 endings
+Origin | a dream the author had
+Folded corner | Chapter 1 · line 8
+AI help | organizing and proofreading (DeepSeek) · about 15–25%
+
+Characters · 角色
+Cus · Mom · Grandpa
+Characters and art: Endnd (pencil lines, watercolour)
+street | Chapter 1 · The town
+Cus | blond hair · tail · flying cap
+Mom | cobalt dress
+Grandpa | white hair · cane
+AI help | torn-paper edges and entrance animation · about 5–10%
+
+Pictures · 画面
+Crayon and watercolour
+Every background was drawn stroke by stroke in a browser
+earth | Chapter 2 · The highest place
+Crayon | three-frame boil · 12 fps
+Watercolour | spreading layer by layer
+Paper | warm paper white F2ECDF
+AI | Claude Opus 5.5 · about 90%
+
+UI & Motion · 界面与动态
+Cobalt · warm paper white · yellow
+12 columns · 24 gutter · 8 baseline · dream layer 12 fps
+slope | Chapter 5 · November
+Grid | 12 columns · 24 gutter
+Baseline | 8 px
+Colours | cobalt · paper white · yellow
+AI | Claude Opus 5.5 · about 90%
+
+Sound · 声音
+Pads, music box, wind and paper
+All synthesized in code, not a single recording
+night | Chapter 4 · Before dawn
+Music | 15 pad layers · music box
+Sound effects | pencil · page turn · wind · rain · lock
+Recordings | 0
+AI | Claude Opus 5.5 · 100%
+
+Type · 字体
+HarmonyOS Sans SC · LXGW WenKai
+Handwriting: ZCOOL KuaiLe
+room3 | Chapter 3 · The folded corner
+Interface | HarmonyOS Sans SC
+Body text | LXGW WenKai
+Handwriting | ZCOOL KuaiLe
+AI note | the opening N°00 · can be reopened from the title screen
+
+Thanks · 鸣谢
+Everyone who played
+You played, filled in surveys, reported bugs: this version is better for it
+ascent_dusk | Chapter 2 · Foot of the slope
+rdx | first to see both endings
+我跟猪刚当仙 | gave it a 9, chose to park the glider
+A player on 10.07 | liked the art; phone text was too small
+A classmate on 10.19 | "a book that moves"
+A player on 10.25 | "an immersive emotional experience"; saves hard to find
+jmwyszbm | found the 1.5× bug; suggested a skip button

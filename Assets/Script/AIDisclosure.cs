@@ -55,6 +55,14 @@ public class AIDisclosure : MonoBehaviour
         ForceShow = false;
         if (uiFont == null) { var ts = FindObjectOfType<TitleScreen>(); if (ts != null) { uiFont = ts.uiFont; textFont = ts.textFont; handFont = ts.labelFont; } }   // 从标题再打开时：字体跟标题拿
         Shown = true; Active = true;
+        if (!Loc.HasChosen) { LangSelect.Show(transform.parent, uiFont, textFont, Build); return; }   // v1.3：第一次打开先选语言，选完再搭声明页
+        Build();
+    }
+
+    bool built;
+    void Build()
+    {
+        built = true;
         var r = (RectTransform)transform;
         r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero; r.SetAsLastSibling();
         gameObject.AddComponent<Bleed>();                                                     // 纸色底伸到屏幕边（宽屏 / 平板）
@@ -108,7 +116,7 @@ public class AIDisclosure : MonoBehaviour
         In(Txt("创作声明：\n此项目由 <color=#0047AB>AI</color> 辅助完成", uiFont, 46f, 120, 136, 686, 124, FontStyles.Bold), 0.4f, 0);
         In(Img("bar", 120, 268, 686, 5, Cobalt), 0.65f, 1);                                  // 粗钴蓝条：版式的骨头
         var body = Txt("此故事出自于作者的梦。故事与文本、立绘主要由人类创作；画面、动画、程序、音乐由 Claude Opus 5.5 完成，DeepSeek 协助文字校对与部分程序。",
-            textFont, 18f, 120, 288, 686, 64); body.enableWordWrapping = true; body.lineSpacing = 14f; In(body, 0.75f, 0);
+            textFont, Loc.Lang == "zh" ? 18f : 16f, 120, 288, 686, 64); body.enableWordWrapping = true; body.lineSpacing = Loc.Lang == "zh" ? 14f : 2f; In(body, 0.75f, 0);   // 译文比中文长：字小一号、行距收紧，三行放得下
         // 大数字：整体 AI ≈ 60%（入场时从 0 数上来）
         stat = Txt("0", uiFont, 112f, 112, 352, 190, 120, FontStyles.Bold, TextAlignmentOptions.TopRight); In(stat, 0.9f, 0);
         In(Txt("%", uiFont, 44f, 304, 372, 60, 60, FontStyles.Bold), 0.95f, 0);
@@ -128,7 +136,7 @@ public class AIDisclosure : MonoBehaviour
         {
             float y = 596 + i * 38, dl = 1.55f + i * 0.06f;
             var n = Txt("0" + (i + 1), uiFont, 12f, 120, y + 12, 40, 18); n.alpha = 0.7f; In(n, dl, 5);
-            In(Txt(rows[i].cn + "  <size=10><alpha=#99>" + rows[i].en + "<alpha=#FF></size>", uiFont, UIFrame.Read(18f, 21f), 160, y + 6, 420, 28), dl, 5);
+            In(Txt(Loc.T(rows[i].cn) + "  <size=10><alpha=#99>" + rows[i].en + "<alpha=#FF></size>", uiFont, UIFrame.Read(18f, 21f), 160, y + 6, 420, 28), dl, 5);
             var rg = Txt(rows[i].rg, uiFont, 12f, 560, y + 12, 120, 18, FontStyles.Normal, TextAlignmentOptions.TopRight); rg.alpha = 0.6f; In(rg, dl, 5);
             rows[i].val = Txt("—", uiFont, 19f, 690, y + 7, 116, 26, FontStyles.Bold, TextAlignmentOptions.TopRight); rows[i].val.alpha = 0.25f; In(rows[i].val, dl, 5);
             rows[i].mark = Img("cur", 104, y + 8, 4, 24, Sun); rows[i].mark.enabled = false;
@@ -274,13 +282,14 @@ public class AIDisclosure : MonoBehaviour
         var b = Img("x2", x, G - 18, 22, 2.4f, Cobalt); b.rectTransform.pivot = new Vector2(0.5f, 0.5f); b.rectTransform.anchoredPosition = new Vector2(x, -(G - 18)); b.rectTransform.localEulerAngles = new Vector3(0, 0, -45); Child(targetRoot, b);
         var lab = Txt("0" + (k + 1), uiFont, 13f, x - 30, G - 104, 60, 18, FontStyles.Bold, TextAlignmentOptions.Top); Child(targetRoot, lab);
         for (int i = 0; i < rows.Length; i++) rows[i].mark.enabled = i == k;
-        detail.text = "<b>0" + (k + 1) + " — " + rows[k].cn + "</b>\n<b>作者</b>　" + rows[k].h + "\n<b>AI</b>　　" + rows[k].a;
+        detail.text = Loc.F("<b>0{0} — {1}</b>\n<b>作者</b>　{2}\n<b>AI</b>　　{3}", k + 1, Loc.T(rows[k].cn), Loc.T(rows[k].h), Loc.T(rows[k].a));
         PlaceGlider(LP, -0.18f); glider.gameObject.SetActive(true);
         Preview();
     }
 
     void Update()
     {
+        if (!built) return;                                  // 还在选语言
         AnimateGuide();
         if (Input.GetKeyDown(KeyCode.Escape)) { Skip(); return; }
         if (intro || finished || flying || auto) return;
@@ -349,7 +358,7 @@ public class AIDisclosure : MonoBehaviour
         {
             Play("sfx_whisper");
             Vector2 end = Bez(dd, k, 1f);
-            hint.text = dd < rows[k].ai ? "近了一点。再试一次。" : "远了一点。再试一次。";
+            hint.text = Loc.T(dd < rows[k].ai ? "近了一点。再试一次。" : "远了一点。再试一次。");
             hint.rectTransform.anchoredPosition = new Vector2(Mathf.Min(end.x - 60, 1440), -(G - 150));
             for (float t = 0f; t < 1.3f; t += Time.deltaTime)
             {
@@ -459,7 +468,7 @@ public class AIDisclosure : MonoBehaviour
         PlayerPrefs.SetInt(SeenKey, 1); PlayerPrefs.Save();                              // 记住：下次打开直接填好
         foreach (var r in rows) r.mark.enabled = false;
         foreach (Transform c in targetRoot) Destroy(c.gameObject);
-        detail.text = "<b>07 — 整体</b>\n<b>作者</b>　" + rows[6].h + "\n<b>AI</b>　　" + rows[6].a;
+        detail.text = Loc.F("<b>0{0} — {1}</b>\n<b>作者</b>　{2}\n<b>AI</b>　　{3}", 7, Loc.T(rows[6].cn), Loc.T(rows[6].h), Loc.T(rows[6].a));
         Play("sfx_chime"); Play("sfx_swoosh");
         for (float t = 0f; t < 1.6f; t += Time.deltaTime)
         {
@@ -559,7 +568,7 @@ public class AIDisclosure : MonoBehaviour
         var go = new GameObject("T", typeof(RectTransform), typeof(TextMeshProUGUI)); var rt = go.GetComponent<RectTransform>(); rt.SetParent(stage, false);
         rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f); rt.anchoredPosition = new Vector2(x, -y); rt.sizeDelta = new Vector2(w, h);
         var t = go.GetComponent<TextMeshProUGUI>(); if (f != null) t.font = f;
-        t.text = s; t.fontSize = size; t.color = Cobalt; t.fontStyle = st; t.alignment = al; t.enableWordWrapping = w > 300 && h > 40; t.raycastTarget = false;
+        t.text = Loc.T(s); t.fontSize = size; t.color = Cobalt; t.fontStyle = st; t.alignment = al; t.enableWordWrapping = w > 300 && h > 40; t.raycastTarget = false;
         return t;
     }
     TextMeshProUGUI Cap(string s, float x, float y, float w, TextAlignmentOptions al = TextAlignmentOptions.TopLeft)

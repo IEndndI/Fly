@@ -232,7 +232,8 @@ public class TitleScreen : MonoBehaviour
     {
         Text(parent, it.num, 12f, new Vector2(12, -28), new Vector2(40, 30), c, TextAlignmentOptions.MidlineLeft, null, 1f);
         Text(parent, it.zh, 24f, new Vector2(60, -28), new Vector2(260, 40), c, TextAlignmentOptions.MidlineLeft, labelFont, 0f);
-        Text(parent, it.en, 11f, new Vector2(402 - 14 - 160, -28), new Vector2(160, 30), c, TextAlignmentOptions.MidlineRight, null, 8f);
+        var small = Text(parent, Loc.Small(it.en, it.zh), 11f, new Vector2(402 - 14 - 160, -28), new Vector2(160, 30), c, TextAlignmentOptions.MidlineRight, null, 8f);
+        relabel.Add(() => small.text = Loc.T(Loc.Small(it.en, it.zh)));   // 小字是「英文版换中文」那种，要按新语言重新挑
     }
 
     RectTransform MakeRect(string n, RectTransform parent, Vector2 pos, Vector2 size)
@@ -245,15 +246,23 @@ public class TitleScreen : MonoBehaviour
         return rt;
     }
 
-    void Text(RectTransform parent, string s, float size, Vector2 pos, Vector2 box, Color c, TextAlignmentOptions al, TMP_FontAsset f, float spacing)
+    // v1.3：标题在选语言之前就搭好了，所以每个字都记下「怎么重新算」，换了语言就全部重写一遍
+    readonly System.Collections.Generic.List<System.Action> relabel = new System.Collections.Generic.List<System.Action>();
+    void OnEnable() { Loc.Changed += Relabel; }
+    void OnDisable() { Loc.Changed -= Relabel; }
+    void Relabel() { foreach (var a in relabel) a(); }
+
+    TextMeshProUGUI Text(RectTransform parent, string s, float size, Vector2 pos, Vector2 box, Color c, TextAlignmentOptions al, TMP_FontAsset f, float spacing)
     {
         var go = new GameObject("T", typeof(RectTransform), typeof(TextMeshProUGUI));
         var rt = go.GetComponent<RectTransform>(); rt.SetParent(parent, false);
         rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 0.5f);
         rt.anchoredPosition = pos; rt.sizeDelta = box;
         var t = go.GetComponent<TextMeshProUGUI>(); if (f != null) t.font = f;
-        t.text = s; t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
+        t.text = Loc.T(s); t.fontSize = size; t.color = c; t.alignment = al; t.characterSpacing = spacing;
         t.enableWordWrapping = false; t.raycastTarget = false;
+        relabel.Add(() => t.text = Loc.T(s));
+        return t;
     }
 
     static void AddTrigger(UnityEngine.EventSystems.EventTrigger trig, UnityEngine.EventSystems.EventTriggerType type, System.Action a)
